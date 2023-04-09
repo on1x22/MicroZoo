@@ -4,11 +4,10 @@ namespace MicroZoo.ZookeeperCatalog
 {
     public interface IZookeeperCatalog
     {
-        IEnumerable<Zookepeer> Get();
+        Zookepeer GetByName(string name);
+        Zookepeer GetById(int id);
 
-        Zookepeer Get(string name);
-        Zookepeer Get(int id);
-
-        IEnumerable<Zookepeer> GetZookeepers(string speciality);
+        IEnumerable<Zookepeer> GetAll();
+        IEnumerable<Zookepeer> GetZookeepersSpeciality(string speciality);
     }
 }
