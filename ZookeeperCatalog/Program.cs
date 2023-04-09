@@ -1,33 +1,53 @@
 using MicroZoo.ZookeeperCatalog;
 using MicroZoo.ZookeeperCatalog.Models;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddLogging();
+builder.Services.AddLogging(builder => builder.AddConsole());
 builder.Services.AddTransient<IZookeeperCatalog, ZookeeperCatalog>();
 
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello ZookeeperCatalog!");
 
-app.MapGet("/get/{name:string}", (IZookeeperCatalog zc, string name) =>
+//app.MapGet("/zookeeper/{name:string}", (IZookeeperCatalog zc, string name) =>
+app.MapGet("/zookeeper/name/{name}", (IZookeeperCatalog zc, string name) =>
 {
-    Results.Ok( zc.Get(name));
+    var zookeeper = zc.GetByName(name);
+    if (zookeeper == null)
+        return Results.NotFound();
+
+    return Results.Ok(zookeeper);
 });
 
-app.MapGet("/get/{id:int}", (IZookeeperCatalog zc, int id) =>
+//app.MapGet("/zookeeper/{id:int}", (IZookeeperCatalog zc, int id) =>
+app.MapGet("/zookeeper/id/{id}", (IZookeeperCatalog zc, int id) =>
 {
-    Results.Ok(zc.Get(id));
+    var zookeeper = zc.GetById(id);
+    if (zookeeper == null)
+        return Results.NotFound(); 
+    
+    return Results.Ok(zookeeper);       
 });
 
-app.MapGet("/get", (IZookeeperCatalog zc) =>
+app.MapGet("/zookeeper", (IZookeeperCatalog zc) =>
 {
-    Results.Ok(zc.Get());
+    var allZookeepers = zc.GetAll();
+    if (allZookeepers == null)
+        return Results.NotFound();
+
+    return Results.Ok(allZookeepers);
 });
 
-app.MapGet("/getzookeepers/{speciality:string}", (IZookeeperCatalog zc, string speciality) =>
+//app.MapGet("/zookeeperspeciality/{speciality:string}", (IZookeeperCatalog zc, string speciality) =>
+app.MapGet("/zookeeper/speciality/{speciality}", (IZookeeperCatalog zc, string speciality) =>
 {
-    Results.Ok(zc.GetZookeepers(speciality));
+    var zookepers = zc.GetZookeepersSpeciality(speciality);
+    if (zookepers == null)
+        return Results.NotFound();
+
+    return Results.Ok(zookepers);
 });
 
 app.Run();

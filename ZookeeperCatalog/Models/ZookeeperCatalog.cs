@@ -1,4 +1,8 @@
-﻿using MicroZoo.ZookeeperCatalog;
+﻿using Microsoft.AspNetCore.Mvc;
+using MicroZoo.ZookeeperCatalog;
+using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+using System.Xml.Linq;
 
 namespace MicroZoo.ZookeeperCatalog.Models
 {
@@ -7,30 +11,30 @@ namespace MicroZoo.ZookeeperCatalog.Models
         // Temporal solution
         private List<Zookepeer> _zookepeers = new List<Zookepeer>
         {
-            new Zookepeer { Id = 1, Name = "Sam", Speciality = new List<string>{ "Tigers" } },
-            new Zookepeer { Id = 2, Name = "Bob", Speciality = new List<string>{ "Bears", "Lamas"} },
-            new Zookepeer { Id = 3, Name = "Tom", Speciality = new List<string>{ "birds" }}
+            new Zookepeer { Id = 1, Name = "Sam", Specialities = new List<string>{ "Tigers" } },
+            new Zookepeer { Id = 2, Name = "Bob", Specialities = new List<string>{ "Bears", "Lamas"} },
+            new Zookepeer { Id = 3, Name = "Tom", Specialities = new List<string>{ "Birds" }}
         };
 
-        public Zookepeer Get (string name)
+        public Zookepeer GetByName(string name)
         {
             return _zookepeers.FirstOrDefault(z => z.Name == name);
         }
 
-        public Zookepeer Get(int id)
+        public Zookepeer GetById(int id)
         {
             return _zookepeers.FirstOrDefault(z => z.Id == id);
         }
-
-        public IEnumerable<Zookepeer> Get()
-        {
+        [HttpGet]
+        public IEnumerable<Zookepeer> GetAll()
+        {            
             return _zookepeers;
         }
 
-        public IEnumerable<Zookepeer> GetZookepeers(string speciality)
+        public IEnumerable<Zookepeer> GetZookeepersSpeciality(string speciality)
         {
-            var ddd = _zookepeers[0].Specialities.Where(s => s == speciality);
-            return _zookepeers.Select(z => z.Specialities.Where(s => s == speciality));
+            var zSpec = _zookepeers.Where(z => z.Specialities.Contains(speciality));
+            return zSpec;
         }
     }
 }
