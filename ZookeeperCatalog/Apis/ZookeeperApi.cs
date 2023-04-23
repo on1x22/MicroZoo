@@ -11,10 +11,12 @@ namespace MicroZoo.ZookeeperCatalog.Apis
 
             app.MapGet("/zookeeper/name/{name}", GetByName);
 
+            //app.MapGet("/zookeeper/{id:int}", (IZookeeperCatalog zc, int id) =>
             app.MapGet("/zookeeper/id/{id}", GetById);
 
             app.MapGet("/zookeeper", GetAll);
-                       
+
+            //app.MapGet("/zookeeperspeciality/{speciality:string}", (IZookeeperCatalog zc, string speciality) =>
             app.MapGet("/zookeeper/speciality/{speciality}", GetBySpeciality);
         }
 
