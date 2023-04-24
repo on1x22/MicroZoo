@@ -10,14 +10,6 @@ namespace MicroZoo.ZookeeperCatalog.Repository
 {
     public class ZookeeperRepository : IZookeeperRepository
     {
-        // Temporal solution
-        /*private List<Zookepeer> _zookepeers = new List<Zookepeer>
-        {
-            new Zookepeer { Id = 1, Name = "Sam", Specialities = new List<string>{ "Tigers" } },
-            new Zookepeer { Id = 2, Name = "Bob", Specialities = new List<string>{ "Bears", "Lamas"} },
-            new Zookepeer { Id = 3, Name = "Tom", Specialities = new List<string>{ "Birds" }}
-        };*/
-
         private readonly ZookeeperDBContext _dBContext;
 
         public ZookeeperRepository(ZookeeperDBContext dBContext)
@@ -28,11 +20,9 @@ namespace MicroZoo.ZookeeperCatalog.Repository
         public async Task<Zookepeer> GetByNameAsync(string name) =>
             await _dBContext.Zookepeers.FirstOrDefaultAsync(z => z.Name == name);
         
-
         public async Task<Zookepeer> GetByIdAsync(int id) =>
             await _dBContext.Zookepeers.FirstOrDefaultAsync(z => z.Id == id);
-        
-        //[HttpGet]
+                
         public async Task<List<Zookepeer>> GetAllAsync() =>
             await _dBContext.Zookepeers.ToListAsync();
         
