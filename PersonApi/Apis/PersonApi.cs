@@ -1,5 +1,6 @@
 ﻿using MicroZoo.PersonsApi.Models;
 using MicroZoo.PersonsApi.Repository;
+using MicroZoo.Infrastructure.Models.Persons;
 
 namespace MicroZoo.PersonsApi.Apis
 {

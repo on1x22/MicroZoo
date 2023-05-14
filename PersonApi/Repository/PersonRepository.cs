@@ -2,6 +2,7 @@
 using MicroZoo.PersonsApi.DbContexts;
 using MicroZoo.PersonsApi.Models;
 using System.Reflection.Metadata.Ecma335;
+using MicroZoo.Infrastructure.Models.Persons;
 
 namespace MicroZoo.PersonsApi.Repository
 {
@@ -39,11 +40,11 @@ namespace MicroZoo.PersonsApi.Repository
 
             if (person == null) return;
 
-            person.firstName = employee.firstName; 
-            person.lastName = employee.lastName;
-            person.email = employee.email;
-            person.isManager = employee.isManager;
-            person.managerId = employee.managerId;
+            person.FirstName = employee.FirstName; 
+            person.LastName = employee.LastName;
+            person.Email = employee.Email;
+            person.IsManager = employee.IsManager;
+            person.ManagerId = employee.ManagerId;
             await _dbContext.SaveChangesAsync();
         }
     }
