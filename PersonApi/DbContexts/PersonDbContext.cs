@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MicroZoo.PersonsApi.Models;
+using MicroZoo.Infrastructure.Models.Persons;
 
 namespace MicroZoo.PersonsApi.DbContexts
 {
