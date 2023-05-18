@@ -2,6 +2,7 @@
 using MicroZoo.ZookeepersApi.Repository;
 using MicroZoo.Infrastructure.Models.Persons;
 using Newtonsoft.Json;
+using MicroZoo.Infrastructure.Models.Animals;
 
 namespace MicroZoo.ZookeepersApi.Apis
 {
@@ -19,7 +20,10 @@ namespace MicroZoo.ZookeepersApi.Apis
 
             app.MapGet("/zookeeper/speciality/{speciality}", GetBySpeciality);
 
+            // new functionality:
             app.MapGet("/zookeeper/{id}", GetZookepeerInfoAsync);
+
+            app.MapGet("/zookeeper/speciality/all", GetAllZookeperSpecialitiesAsync);
         }
 
         private async Task<IResult> GetByName(string name, IZookeeperRepository repository) =>
@@ -46,6 +50,11 @@ namespace MicroZoo.ZookeepersApi.Apis
         private async Task<IResult> GetZookepeerInfoAsync(int id, IZookeeperRepository repository) =>
             await repository.GetZookepeerInfoAsync(id) is ZookeeperInfo zookeeper
             ? Results.Ok(zookeeper)
+            : Results.NotFound();
+
+        private async Task<IResult> GetAllZookeperSpecialitiesAsync(IZookeeperRepository repository) =>
+            await repository.GetAllZookeperSpecialitiesAsync() is List<AnimalType> animalTypes
+            ? Results.Ok(animalTypes)
             : Results.NotFound();
     }
 }

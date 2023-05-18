@@ -42,6 +42,7 @@ void RegisterServices(IServiceCollection services)
 
     services.AddScoped<IZookeeperRepository, ZookeeperRepository>();
     services.AddTransient<IApi, ZookeeperApi>();
+    services.AddTransient<RequestHelper>();
 }
 
 void Configure(WebApplication app)

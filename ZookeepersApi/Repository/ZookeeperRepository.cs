@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.ZookeepersApi.DBContext;
 using MicroZoo.ZookeepersApi.Models;
-using MicroZoo.ZookeepersApi.Models;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Animals;
 using Newtonsoft.Json;
@@ -10,21 +9,19 @@ using System.Net.Mime;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using System.Xml.Linq;
-
+using static System.Net.WebRequestMethods;
 
 namespace MicroZoo.ZookeepersApi.Repository
 {
     public class ZookeeperRepository : IZookeeperRepository
     {
         private readonly ZookeeperDBContext _dBContext;
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly HttpClient _client;
+        private readonly RequestHelper _requestHelper;
 
-        public ZookeeperRepository(ZookeeperDBContext dBContext, IHttpClientFactory httpClientFactory)
+        public ZookeeperRepository(ZookeeperDBContext dBContext, RequestHelper requestHelper)
         {
             _dBContext = dBContext;
-            //_httpClientFactory = httpClientFactory;
-            _client = httpClientFactory.CreateClient();
+            _requestHelper = requestHelper;
         }
 
         // TODO: remove not actual methods
@@ -44,13 +41,9 @@ namespace MicroZoo.ZookeepersApi.Repository
 
 
         public async Task<ZookeeperInfo> GetZookepeerInfoAsync(int id)
-        {
-            //var client = _httpClientFactory.CreateClient();
-            
+        {            
             ZookeeperInfo zookeeperInfo = new ZookeeperInfo();
-            
-
-            
+                        
             zookeeperInfo.Adout = await GetByIdAsync(id);
             zookeeperInfo.Jobs = await _dBContext.Jobs.Where(j => j.ZookeeperId == id).ToListAsync();
             
@@ -60,25 +53,15 @@ namespace MicroZoo.ZookeepersApi.Repository
                                             .ToListAsync();
 
             string parametrs = "animalTypeIds=" + String.Join("&animalTypeIds=", specialitiesInId);
+            string requestString = "https://localhost:7284/animal/getanimaltypesbyid?" + parametrs;
             
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri("https://localhost:7284/animal/getanimaltypesbyid?" + parametrs)                
-            };
-
-            var response = await _client.SendAsync(request);
-            zookeeperInfo.Specialities = await response.Content.ReadFromJsonAsync<List<AnimalType>>();
-
-            var animalsRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri("https://localhost:7284/animal/getanimalsbytypes2?" + parametrs)
-            };
-
-            var animalsResponse = await _client.SendAsync(animalsRequest);
-            var animals = await animalsResponse.Content.ReadFromJsonAsync<List<Animal>>();
-
+            zookeeperInfo.Specialities = await _requestHelper
+                .GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
+                                                    requestUri: requestString);
+                        
+            requestString = "https://localhost:7284/animal/getanimalsbytypes2?" + parametrs;
+            var animals = await _requestHelper.GetResponseAsync<List<Animal>>(method: HttpMethod.Get,
+                                                                              requestUri: requestString);
 
             var observerAnimals = (from animal in animals
                                   join animalType in zookeeperInfo.Specialities
@@ -90,25 +73,23 @@ namespace MicroZoo.ZookeepersApi.Repository
                                       AnimalType = animalType.Description
                                   }).ToList();
             
-            zookeeperInfo.ObservedAnimals = observerAnimals/*.ToList()*/;
+            zookeeperInfo.ObservedAnimals = observerAnimals;
             return zookeeperInfo;
         }
 
         public async Task<Person> GetByIdAsync(int id)
         {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://localhost:7206/person/{id}")
-            };
-            var response = await _client.SendAsync(request);
-            
-            return await response.Content.ReadFromJsonAsync<Person>();
+            string requestString = $"https://localhost:7206/person/{id}";
+
+            return await _requestHelper.GetResponseAsync<Person>(method: HttpMethod.Get,
+                                                                 requestUri: requestString);
         }
 
-        public Task<List<string>> GetAllZookeperSpecialitiesAsync()
+        public async Task<List<AnimalType>> GetAllZookeperSpecialitiesAsync()
         {
-            throw new NotImplementedException();
+            string requestString = "https://localhost:7284/animal/getallanimaltypes";
+            return await _requestHelper.GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
+                                                                     requestUri: requestString);
         }
 
         public Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities)
