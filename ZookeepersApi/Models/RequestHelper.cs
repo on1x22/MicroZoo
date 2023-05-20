@@ -18,6 +18,9 @@
             };
 
             var response = await _httpClient.SendAsync(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return default;
+
             return await response.Content.ReadFromJsonAsync<T>();
         }
 
