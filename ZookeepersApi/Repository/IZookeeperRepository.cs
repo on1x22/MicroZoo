@@ -1,5 +1,6 @@
 ﻿using MicroZoo.ZookeepersApi.Models;
 using MicroZoo.Infrastructure.Models.Persons;
+using MicroZoo.Infrastructure.Models.Animals;
 
 namespace MicroZoo.ZookeepersApi.Repository
 {
@@ -16,8 +17,9 @@ namespace MicroZoo.ZookeepersApi.Repository
         Task<ZookeeperInfo> GetZookepeerInfoAsync(int id);
 
 
-        Task<List<string>> GetAllZookeperSpecialitiesAsync();
+        Task<List<AnimalType>> GetAllZookeperSpecialitiesAsync();
         Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities);
+        Task DeleteSpecialityAsync(int zookeeperid, int animaltypeid);
 
 
         Task<List<Job>> GetAllJobsOfZookeeperAsync(int id);
