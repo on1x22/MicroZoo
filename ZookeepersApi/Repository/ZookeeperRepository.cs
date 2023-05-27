@@ -112,6 +112,14 @@ namespace MicroZoo.ZookeepersApi.Repository
             }
         }
 
+        public async Task DeleteSpecialityAsync(int zookeeperId, int animalTypeId)
+        {
+            await _dBContext.Specialities.Where(s => s.ZookeeperId == zookeeperId && 
+                                                s.AnimalTypeId == animalTypeId).ExecuteDeleteAsync();
+            _dBContext.SaveChanges();
+
+        }
+
         public Task<List<Job>> GetAllJobsOfZookeeperAsync(int id)
         {
             throw new NotImplementedException();

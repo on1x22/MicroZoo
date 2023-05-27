@@ -10,22 +10,33 @@ namespace MicroZoo.ZookeepersApi.Apis
     {
         public void Register(WebApplication app)
         {
-            app.MapGet("/", () => "Hello ZookeepersApi!");
+            app.MapGet("/", () => "Hello ZookeepersApi!")
+                .ExcludeFromDescription();
 
-            app.MapGet("/zookeeper/name/{name}", GetByName);
+            app.MapGet("/zookeeper/name/{name}", GetByName)
+                .ExcludeFromDescription();
 
-            app.MapGet("/zookeeper/id/{id}", GetById);
+            app.MapGet("/zookeeper/id/{id}", GetById)
+                .ExcludeFromDescription();
 
-            app.MapGet("/zookeeper", GetAll);
+            app.MapGet("/zookeeper", GetAll)
+                .ExcludeFromDescription();
 
-            app.MapGet("/zookeeper/speciality/{speciality}", GetBySpeciality);
+            app.MapGet("/zookeeper/speciality/{speciality}", GetBySpeciality)
+                .ExcludeFromDescription();
 
             // new functionality:
-            app.MapGet("/zookeeper/{id}", GetZookepeerInfoAsync);
+            app.MapGet("/zookeeper/{id}", GetZookepeerInfoAsync)
+                .WithTags("Index");
 
-            app.MapGet("/zookeeper/speciality/all", GetAllZookeperSpecialitiesAsync);
+            app.MapGet("/zookeeper/speciality/all", GetAllZookeperSpecialitiesAsync)
+                .WithTags("Speciality");
 
-            app.MapPut("/zookeeper/speciality", ChangeSpecialitiesAsync);
+            app.MapPut("/zookeeper/speciality", ChangeSpecialitiesAsync)
+                .WithTags("Speciality");
+
+            app.MapDelete("/zookeeper/{zookeeperid}/speciality/{animaltypeid}", DeleteSpecialityAsync)
+                .WithTags("Speciality");
         }
         #region
         private async Task<IResult> GetByName(string name, IZookeeperRepository repository) =>
@@ -69,5 +80,13 @@ namespace MicroZoo.ZookeepersApi.Apis
             var id = animalTypes.FirstOrDefault().ZookeeperId;            
             return await GetZookepeerInfoAsync(id, repository);
         }
+
+        private async Task<IResult> DeleteSpecialityAsync(int zookeeperId, int animaltypeId, 
+            IZookeeperRepository repository)
+        { 
+            await repository.DeleteSpecialityAsync(zookeeperId, animaltypeId);
+            return await GetZookepeerInfoAsync(zookeeperId, repository);
+        }
+
     }
 }
