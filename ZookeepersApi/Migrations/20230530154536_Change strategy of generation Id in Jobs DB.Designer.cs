@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using MicroZoo.ZookeepersApi.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MicroZoo.ZookeepersApi.Migrations
 {
     [DbContext(typeof(ZookeeperDBContext))]
-    partial class ZookeeperDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230530154536_Change strategy of generation Id in Jobs DB")]
+    partial class ChangestrategyofgenerationIdinJobsDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

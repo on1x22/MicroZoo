@@ -16,7 +16,7 @@ namespace MicroZoo.ZookeepersApi.Models
         public string Description { get; set; }
         [Column("starttime"), NotNull]
         public DateTime StartTime { get; set; }
-        [Column("finishtime"), NotNull]
-        public DateTime FinishTime { get; set; }
+        [Column("finishtime")]
+        public DateTime? FinishTime { get; set; }
     }
 }
