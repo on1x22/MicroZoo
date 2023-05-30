@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using static System.Net.WebRequestMethods;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace MicroZoo.ZookeepersApi.Repository
 {
@@ -120,19 +121,68 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         }
 
-        public Task<List<Job>> GetAllJobsOfZookeeperAsync(int id)
+        public async Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _dBContext.Jobs.Where(j => j.ZookeeperId == id && 
+                                                    j.FinishTime == null)
+                                        .OrderBy(j => j.StartTime).ToListAsync();
         }
 
-        public Task<Job> AddJobAsync(Job job)
-        {
-            throw new NotImplementedException();
+        public async Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom)
+        { 
+            return await _dBContext.Jobs.Where(j => j.ZookeeperId == id &&
+                                               j.StartTime >= dateTimeFrom)
+                                        .OrderBy(j => j.StartTime).ToListAsync();
         }
 
-        public Task UpdateJobAsync(Job job)
+        public async Task<List<Job>> GetAllJobsOfZookeeperAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _dBContext.Jobs.Where(j => j.ZookeeperId == id)
+                                        .OrderBy(j => j.StartTime).ToListAsync();
+        }
+
+        public async Task AddJobAsync(int id, Job job)
+        {
+            if (id == job.ZookeeperId && job.StartTime >= DateTime.UtcNow && job.FinishTime == null)
+            {
+                await _dBContext.Jobs.AddAsync(job);
+                await _dBContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteJobAsync(int id, int jobId)
+        {
+            {
+                var job = _dBContext.Jobs.Where(j => j.ZookeeperId == id && j.Id == jobId)
+                                         .FirstOrDefault();
+                _dBContext.Jobs.Remove(job);
+                await _dBContext.SaveChangesAsync();
+            }
+        }
+        
+        public async Task UpdateJobByZookeeperAsync(int id, Job job)
+        {
+            if(id == job.ZookeeperId)
+            {
+                _dBContext.Entry(job).Property(x => x.Description).IsModified = true;
+                /*_dBContext.Entry(job).Property(x => x.Id). IsModified = false;
+                _dBContext.Entry(job).Property(x => x.ZookeeperId).IsModified = false;
+                _dBContext.Entry(job).Property(x => x.StartTime).IsModified = false;
+                _dBContext.Entry(job).Property(x => x.FinishTime).IsModified = false;*/
+
+                //_dBContext.Jobs.Update(job);
+                await _dBContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task FinishJobAsync(int id, Job job)
+        {            
+            if (id == job.ZookeeperId && job.FinishTime == null)
+            {
+                job.FinishTime = DateTime.UtcNow;
+                _dBContext.Entry(job).Property(x => x.FinishTime).IsModified = true;
+                await _dBContext.SaveChangesAsync();
+            }
         }
     }
 }

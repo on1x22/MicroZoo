@@ -9,10 +9,18 @@ namespace MicroZoo.ZookeepersApi.DBContext
         { 
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Job>().Property(j => j.Id)
+                .HasIdentityOptions(startValue: 1);
+        }
+
         public DbSet<Zookeeper> Zookepeers { get; set; }
 
         public DbSet<Job> Jobs { get; set; }
 
         public DbSet<Speciality> Specialities { get; set; }
+
+
     }
 }

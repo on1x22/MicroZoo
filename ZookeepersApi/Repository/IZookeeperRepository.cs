@@ -22,8 +22,12 @@ namespace MicroZoo.ZookeepersApi.Repository
         Task DeleteSpecialityAsync(int zookeeperid, int animaltypeid);
 
 
+        Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id);
+        Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom);
         Task<List<Job>> GetAllJobsOfZookeeperAsync(int id);
-        Task<Job> AddJobAsync(Job job);
-        Task UpdateJobAsync(Job job);
+        Task AddJobAsync(int id, Job job);        
+        Task DeleteJobAsync(int id, int jobId);
+        Task UpdateJobByZookeeperAsync(int id, Job job);
+        Task FinishJobAsync(int id, Job job);
     }
 }
