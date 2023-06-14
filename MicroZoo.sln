@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProgramUI", "WebUI\ProgramU
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonsApi", "PersonApi\PersonsApi.csproj", "{D637C01D-442F-47AC-A851-5E6D20520965}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroZoo.Infrastructure", "MicroZoo.Infrastructure\MicroZoo.Infrastructure.csproj", "{F399BB20-CE31-491B-AAC7-9874647BB26D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "MicroZoo.Infrastructure\Infrastructure.csproj", "{F399BB20-CE31-491B-AAC7-9874647BB26D}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2950EADF-3337-45ED-A1E7-A91C7E55F305}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{F399BB20-CE31-491B-AAC7-9874647BB26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F399BB20-CE31-491B-AAC7-9874647BB26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F399BB20-CE31-491B-AAC7-9874647BB26D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2950EADF-3337-45ED-A1E7-A91C7E55F305}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2950EADF-3337-45ED-A1E7-A91C7E55F305}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2950EADF-3337-45ED-A1E7-A91C7E55F305}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2950EADF-3337-45ED-A1E7-A91C7E55F305}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

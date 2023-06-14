@@ -1,0 +1,45 @@
+version: '3.4'
+
+services:   
+  zookeepersapi:
+    image: zookeepersapi
+    container_name: zookeepersapi
+    build:
+      context: .
+      dockerfile: ZookeepersApi/Dockerfile
+    ports:
+    - 7000:80
+    - 7001:443
+    networks:
+    - microzoo_net
+    environment:
+      PERSONS_API: "http://personsapi"
+      ANIMALS_API: "http://animalsapi"
+  
+  personsapi:
+    image: personsapi
+    container_name: personsapi
+    build:
+      context: .
+      dockerfile: PersonApi/Dockerfile
+    ports:
+    - 7010:80
+    networks:
+    - microzoo_net
+
+  animalsapi:
+    image: animalsapi
+    container_name: animalsapi
+    build:
+      context: .
+      dockerfile: AnimalsApi/Dockerfile
+    ports:
+    - 7020:80
+    networks:
+    - microzoo_net
+
+networks:
+  microzoo_net:
+    name: microzoo_net
+    driver: bridge
+  

@@ -13,6 +13,8 @@ using static System.Net.WebRequestMethods;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System.Data.SqlClient;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
 
 namespace MicroZoo.ZookeepersApi.Repository
 {
@@ -20,11 +22,15 @@ namespace MicroZoo.ZookeepersApi.Repository
     {
         private readonly ZookeeperDBContext _dBContext;
         private readonly RequestHelper _requestHelper;
+        private readonly string _personsApi;
+        private readonly string _animalsApi;
 
         public ZookeeperRepository(ZookeeperDBContext dBContext, RequestHelper requestHelper)
         {
             _dBContext = dBContext;
             _requestHelper = requestHelper;
+            _personsApi = Environment.GetEnvironmentVariable("PERSONS_API");
+            _animalsApi = Environment.GetEnvironmentVariable("ANIMALS_API");
         }
 
         // TODO: remove not actual methods
@@ -61,7 +67,7 @@ namespace MicroZoo.ZookeepersApi.Repository
             if (specialitiesInId != null && specialitiesInId.Count > 0)
             {
                 string parameters = "animalTypeIds=" + String.Join("&animalTypeIds=", specialitiesInId);
-                string requestString = "https://localhost:7284/animal/getanimaltypesbyid?" + parameters;
+                string requestString = $"{_animalsApi}/animal/getanimaltypesbyid?" + parameters;
 
                 zookeeperInfo.Specialities = await _requestHelper
                     .GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
@@ -69,8 +75,8 @@ namespace MicroZoo.ZookeepersApi.Repository
 
                 if (zookeeperInfo.Specialities.Count == 0)
                     return zookeeperInfo;
-                
-                requestString = "https://localhost:7284/animal/getanimalsbytypes2?" + parameters;
+
+                requestString = $"{_animalsApi}/animal/getanimalsbytypes2?" + parameters;
                 var animals = await _requestHelper.GetResponseAsync<List<Animal>>(method: HttpMethod.Get,
                                                                                   requestUri: requestString);
 
@@ -91,7 +97,7 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         public async Task<Person> GetByIdAsync(int id)
         {
-            string requestString = $"https://localhost:7206/person/{id}";
+            string requestString = $"{_personsApi}/person/{id}";
 
             return await _requestHelper.GetResponseAsync<Person>(method: HttpMethod.Get,
                                                                  requestUri: requestString);
@@ -99,7 +105,7 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         public async Task<List<AnimalType>> GetAllZookeperSpecialitiesAsync()
         {
-            string requestString = "https://localhost:7284/animal/getallanimaltypes";
+            string requestString = $"{_animalsApi}/animal/getallanimaltypes";
             return await _requestHelper.GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
                                                                      requestUri: requestString);
         }
@@ -155,6 +161,8 @@ namespace MicroZoo.ZookeepersApi.Repository
             {
                 var job = _dBContext.Jobs.Where(j => j.ZookeeperId == id && j.Id == jobId)
                                          .FirstOrDefault();
+                if (job == null)
+                    return;
                 _dBContext.Jobs.Remove(job);
                 await _dBContext.SaveChangesAsync();
             }
