@@ -1,6 +1,18 @@
 version: '3.4'
 
 services:   
+  gateway:
+    image: gateway
+    container_name: gateway
+    build:
+      context: .
+      dockerfile: Gateway/Dockerfile
+    ports:
+    - 6000:80
+    - 6001:443
+    networks:
+    - microzoo_net
+
   zookeepersapi:
     image: zookeepersapi
     container_name: zookeepersapi
