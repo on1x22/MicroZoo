@@ -40,25 +40,25 @@ namespace MicroZoo.ZookeepersApi.Apis
             app.MapDelete("/zookeeper/{zookeeperid}/speciality/{animaltypeid}", DeleteSpecialityAsync)
                 .WithTags("Speciality");
 
-            app.MapGet("zookeeper/{zookeeperid}/jobs/current", GetCurrentJobsOfZookeeperAsync)
+            app.MapGet("/zookeeper/{zookeeperid}/jobs/current", GetCurrentJobsOfZookeeperAsync)
                 .WithTags("Jobs");
 
-            app.MapGet("zookeeper/{zookeeperid}/jobs/from/{datetimefrom}", GetJobsOfZookeeperFromAsync)
+            app.MapGet("/zookeeper/{zookeeperid}/jobs/from/{datetimefrom}", GetJobsOfZookeeperFromAsync)
                 .WithTags("Jobs");
 
-            app.MapGet("zookeeper/{zookeeperid}/jobs/all", GetAllJobsOfZookeeperAsync)
+            app.MapGet("/zookeeper/{zookeeperid}/jobs/all", GetAllJobsOfZookeeperAsync)
                 .WithTags("Jobs");
 
-            app.MapPost("zookeeper/{zookeeperid}/jobs", AddJobAsync)
+            app.MapPost("/zookeeper/{zookeeperid}/jobs", AddJobAsync)
                 .WithTags("Jobs");
 
-            app.MapDelete("zookeeper/{zookeeperid}/jobs/{jobid}", DeleteJobAsync)
+            app.MapDelete("/zookeeper/{zookeeperid}/jobs/{jobid}", DeleteJobAsync)
                 .WithTags("Jobs");
 
-            app.MapPut("zookeeper/{zookeeperid}/jobs", UpdateJobByZookeeperAsync)
+            app.MapPut("/zookeeper/{zookeeperid}/jobs", UpdateJobByZookeeperAsync)
                 .WithTags("Jobs");
 
-            app.MapPut("zookeeper/{zookeeperid}/jobs/finish", FinishJobAsync)
+            app.MapPut("/zookeeper/{zookeeperid}/jobs/finish", FinishJobAsync)
                 .WithTags("Jobs");
         }
         #region
