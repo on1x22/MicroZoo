@@ -15,17 +15,17 @@ namespace MicroZoo.PersonsApi.Repository
             this._dbContext = dbContext;
         }
 
-        public Task<Person> CreateNewEmployee(Person employee)
+        public Task<Person> CreateNewPerson(Person employee)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteEmployee(int id)
+        public Task DeletePerson(int id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Person> GetById(int id) => 
+        public async Task<Person> GetPersonById(int id) => 
             await _dbContext.Persons.FirstOrDefaultAsync(x => x.Id == id);
         
 
@@ -34,7 +34,7 @@ namespace MicroZoo.PersonsApi.Repository
             throw new NotImplementedException();
         }
 
-        public async Task UpdateEmployee(Person employee)
+        public async Task UpdatePerson(Person employee)
         {
             var person = await _dbContext.Persons.FirstOrDefaultAsync(p => p.Id == employee.Id);
 

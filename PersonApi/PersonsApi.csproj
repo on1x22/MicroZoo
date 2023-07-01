@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MicroZoo.Infrastructure\Infrastructure.csproj" />
+	<InternalsVisibleTo Include="PersonsApi.Tests"/>
   </ItemGroup>
 
 </Project>
