@@ -10,19 +10,19 @@ namespace MicroZoo.PersonsApi.Apis
         {
             app.MapGet("/", () => "Hello PersonApi!");
 
-            app.MapGet("/person/{id}", GetById);
+            app.MapGet("/person/{id}", GetPersonById);
 
-            app.MapPut("/person", UpdateEmployee);
+            app.MapPut("/person", UpdatePerson);
         }
 
-        private async Task<IResult> GetById(int id, IPersonRepository repository) =>
-            await repository.GetById(id) is Person person
+        internal static async Task<IResult> GetPersonById(int id, IPersonRepository repository) =>
+            await repository.GetPersonById(id) is Person person
             ? Results.Ok(person)
             : Results.NotFound();
 
-        private async Task<IResult> UpdateEmployee(Person person, IPersonRepository repository)
+        internal static async Task<IResult> UpdatePerson(Person person, IPersonRepository repository)
         {
-            await repository.UpdateEmployee(person);
+            await repository.UpdatePerson(person);
             return Results.NoContent();
         }
 

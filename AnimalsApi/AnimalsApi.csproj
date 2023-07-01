@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MicroZoo.Infrastructure\Infrastructure.csproj" />
+	<InternalsVisibleTo Include="AnimalsApi.Tests"/>
   </ItemGroup>
 
 </Project>
