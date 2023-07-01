@@ -24,7 +24,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B9217663-80EA-4EBB-A202-10944A3C3B56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonsApi.Tests", "Tests\PersonsApi.Tests\PersonsApi.Tests.csproj", "{5AAB1456-2A83-4F4B-98E7-28DB473BF335}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonsApi.Tests", "Tests\PersonsApi.Tests\PersonsApi.Tests.csproj", "{5AAB1456-2A83-4F4B-98E7-28DB473BF335}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalsApi.Tests", "Tests\AnimalsApi.Tests\AnimalsApi.Tests.csproj", "{3D5D9803-3BE2-4EF1-9FCB-162234631DB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,6 +62,10 @@ Global
 		{5AAB1456-2A83-4F4B-98E7-28DB473BF335}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AAB1456-2A83-4F4B-98E7-28DB473BF335}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AAB1456-2A83-4F4B-98E7-28DB473BF335}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D5D9803-3BE2-4EF1-9FCB-162234631DB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D5D9803-3BE2-4EF1-9FCB-162234631DB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D5D9803-3BE2-4EF1-9FCB-162234631DB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D5D9803-3BE2-4EF1-9FCB-162234631DB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{E5770E9C-FE51-4EEA-85C4-30DD887FE08B} = {1631D592-C458-4647-8E36-4C6257E86A96}
 		{D637C01D-442F-47AC-A851-5E6D20520965} = {1631D592-C458-4647-8E36-4C6257E86A96}
 		{5AAB1456-2A83-4F4B-98E7-28DB473BF335} = {B9217663-80EA-4EBB-A202-10944A3C3B56}
+		{3D5D9803-3BE2-4EF1-9FCB-162234631DB6} = {B9217663-80EA-4EBB-A202-10944A3C3B56}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {96C26459-1177-4AD4-BCC5-C0A6538E2DEB}
