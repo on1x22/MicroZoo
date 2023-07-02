@@ -5,10 +5,10 @@ namespace MicroZoo.PersonsApi.Repository
 {
     public interface IPersonRepository
     {
-        Task<Person> GetById(int id);
+        Task<Person> GetPersonById(int id);
         Task<List<Person>> GetEmployeesOfManager(int id);
-        Task<Person> CreateNewEmployee(Person employee);
-        Task UpdateEmployee(Person employee);
-        Task DeleteEmployee(int id);
+        Task<Person> CreateNewPerson(Person employee);
+        Task UpdatePerson(Person employee);
+        Task DeletePerson(int id);
     }
 }

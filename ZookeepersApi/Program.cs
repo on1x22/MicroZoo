@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-//using MicroZoo.ZookeepersApi;
 using MicroZoo.ZookeepersApi.DBContext;
 using MicroZoo.ZookeepersApi.Models;
 using MicroZoo.ZookeepersApi.Repository;
@@ -32,8 +31,6 @@ void RegisterServices(IServiceCollection services)
     services.AddLogging(builder => builder.AddConsole());
     services.AddEndpointsApiExplorer();
     services.AddSwaggerGen();
-
-    //services.Configure<JsonOptions>(opts => opts.SerializerOptions.IncludeFields = true);
 
     services.AddDbContext<ZookeeperDBContext>(options =>
     {

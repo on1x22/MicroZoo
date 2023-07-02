@@ -1,0 +1,139 @@
+{
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:6001"
+  },
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/gateway/zookeeper",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/zookeeper/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/zookeeper/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/zookeeper/speciality/all",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/zookeeper/speciality/all",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/zookeeper/speciality",
+      "UpstreamHttpMethod": [ "PUT" ],
+      "DownstreamPathTemplate": "/zookeeper/speciality",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/zookeeper/{zookeeperid}/speciality/{animaltypeid}",
+      "UpstreamHttpMethod": [ "DELETE" ],
+      "DownstreamPathTemplate": "/zookeeper/{zookeeperid}/speciality/{animaltypeid}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/zookeeper/{zookeeperid}/jobs/current",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/zookeeper/{zookeeperid}/jobs/current",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/zookeeper/{zookeeperid}/jobs/from/{datetimefrom}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/zookeeper/{zookeeperid}/jobs/from/{datetimefrom}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/zookeeper/{zookeeperid}/jobs/all",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/zookeeper/{zookeeperid}/jobs/all",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/zookeeper/{zookeeperid}/jobs",
+      "UpstreamHttpMethod": [ "POST", "PUT" ],
+      "DownstreamPathTemplate": "/zookeeper/{zookeeperid}/jobs",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/zookeeper/{zookeeperid}/jobs/{jobid}",
+      "UpstreamHttpMethod": [ "DELETE" ],
+      "DownstreamPathTemplate": "/zookeeper/{zookeeperid}/jobs/{jobid}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/zookeeper/{zookeeperid}/jobs/finish",
+      "UpstreamHttpMethod": [ "PUT" ],
+      "DownstreamPathTemplate": "/zookeeper/{zookeeperid}/jobs/finish",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    }
+  ]
+}
