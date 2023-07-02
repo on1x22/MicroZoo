@@ -2,11 +2,11 @@
 {
     public class RequestHelper
     {
-        private readonly HttpClient _httpClient;
+        private static HttpClient _httpClient = new HttpClient();
 
-        public RequestHelper()
+        public RequestHelper(HttpClient client)
         {
-            _httpClient = new HttpClient();
+            _httpClient = client;
         }
 
         internal async Task<T> GetResponseAsync<T>(HttpMethod method, string requestUri)
@@ -17,7 +17,7 @@
                 RequestUri = new Uri(requestUri)
             };
 
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient./*GetAsync(request.RequestUri);*/ SendAsync(request);
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return default;
 
