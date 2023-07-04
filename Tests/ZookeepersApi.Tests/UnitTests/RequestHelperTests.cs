@@ -1,27 +1,21 @@
-﻿
-
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Http.HttpResults;
-using MicroZoo.Infrastructure.Models.Animals;
-using MicroZoo.Infrastructure.Models.Persons;
+﻿using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.ZookeepersApi.Models;
 using Moq.Protected;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 {
     public class RequestHelperTests
     {
-        [Fact]
-        public async void GetResponseAsync_should_return_content()
+        private Mock<HttpMessageHandler> GetMockHandler(out Animal animal, HttpStatusCode statusCode)
         {
-            // Arrange    
             var mockHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-            var animal = new Fixture().Build<Animal>().Without(p => p.AnimalType).Create();
-            var mockResponse = new HttpResponseMessage 
-            { 
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Content = JsonContent.Create<Animal>(animal) 
+            animal = new Fixture().Build<Animal>().Without(p => p.AnimalType).Create();
+            var mockResponse = new HttpResponseMessage
+            {
+                StatusCode = statusCode,
+                Content = JsonContent.Create(animal)
             };
 
             mockHandler
@@ -32,16 +26,61 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                     ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(mockResponse);
 
+            return mockHandler;
+        }
+
+        [Fact]
+        public async void GetResponseAsync_should_return_content()
+        {
+            // Arrange    
+            string connectionString = "http://test";
+            var mockHandler = GetMockHandler(out var animal, HttpStatusCode.OK);
+
             var httpClient = new HttpClient(mockHandler.Object);
-            var sut = new RequestHelper(httpClient);
+            var requestHelper = new RequestHelper(httpClient);
 
             // Act
-            var actual = await sut.GetResponseAsync<Animal>(method: HttpMethod.Get,
-                                                    requestUri: "http://test");
+            var actual = await requestHelper.GetResponseAsync<Animal>(method: HttpMethod.Get,
+                                                    requestUri: connectionString);
 
             //Assert
             Assert.NotNull(actual);
             Assert.Equal(animal.Name, actual.Name);
+        }
+
+        [Fact]
+        public async void GetResponseAsync_pass_invalid_Uri_scheme_should_return_null()
+        {
+            // Arrange    
+            string connectionString = "ht";
+
+            var httpClient = new HttpClient();
+            var requestHelper = new RequestHelper(httpClient);
+
+            // Act
+            var actual = await requestHelper.GetResponseAsync<Animal>(method: HttpMethod.Get,
+                                                    requestUri: connectionString);
+
+            //Assert
+            Assert.Null(actual);
+        }
+
+        [Fact]
+        public async void GetResponseAsync_get_status_code_NotFound_should_return_null()
+        {
+            // Arrange    
+            string connectionString = "http://test";            
+            var mockHandler = GetMockHandler(out var _, HttpStatusCode.NotFound);
+
+            var httpClient = new HttpClient(mockHandler.Object);
+            var requestHelper = new RequestHelper(httpClient);
+
+            // Act
+            var actual = await requestHelper.GetResponseAsync<Animal>(method: HttpMethod.Get,
+                                                    requestUri: connectionString);
+
+            //Assert
+            Assert.Null(actual);
         }
     }
 }

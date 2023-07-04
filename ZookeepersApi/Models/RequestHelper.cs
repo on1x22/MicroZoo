@@ -11,6 +11,8 @@
 
         internal async Task<T> GetResponseAsync<T>(HttpMethod method, string requestUri)
         {
+            if (Uri.CheckSchemeName(requestUri))
+                return default;
             var request = new HttpRequestMessage
             {
                 Method = method,
@@ -21,7 +23,7 @@
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return default;
 
-            return await response.Content.ReadFromJsonAsync<T>();
+            return await response?.Content?.ReadFromJsonAsync<T>();
         }
 
     }
