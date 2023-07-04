@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.PersonsApi.Repository;
+using MicroZoo.PersonsApi.Apis;
 
 namespace MicroZoo.PersonsApi.Tests.UnitTests
 {

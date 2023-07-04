@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using MicroZoo.Infrastructure.Models.Animals;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.AspNetCore.Mvc;
+using MicroZoo.ZookeepersApi.Services;
 
 namespace MicroZoo.ZookeepersApi.Apis
 {
@@ -67,8 +68,9 @@ namespace MicroZoo.ZookeepersApi.Apis
             ? Results.Ok(zookepeer) 
             : Results.NotFound();
 
-        private async Task<IResult> GetById(int id, IZookeeperRepository repository) =>
-            await repository.GetByIdAsync(id) is Person zookepeer
+        internal static async Task<IResult> GetById(int id, IZookeeperRepository repository,
+                                                    IZookeeperApiService service) =>
+            await service.GetPersonByIdFromPersonsApiAsync(id) is Person zookepeer
             ? Results.Ok(zookepeer)
             : Results.NotFound();
 
@@ -85,43 +87,47 @@ namespace MicroZoo.ZookeepersApi.Apis
 
         // new functionality:
 
-        private async Task<IResult> GetZookepeerInfoAsync(int id, IZookeeperRepository repository) =>
-            await repository.GetZookepeerInfoAsync(id) is ZookeeperInfo zookeeper
+        private async Task<IResult> GetZookepeerInfoAsync(int id, /*IZookeeperRepository repository*/
+                                                          IZookeeperApiService service) =>
+            await service.GetZookepeerInfoAsync(id) is ZookeeperInfo zookeeper
             ? Results.Ok(zookeeper)
             : Results.NotFound("Zookeeper is not found");
 
-        private async Task<IResult> GetAllZookeperSpecialitiesAsync(IZookeeperRepository repository) =>
-            await repository.GetAllZookeperSpecialitiesAsync() is List<AnimalType> animalTypes
+        private async Task<IResult> GetAllZookeperSpecialitiesAsync(IZookeeperRepository repository,
+                                                                    IZookeeperApiService service) =>
+            await service.GetAllAnimalTypesFromAnimalsApiAsync() is List<AnimalType> animalTypes
             ? Results.Ok(animalTypes)
             : Results.NotFound();
 
         private async Task<IResult> ChangeSpecialitiesAsync(List<Speciality> animalTypes, 
-                                                       IZookeeperRepository repository)
+                                                            IZookeeperRepository repository,
+                                                            IZookeeperApiService service)
         {
            await repository.ChangeSpecialitiesAsync(animalTypes);
 
             var id = animalTypes.FirstOrDefault().ZookeeperId;            
-            return await GetZookepeerInfoAsync(id, repository);
+            return await GetZookepeerInfoAsync(id, /*repository*/service);
         }
 
         private async Task<IResult> DeleteSpecialityAsync(int zookeeperId, int animaltypeId, 
-            IZookeeperRepository repository)
+                                                          IZookeeperRepository repository,
+                                                          IZookeeperApiService service)
         { 
             await repository.DeleteSpecialityAsync(zookeeperId, animaltypeId);
-            return await GetZookepeerInfoAsync(zookeeperId, repository);
+            return await GetZookepeerInfoAsync(zookeeperId, /*repository*/service);
         }
 
         // TODO: Need to figure out how to display the time
         private async Task<IResult> GetCurrentJobsOfZookeeperAsync(int zookeeperId, 
-                                                       IZookeeperRepository repository) =>
+                                                                   IZookeeperRepository repository) =>
             await repository.GetCurrentJobsOfZookeeperAsync(zookeeperId) is List<Job> jobs
             ? Results.Ok(jobs)
             : Results.NotFound();
 
         // TODO: Need to figure out how to display the time
         private async Task<IResult> GetJobsOfZookeeperFromAsync(int zookeeperid,
-                                                       DateTime datetimefrom,
-                                                       IZookeeperRepository repository) =>
+                                                                DateTime datetimefrom,
+                                                                IZookeeperRepository repository) =>
             await repository.GetJobsOfZookeeperFromAsync(zookeeperid, datetimefrom) 
             is List<Job> jobs
             ? Results.Ok(jobs)
@@ -129,37 +135,41 @@ namespace MicroZoo.ZookeepersApi.Apis
 
         // TODO: Need to figure out how to display the time
         private async Task<IResult> GetAllJobsOfZookeeperAsync(int zookeeperid,
-                                                       IZookeeperRepository repository) =>
+                                                               IZookeeperRepository repository) =>
             await repository.GetAllJobsOfZookeeperAsync(zookeeperid) is List<Job> jobs
             ? Results.Ok(jobs)
             : Results.NotFound();
 
         private async Task<IResult> AddJobAsync(int zookeeperid, /*[FromBody]*/ Job job,
-                                                       IZookeeperRepository repository)
+                                                IZookeeperRepository repository,
+                                                IZookeeperApiService service)
         {
             await repository.AddJobAsync(zookeeperid, job);
-            return await GetZookepeerInfoAsync(zookeeperid, repository);
+            return await GetZookepeerInfoAsync(zookeeperid, /*repository*/service);
         }
             
         private async Task<IResult> DeleteJobAsync(int zookeeperid, int jobid,
-                                                       IZookeeperRepository repository)
+                                                   IZookeeperRepository repository,
+                                                   IZookeeperApiService service)
         {
             await repository.DeleteJobAsync(zookeeperid, jobid);
-            return await GetZookepeerInfoAsync(zookeeperid, repository);
+            return await GetZookepeerInfoAsync(zookeeperid, /*repository*/service);
         }
 
         private async Task<IResult> UpdateJobByZookeeperAsync(int zookeeperid, Job job,
-                                                       IZookeeperRepository repository)
+                                                              IZookeeperRepository repository,
+                                                              IZookeeperApiService service)
         {
             await repository.UpdateJobByZookeeperAsync(zookeeperid, job);
-            return await GetZookepeerInfoAsync(zookeeperid, repository);
+            return await GetZookepeerInfoAsync(zookeeperid, /*repository*/service);
         }
 
         private async Task<IResult> FinishJobAsync(int zookeeperid, Job job,
-                                                       IZookeeperRepository repository)
+                                                   IZookeeperRepository repository,
+                                                   IZookeeperApiService service)
         {
             await repository.FinishJobAsync(zookeeperid, job);
-            return await GetZookepeerInfoAsync(zookeeperid, repository);
+            return await GetZookepeerInfoAsync(zookeeperid, /*repository*/service);
         }
     }
 }

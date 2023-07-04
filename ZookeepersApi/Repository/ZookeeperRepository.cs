@@ -53,34 +53,38 @@ namespace MicroZoo.ZookeepersApi.Repository
         {            
             ZookeeperInfo zookeeperInfo = new ZookeeperInfo();
                         
-            zookeeperInfo.Adout = await GetByIdAsync(id);
+            //zookeeperInfo.Adout = await GetPersonByIdFromPersonsApiAsync(id);
             if (zookeeperInfo.Adout == null)
                 return default;
 
-            zookeeperInfo.Jobs = await _dBContext.Jobs.Where(j => j.ZookeeperId == id).ToListAsync();
+            zookeeperInfo.Jobs = await GetJobsById(id);
+                /*await _dBContext.Jobs.Where(j => j.ZookeeperId == id).ToListAsync();*/
             
-            var specialitiesInId = await _dBContext.Specialities
+            var idOfSpecialities = await GetSpecialitiesIdByPersonId(id);
+                                            /*_dBContext.Specialities
                                             .Where(s => s.ZookeeperId == id)
                                             .Select(s => s.AnimalTypeId)
-                                            .ToListAsync();
+                                            .ToListAsync();*/
 
-            if (specialitiesInId != null && specialitiesInId.Count > 0)
+            if (idOfSpecialities != null && idOfSpecialities.Count > 0)
             {
-                string parameters = "animalTypeIds=" + String.Join("&animalTypeIds=", specialitiesInId);
+                string parameters = "animalTypeIds=" + String.Join("&animalTypeIds=", idOfSpecialities);
                 string requestString = $"{_animalsApi}/animal/getanimaltypesbyid?" + parameters;
 
-                zookeeperInfo.Specialities = await _requestHelper
+                zookeeperInfo.Specialities = await GetAnimalTypesByIds(requestString);
+                    /*_requestHelper
                     .GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
-                                                        requestUri: requestString);
+                                                        requestUri: requestString);*/
 
                 if (zookeeperInfo.Specialities.Count == 0)
                     return zookeeperInfo;
 
                 requestString = $"{_animalsApi}/animal/getanimalsbytypes2?" + parameters;
-                var animals = await _requestHelper.GetResponseAsync<List<Animal>>(method: HttpMethod.Get,
-                                                                                  requestUri: requestString);
+                var animals = await GetAnimalsByAnimalTypesIds(requestString);
+                /*_requestHelper.GetResponseAsync<List<Animal>>(method: HttpMethod.Get,
+                                                                              requestUri: requestString);*/
 
-                var observedAnimals = (from animal in animals
+                /*var observedAnimals = (from animal in animals
                                        join animalType in zookeeperInfo.Specialities
                                        on animal.AnimalTypeId equals animalType.Id
                                        select new ObservedAnimal
@@ -88,24 +92,53 @@ namespace MicroZoo.ZookeepersApi.Repository
                                            Id = animal.Id,
                                            Name = animal.Name,
                                            AnimalType = animalType.Description
-                                       }).ToList();
+                                       }).ToList();*/
 
-                zookeeperInfo.ObservedAnimals = observedAnimals;
+                zookeeperInfo.ObservedAnimals = GetObservedAnimals(animals, zookeeperInfo.Specialities);
+                                                //observedAnimals;
             }
             return zookeeperInfo;
         }
 
-        public async Task<Person> GetByIdAsync(int id)
+        public async Task<Person> GetPersonByIdFromPersonsApiAsync(string requestString)
         {
-            string requestString = $"{_personsApi}/person/{id}";
+            //string requestString = $"{_personsApi}/person/{id}";
 
             return await _requestHelper.GetResponseAsync<Person>(method: HttpMethod.Get,
                                                                  requestUri: requestString);
         }
 
-        public async Task<List<AnimalType>> GetAllZookeperSpecialitiesAsync()
+        public async Task<List<Job>> GetJobsById(int id) =>        
+            await _dBContext.Jobs.Where(j => j.ZookeeperId == id).ToListAsync();
+        
+
+        public async Task<List<int>> GetSpecialitiesIdByPersonId(int id) =>        
+            await _dBContext.Specialities.Where(s => s.ZookeeperId == id)
+                                         .Select(s => s.AnimalTypeId)
+                                         .ToListAsync();
+        
+        public async Task<List<AnimalType>> GetAnimalTypesByIds(string requestString) =>
+            await _requestHelper.GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
+                                                                    requestUri: requestString);        
+
+        public async Task<List<Animal>> GetAnimalsByAnimalTypesIds(string requestString) =>
+            await _requestHelper.GetResponseAsync<List<Animal>>(method: HttpMethod.Get,
+                                                                requestUri: requestString);
+
+        public List<ObservedAnimal> GetObservedAnimals(List<Animal> animals, List<AnimalType> animalTypes) =>
+            (from animal in animals
+             join animalType in animalTypes
+             on animal.AnimalTypeId equals animalType.Id
+             select new ObservedAnimal
+             {
+                 Id = animal.Id,
+                 Name = animal.Name,
+                 AnimalType = animalType.Description
+             }).ToList();
+
+        public async Task<List<AnimalType>> GetAllAnimalTypesFromAnimalsApiAsync(string requestString)
         {
-            string requestString = $"{_animalsApi}/animal/getallanimaltypes";
+            //string requestString = $"{_animalsApi}/animal/getallanimaltypes";
             return await _requestHelper.GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
                                                                      requestUri: requestString);
         }
