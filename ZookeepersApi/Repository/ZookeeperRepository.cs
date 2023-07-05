@@ -1,20 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MicroZoo.ZookeepersApi.DBContext;
 using MicroZoo.ZookeepersApi.Models;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Animals;
-using Newtonsoft.Json;
-using System.Net.Mime;
-using System.Text.Json.Serialization;
-using System.Text.Unicode;
-using System.Xml.Linq;
-using static System.Net.WebRequestMethods;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using System.Data.SqlClient;
-using System.Linq;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Hosting;
 
 namespace MicroZoo.ZookeepersApi.Repository
 {
@@ -49,22 +37,16 @@ namespace MicroZoo.ZookeepersApi.Repository
 
 
 
-        public async Task<ZookeeperInfo> GetZookepeerInfoAsync(int id)
+        /*public async Task<ZookeeperInfo> GetZookepeerInfoAsync(int id)
         {            
             ZookeeperInfo zookeeperInfo = new ZookeeperInfo();
                         
-            //zookeeperInfo.Adout = await GetPersonByIdFromPersonsApiAsync(id);
             if (zookeeperInfo.Adout == null)
                 return default;
 
             zookeeperInfo.Jobs = await GetJobsById(id);
-                /*await _dBContext.Jobs.Where(j => j.ZookeeperId == id).ToListAsync();*/
             
             var idOfSpecialities = await GetSpecialitiesIdByPersonId(id);
-                                            /*_dBContext.Specialities
-                                            .Where(s => s.ZookeeperId == id)
-                                            .Select(s => s.AnimalTypeId)
-                                            .ToListAsync();*/
 
             if (idOfSpecialities != null && idOfSpecialities.Count > 0)
             {
@@ -72,41 +54,22 @@ namespace MicroZoo.ZookeepersApi.Repository
                 string requestString = $"{_animalsApi}/animal/getanimaltypesbyid?" + parameters;
 
                 zookeeperInfo.Specialities = await GetAnimalTypesByIds(requestString);
-                    /*_requestHelper
-                    .GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
-                                                        requestUri: requestString);*/
 
                 if (zookeeperInfo.Specialities.Count == 0)
                     return zookeeperInfo;
 
                 requestString = $"{_animalsApi}/animal/getanimalsbytypes2?" + parameters;
-                var animals = await GetAnimalsByAnimalTypesIds(requestString);
-                /*_requestHelper.GetResponseAsync<List<Animal>>(method: HttpMethod.Get,
-                                                                              requestUri: requestString);*/
+                var animals = await GetAnimalsByAnimalTypesIds(requestString);                
 
-                /*var observedAnimals = (from animal in animals
-                                       join animalType in zookeeperInfo.Specialities
-                                       on animal.AnimalTypeId equals animalType.Id
-                                       select new ObservedAnimal
-                                       {
-                                           Id = animal.Id,
-                                           Name = animal.Name,
-                                           AnimalType = animalType.Description
-                                       }).ToList();*/
-
-                zookeeperInfo.ObservedAnimals = GetObservedAnimals(animals, zookeeperInfo.Specialities);
-                                                //observedAnimals;
+                zookeeperInfo.ObservedAnimals = GetObservedAnimals(animals, zookeeperInfo.Specialities);                                                
             }
             return zookeeperInfo;
-        }
+        }*/
 
-        public async Task<Person> GetPersonByIdFromPersonsApiAsync(string requestString)
-        {
-            //string requestString = $"{_personsApi}/person/{id}";
-
-            return await _requestHelper.GetResponseAsync<Person>(method: HttpMethod.Get,
+        public async Task<Person> GetPersonByIdFromPersonsApiAsync(string requestString) =>        
+            await _requestHelper.GetResponseAsync<Person>(method: HttpMethod.Get,
                                                                  requestUri: requestString);
-        }
+        
 
         public async Task<List<Job>> GetJobsById(int id) =>        
             await _dBContext.Jobs.Where(j => j.ZookeeperId == id).ToListAsync();
@@ -136,13 +99,10 @@ namespace MicroZoo.ZookeepersApi.Repository
                  AnimalType = animalType.Description
              }).ToList();
 
-        public async Task<List<AnimalType>> GetAllAnimalTypesFromAnimalsApiAsync(string requestString)
-        {
-            //string requestString = $"{_animalsApi}/animal/getallanimaltypes";
-            return await _requestHelper.GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
+        public async Task<List<AnimalType>> GetAllAnimalTypesFromAnimalsApiAsync(string requestString) =>        
+            await _requestHelper.GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
                                                                      requestUri: requestString);
-        }
-
+        
         public async Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities)
         {
             foreach (Speciality speciality in newSpecialities)
@@ -160,26 +120,20 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         }
 
-        public async Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id)
-        {
-            return await _dBContext.Jobs.Where(j => j.ZookeeperId == id && 
+        public async Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id) =>        
+            await _dBContext.Jobs.Where(j => j.ZookeeperId == id && 
                                                     j.FinishTime == null)
                                         .OrderBy(j => j.StartTime).ToListAsync();
-        }
-
-        public async Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom)
-        { 
-            return await _dBContext.Jobs.Where(j => j.ZookeeperId == id &&
+        
+        public async Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom) =>        
+            await _dBContext.Jobs.Where(j => j.ZookeeperId == id &&
                                                j.StartTime >= dateTimeFrom)
                                         .OrderBy(j => j.StartTime).ToListAsync();
-        }
-
-        public async Task<List<Job>> GetAllJobsOfZookeeperAsync(int id)
-        {
-            return await _dBContext.Jobs.Where(j => j.ZookeeperId == id)
+        
+        public async Task<List<Job>> GetAllJobsOfZookeeperAsync(int id) =>
+            await _dBContext.Jobs.Where(j => j.ZookeeperId == id)
                                         .OrderBy(j => j.StartTime).ToListAsync();
-        }
-
+        
         public async Task AddJobAsync(int id, Job job)
         {
             if (id == job.ZookeeperId && job.StartTime >= DateTime.UtcNow && job.FinishTime == null)

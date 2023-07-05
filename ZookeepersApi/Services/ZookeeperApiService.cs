@@ -8,14 +8,14 @@ namespace MicroZoo.ZookeepersApi.Services
     public class ZookeeperApiService : IZookeeperApiService
     {
         private readonly IZookeeperRepository _repository;
-        private readonly RequestHelper _requestHelper;
+        //private readonly RequestHelper _requestHelper;
         private readonly string _personsApi;
         private readonly string _animalsApi;
 
-        public ZookeeperApiService(IZookeeperRepository repository, RequestHelper requestHelper) 
+        public ZookeeperApiService(IZookeeperRepository repository/*, RequestHelper requestHelper*/) 
         {
             _repository = repository;
-            _requestHelper = requestHelper;
+            //_requestHelper = requestHelper;
             _personsApi = Environment.GetEnvironmentVariable("PERSONS_API");
             _animalsApi = Environment.GetEnvironmentVariable("ANIMALS_API");
         }
@@ -55,8 +55,6 @@ namespace MicroZoo.ZookeepersApi.Services
             string requestString = $"{_personsApi}/person/{id}";
 
             return await _repository.GetPersonByIdFromPersonsApiAsync(requestString);
-                            /*_requestHelper.GetResponseAsync<Person>(method: HttpMethod.Get,
-                                                                 requestUri: requestString);*/
         }
 
         public async Task<List<AnimalType>> GetAllAnimalTypesFromAnimalsApiAsync()
@@ -65,5 +63,33 @@ namespace MicroZoo.ZookeepersApi.Services
 
             return await _repository.GetAllAnimalTypesFromAnimalsApiAsync(requestString);
         }
+
+        public async Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities) =>        
+            await _repository.ChangeSpecialitiesAsync(newSpecialities);
+        
+        public async Task DeleteSpecialityAsync(int zookeeperId, int animalTypeId) =>        
+            await _repository.DeleteSpecialityAsync(zookeeperId, animalTypeId);        
+
+        public async Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id) =>        
+            await _repository.GetCurrentJobsOfZookeeperAsync(id);
+
+        public async Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom) =>        
+            await _repository.GetJobsOfZookeeperFromAsync(id, dateTimeFrom);
+        
+        public async Task<List<Job>> GetAllJobsOfZookeeperAsync(int id) =>        
+            await _repository.GetAllJobsOfZookeeperAsync(id);
+        
+        public async Task AddJobAsync(int id, Job job) =>        
+            await _repository.AddJobAsync(id, job);
+
+        public async Task DeleteJobAsync(int id, int jobId) =>        
+            await _repository.DeleteJobAsync(id, jobId);
+
+        public async Task UpdateJobByZookeeperAsync(int id, Job job) =>
+            await _repository.UpdateJobByZookeeperAsync(id, job);
+
+        public async Task FinishJobAsync(int id, Job job) =>
+            await _repository.FinishJobAsync(id, job);
+        
     }
 }
