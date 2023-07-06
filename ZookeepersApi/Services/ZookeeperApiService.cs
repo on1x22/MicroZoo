@@ -39,7 +39,7 @@ namespace MicroZoo.ZookeepersApi.Services
 
                 zookeeperInfo.Specialities = await _repository.GetAnimalTypesByIds(requestString);
 
-                if (zookeeperInfo.Specialities.Count == 0)
+                if (zookeeperInfo.Specialities == null || zookeeperInfo.Specialities.Count == 0)
                     return zookeeperInfo;
 
                 requestString = $"{_animalsApi}/animal/getanimalsbytypes2?" + parameters;
