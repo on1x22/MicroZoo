@@ -2,26 +2,28 @@
 {
     public class RequestHelper
     {
-        private readonly HttpClient _httpClient;
+        private static HttpClient _httpClient = new HttpClient();
 
-        public RequestHelper()
+        public RequestHelper(HttpClient client)
         {
-            _httpClient = new HttpClient();
+            _httpClient = client;
         }
 
         internal async Task<T> GetResponseAsync<T>(HttpMethod method, string requestUri)
         {
+            if (Uri.CheckSchemeName(requestUri))
+                return default;
             var request = new HttpRequestMessage
             {
                 Method = method,
                 RequestUri = new Uri(requestUri)
             };
 
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient./*GetAsync(request.RequestUri);*/ SendAsync(request);
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return default;
 
-            return await response.Content.ReadFromJsonAsync<T>();
+            return await response?.Content?.ReadFromJsonAsync<T>();
         }
 
     }
