@@ -28,6 +28,22 @@ services:
       PERSONS_API: "http://personsapi"
       ANIMALS_API: "http://animalsapi"
   
+  managersapi:
+    image: managersapi
+    container_name: managersapi
+    build:
+      context: .
+      dockerfile: ManagersApi/Dockerfile
+    ports:
+    - 7005:80
+    - 7006:433
+    networks:
+    - microzoo_net
+    environment:
+      ZOOKEEPERS_API: "http://zookeepersapi"
+      PERSONS_API: "http://personsapi"
+      ANIMALS_API: "http://animalsapi"
+
   personsapi:
     image: personsapi
     container_name: personsapi
