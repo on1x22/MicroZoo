@@ -14,7 +14,10 @@ namespace MicroZoo.AnimalsApi.Repository
             _dbContext = dbContext;
         }
 
-        
+        public async Task<List<Animal>> GetAllAnimalsAsync()
+        {
+            return await _dbContext.Animals.ToListAsync();
+        }
 
         public async Task<List<Animal>> GetAnimalsByTypes(List<int> animalTypeIds)
         {

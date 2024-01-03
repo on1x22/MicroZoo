@@ -1,7 +1,12 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.AnimalsApi.Apis;
+using MicroZoo.AnimalsApi.Consumers;
 using MicroZoo.AnimalsApi.DbContexts;
 using MicroZoo.AnimalsApi.Repository;
+using MicroZoo.AnimalsApi.Services;
+using MicroZoo.Infrastructure.MassTransit.Requests;
+using System.Xml.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +37,30 @@ void RegisterServices(IServiceCollection services)
     });
 
     services.AddScoped<IAnimalRepository, AnimalRepository>();
+    services.AddScoped<IAnimalsApiService, AnimalsApiService>();
     services.AddTransient<IApi, AnimalApi>();
+
+    services.AddMassTransit(x =>
+    {
+        x.AddConsumer<GetAllAnimalsConsumer>()
+            .Endpoint(e => e.Name = "animals-queue");
+
+        //x.AddRequestClient<GetAllAnimalsRequest>(new Uri("exchange:animals-queue"));
+
+        x.UsingRabbitMq((context, cfg) =>
+        {
+            cfg.Host(builder.Configuration.GetConnectionString("RabbitMq"));
+            cfg.ReceiveEndpoint("animals-queue", e =>
+            {
+                e.PrefetchCount = 20;
+                e.UseMessageRetry(r => r.Interval(2, 100));
+
+                e.ConfigureConsumer<GetAllAnimalsConsumer>(context);
+
+            });
+            cfg.ConfigureEndpoints(context);
+        });
+    });
 }
 
 void Configure(WebApplication app)

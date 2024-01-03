@@ -9,6 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit" Version="8.1.3" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.5">
       <PrivateAssets>all</PrivateAssets>
@@ -20,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MicroZoo.Infrastructure\Infrastructure.csproj" />
-	<InternalsVisibleTo Include="AnimalsApi.Tests"/>
+	<InternalsVisibleTo Include="AnimalsApi.Tests" />
   </ItemGroup>
 
 </Project>
