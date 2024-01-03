@@ -42,10 +42,7 @@ void RegisterServices(IServiceCollection services)
 
     services.AddMassTransit(x =>
     {
-        x.AddConsumer<GetAllAnimalsConsumer>()
-            .Endpoint(e => e.Name = "animals-queue");
-
-        //x.AddRequestClient<GetAllAnimalsRequest>(new Uri("exchange:animals-queue"));
+        x.AddConsumer<GetAllAnimalsConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
         {

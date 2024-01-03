@@ -11,13 +11,11 @@ namespace MicroZoo.AnimalsApi.Apis
 {
     public class AnimalApi : IApi
     {
-        private readonly IBusControl _busControl;
         private readonly IServiceProvider _provider;
-        private readonly Uri _rabbitMqUrl = new Uri("rabbitmq://localhost/shopsQueue");
+        private readonly Uri _rabbitMqUrl = new Uri("rabbitmq://localhost/animals-queue");
 
-        public AnimalApi(IBusControl busControl, IServiceProvider provider)
+        public AnimalApi( IServiceProvider provider)
         {
-            _busControl = busControl;
             _provider = provider;
         }
 
@@ -38,7 +36,7 @@ namespace MicroZoo.AnimalsApi.Apis
 
         private async Task<IResult> GetAllAnimals(IAnimalsApiService service)
         {
-            var response = await GetResponseRabbitTask<GetAllAnimalsRequest, GetAllAnimalsResponse> (new GetAllAnimalsRequest());
+            var response = await GetResponseFromRabbitTask<GetAllAnimalsRequest, GetAllAnimalsResponse> (new GetAllAnimalsRequest());
             return response.Animals is List<Animal> animals
                 ? Results.Ok(animals)
                 : Results.NoContent();
@@ -65,7 +63,7 @@ namespace MicroZoo.AnimalsApi.Apis
             ? Results.Ok(animalTypes)
             : Results.NotFound("Not all animal type Ids exist in database");
 
-        private async Task<TOut> GetResponseRabbitTask<TIn, TOut>(TIn request)
+        private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request)
             where TIn : class
             where TOut : class
         {
