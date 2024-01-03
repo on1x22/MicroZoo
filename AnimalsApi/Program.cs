@@ -1,3 +1,4 @@
+using AnimalsApi.Consumers;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.AnimalsApi.Apis;
@@ -30,7 +31,9 @@ void RegisterServices(IServiceCollection services)
 {
     services.AddLogging(builder => builder.AddConsole());
     services.AddEndpointsApiExplorer();
-    
+    //builder.Services.AddEndpointsApiExplorer();
+    //services.AddSwaggerGen();
+
     services.AddDbContext<AnimalDbContext>(options =>
     {
         options.UseNpgsql(builder.Configuration.GetConnectionString("AnimalsAPI"));
@@ -43,6 +46,7 @@ void RegisterServices(IServiceCollection services)
     services.AddMassTransit(x =>
     {
         x.AddConsumer<GetAllAnimalsConsumer>();
+        x.AddConsumer<AddAnimalConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
         {
@@ -53,6 +57,7 @@ void RegisterServices(IServiceCollection services)
                 e.UseMessageRetry(r => r.Interval(2, 100));
 
                 e.ConfigureConsumer<GetAllAnimalsConsumer>(context);
+                e.ConfigureConsumer<AddAnimalConsumer>(context);
 
             });
             cfg.ConfigureEndpoints(context);

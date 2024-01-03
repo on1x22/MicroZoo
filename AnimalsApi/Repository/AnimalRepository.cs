@@ -47,5 +47,11 @@ namespace MicroZoo.AnimalsApi.Repository
             return /*animalTypes =*/ await _dbContext.AnimalTypes
                 .Where(t => animalTypeIds.Contains(t.Id)).ToListAsync(); 
         }
+
+        public async Task AddAnimal(Animal animal) =>
+            await _dbContext.Animals.AddAsync(animal);
+
+        public async Task SaveChanges() =>
+            await _dbContext.SaveChangesAsync();
     }
 }

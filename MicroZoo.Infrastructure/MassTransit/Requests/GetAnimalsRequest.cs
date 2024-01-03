@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace MicroZoo.Infrastructure.MassTransit.Requests
 {
-    public class GetAllAnimalsRequest
+    public class GetAnimalsRequest
     {
         public Guid OperationId { get; set; }
         //public List<Animal> Animals { get; set; }
 
-        public GetAllAnimalsRequest()
+        public GetAnimalsRequest()
         {
             OperationId = Guid.NewGuid();
         }

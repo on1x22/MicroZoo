@@ -23,7 +23,7 @@ namespace MicroZoo.AnimalsApi.Apis
         {
             app.MapGet("/", () => "Hello AnimalsApi!");
 
-            app.MapGet("/animal/getall", GetAllAnimals);
+            app.MapGet("/animals", GetAllAnimals);
 
             app.MapGet("animal/getanimalsbytypes", GetAnimalsByTypes);
 
@@ -32,11 +32,13 @@ namespace MicroZoo.AnimalsApi.Apis
             app.MapGet("animal/getallanimaltypes", GetAllAnimalTypes);
 
             app.MapGet("animal/getanimaltypesbyid", GetAnimalTypesByIds);
+
+            app.MapPost("animals", AddAnimal);
         }
 
         private async Task<IResult> GetAllAnimals(IAnimalsApiService service)
         {
-            var response = await GetResponseFromRabbitTask<GetAllAnimalsRequest, GetAllAnimalsResponse> (new GetAllAnimalsRequest());
+            var response = await GetResponseFromRabbitTask<GetAnimalsRequest, GetAllAnimalsResponse> (new GetAnimalsRequest());
             return response.Animals is List<Animal> animals
                 ? Results.Ok(animals)
                 : Results.NoContent();
@@ -62,6 +64,12 @@ namespace MicroZoo.AnimalsApi.Apis
             await repository.GetAnimalTypesByIds(animalTypeIds) is List<AnimalType> animalTypes
             ? Results.Ok(animalTypes)
             : Results.NotFound("Not all animal type Ids exist in database");
+
+        internal async Task<IResult> AddAnimal([FromBody] Animal animal)
+        {
+            var response = await GetResponseFromRabbitTask<AddAnimalRequest, Animal>(new AddAnimalRequest(animal));
+            return Results.Ok(response);
+        }
 
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request)
             where TIn : class

@@ -11,8 +11,15 @@ namespace MicroZoo.AnimalsApi.Services
             this._repository = repository;
         }
 
+        public async Task AddAnimal(Animal animal)
+        {
+            await _repository.AddAnimal(animal);
+            await _repository.SaveChanges();
+        }
+
         public async Task<List<Animal>> GetAllAnimalsAsync() =>
             await _repository.GetAllAnimalsAsync();
+        
         
     }
 }
