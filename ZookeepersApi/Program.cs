@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
 using MicroZoo.ZookeepersApi.Apis;
 using Microsoft.AspNetCore.Http.Json;
+using MicroZoo.ZookeepersApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,7 @@ void RegisterServices(IServiceCollection services)
     });
 
     services.AddScoped<IZookeeperRepository, ZookeeperRepository>();
+    services.AddScoped<IZookeeperApiService, ZookeeperApiService>();
     services.AddTransient<IApi, ZookeeperApi>();
     services.AddTransient<RequestHelper>();
 }
