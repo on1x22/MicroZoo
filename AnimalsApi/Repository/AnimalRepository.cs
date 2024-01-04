@@ -2,6 +2,7 @@
 using MicroZoo.AnimalsApi.DbContexts;
 using MicroZoo.AnimalsApi.Models;
 using MicroZoo.Infrastructure.Models.Animals;
+using MicroZoo.Infrastructure.Models.Animals.Dto;
 
 namespace MicroZoo.AnimalsApi.Repository
 {
@@ -17,6 +18,16 @@ namespace MicroZoo.AnimalsApi.Repository
         public async Task<List<Animal>> GetAllAnimalsAsync()
         {
             return await _dbContext.Animals.ToListAsync();
+        }
+
+        public async Task<Animal> GetAnimal(int id)
+        {
+            var animal = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == id);
+
+            if (animal == null)
+                return default;
+
+            return animal;
         }
 
         public async Task<List<Animal>> GetAnimalsByTypes(List<int> animalTypeIds)
@@ -48,25 +59,29 @@ namespace MicroZoo.AnimalsApi.Repository
                 .Where(t => animalTypeIds.Contains(t.Id)).ToListAsync(); 
         }
 
-        public async Task AddAnimal(Animal animal) =>
+        // TODO: Add command SaveChanges
+        public async Task AddAnimal(Animal animal)
+        {
             await _dbContext.Animals.AddAsync(animal);
+            await SaveChangesAsync();
+        }
 
         public async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();
 
-        public async Task<Animal> UpdateAnimal(int id, Animal animal)
+        public async Task<Animal> UpdateAnimal(int id, AnimalDto animalDto)
         {
             var animalInDb = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == id);
 
             if (animalInDb == null)
                 await Task.CompletedTask;
 
-            if(animal == null)
+            if(animalDto == null)
                 await Task.CompletedTask;
 
-            animalInDb!.Name = animal!.Name;
-            animalInDb!.Link = animal!.Link;
-            animalInDb!.AnimalTypeId = animal!.AnimalTypeId;
+            animalInDb!.Name = animalDto!.Name;
+            animalInDb!.Link = animalDto!.Link;
+            animalInDb!.AnimalTypeId = animalDto!.AnimalTypeId;
 
             await SaveChangesAsync();
 

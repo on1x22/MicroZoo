@@ -17,9 +17,9 @@ namespace MicroZoo.AnimalsApi.Consumers
         {
             var id = context.Message.Id;
 
-            var animal = context.Message.Animal ?? throw new ArgumentNullException("Request does not contain data");
+            var animalDto = context.Message.AnimalDto ?? throw new ArgumentNullException("Request does not contain data");
 
-            var updatedAnimal = await _service.UpdateAnimalAsync(id, animal);
+            var updatedAnimal = await _service.UpdateAnimalAsync(id, animalDto);
 
             await context.RespondAsync<Animal>(updatedAnimal);
         }

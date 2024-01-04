@@ -46,6 +46,7 @@ void RegisterServices(IServiceCollection services)
     services.AddMassTransit(x =>
     {
         x.AddConsumer<GetAllAnimalsConsumer>();
+        x.AddConsumer<GetAnimalConsumer>();
         x.AddConsumer<AddAnimalConsumer>();
         x.AddConsumer<UpdateAnimalConsumer>();
 
@@ -58,6 +59,7 @@ void RegisterServices(IServiceCollection services)
                 e.UseMessageRetry(r => r.Interval(2, 100));
 
                 e.ConfigureConsumer<GetAllAnimalsConsumer>(context);
+                e.ConfigureConsumer<GetAnimalConsumer>(context);
                 e.ConfigureConsumer<AddAnimalConsumer>(context);
                 e.ConfigureConsumer<UpdateAnimalConsumer>(context);
             });

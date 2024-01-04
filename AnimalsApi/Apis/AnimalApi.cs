@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Infrastructure.MassTransit.Requests;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using MicroZoo.AnimalsApi.Models;
 using MicroZoo.AnimalsApi.Repository;
@@ -6,6 +7,7 @@ using MicroZoo.AnimalsApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests;
 using MicroZoo.Infrastructure.MassTransit.Responses;
 using MicroZoo.Infrastructure.Models.Animals;
+using MicroZoo.Infrastructure.Models.Animals.Dto;
 
 namespace MicroZoo.AnimalsApi.Apis
 {
@@ -25,6 +27,8 @@ namespace MicroZoo.AnimalsApi.Apis
 
             app.MapGet("/animals", GetAllAnimals);
 
+            app.MapGet("/animals/{id}", GetAnimal);
+
             app.MapGet("animal/getanimalsbytypes", GetAnimalsByTypes);
 
             app.MapGet("animal/getanimalsbytypes2", GetAnimalsByTypes2);
@@ -40,7 +44,7 @@ namespace MicroZoo.AnimalsApi.Apis
 
         private async Task<IResult> GetAllAnimals(IAnimalsApiService service)
         {
-            var response = await GetResponseFromRabbitTask<GetAnimalsRequest, GetAllAnimalsResponse> (new GetAnimalsRequest());
+            var response = await GetResponseFromRabbitTask<GetAllAnimalsRequest, GetAllAnimalsResponse> (new GetAllAnimalsRequest());
             return response.Animals is List<Animal> animals
                 ? Results.Ok(animals)
                 : Results.NoContent();
@@ -73,12 +77,20 @@ namespace MicroZoo.AnimalsApi.Apis
             return Results.Ok(response);
         }
 
-        internal async Task<IResult> UpdateAnimal(int id, [FromBody] Animal animal)
+        internal async Task<IResult> UpdateAnimal(int id, [FromBody] AnimalDto animalDto)
         {
-            var response = await GetResponseFromRabbitTask<UpdateAnimalRequest, Animal>(new UpdateAnimalRequest(id, animal));
+            var response = await GetResponseFromRabbitTask<UpdateAnimalRequest, Animal>(new UpdateAnimalRequest(id, animalDto));
             return response is Animal updatedAnimal
                 ? Results.Ok(updatedAnimal)
                 : Results.BadRequest("Invalid data entered");
+        }
+
+        internal async Task<IResult> GetAnimal(int id)
+        {
+            var response = await GetResponseFromRabbitTask<GetAnimalRequest, Animal>(new GetAnimalRequest(id));
+            return response != null
+                ? Results.Ok(response)
+                : Results.NotFound($"Animal with id = {id} not found");
         }
 
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request)

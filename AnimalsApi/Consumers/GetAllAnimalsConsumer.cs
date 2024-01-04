@@ -5,7 +5,7 @@ using MicroZoo.Infrastructure.MassTransit.Responses;
 
 namespace MicroZoo.AnimalsApi.Consumers
 {
-    public class GetAllAnimalsConsumer : IConsumer<GetAnimalsRequest>
+    public class GetAllAnimalsConsumer : IConsumer<GetAllAnimalsRequest>
     {
         private readonly IAnimalsApiService _service;
 
@@ -14,7 +14,7 @@ namespace MicroZoo.AnimalsApi.Consumers
             _service = service;
         }
 
-        public async Task Consume(ConsumeContext<GetAnimalsRequest> context)
+        public async Task Consume(ConsumeContext<GetAllAnimalsRequest> context)
         {
             var animals = await _service.GetAllAnimalsAsync();
             

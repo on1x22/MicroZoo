@@ -1,20 +1,21 @@
-﻿using MicroZoo.Infrastructure.Models.Animals;
+﻿using MicroZoo.Infrastructure.Models.Animals.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MicroZoo.Infrastructure.MassTransit.Requests
+namespace Infrastructure.MassTransit.Requests
 {
-    public class GetAnimalsRequest
+    public class GetAnimalRequest
     {
         public Guid OperationId { get; set; }
-        //public List<Animal> Animals { get; set; }
+        public int Id { get; set; }
 
-        public GetAnimalsRequest()
+        public GetAnimalRequest(int id)
         {
             OperationId = Guid.NewGuid();
+            Id = id;
         }
     }
 }
