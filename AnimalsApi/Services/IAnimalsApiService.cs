@@ -9,5 +9,6 @@ namespace MicroZoo.AnimalsApi.Services
         Task<Animal> GetAnimalAsync(int id);
         Task AddAnimalAsync(Animal animal);
         Task<Animal> UpdateAnimalAsync(int id, AnimalDto animalDto);
+        Task<Animal> DeleteAnimalAsync(int id);
     }
 }

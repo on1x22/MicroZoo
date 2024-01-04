@@ -13,16 +13,18 @@ namespace MicroZoo.AnimalsApi.Services
         }
 
         public async Task AddAnimalAsync(Animal animal) =>        
-            await _repository.AddAnimal(animal);            
-        
+            await _repository.AddAnimalAsync(animal);
 
         public async Task<List<Animal>> GetAllAnimalsAsync() =>
             await _repository.GetAllAnimalsAsync();
 
         public async Task<Animal> GetAnimalAsync(int id) =>
-            await _repository.GetAnimal(id);
+            await _repository.GetAnimalAsync(id);
 
         public async Task<Animal> UpdateAnimalAsync(int id, AnimalDto animalDto) =>
-            await _repository.UpdateAnimal(id, animalDto);
+            await _repository.UpdateAnimalAsync(id, animalDto);
+
+        public async Task<Animal> DeleteAnimalAsync(int id) =>
+            await _repository.DeleteAnimalAsync(id);            
     }
 }

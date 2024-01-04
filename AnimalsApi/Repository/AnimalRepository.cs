@@ -20,7 +20,7 @@ namespace MicroZoo.AnimalsApi.Repository
             return await _dbContext.Animals.ToListAsync();
         }
 
-        public async Task<Animal> GetAnimal(int id)
+        public async Task<Animal> GetAnimalAsync(int id)
         {
             var animal = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == id);
 
@@ -60,7 +60,7 @@ namespace MicroZoo.AnimalsApi.Repository
         }
 
         // TODO: Add command SaveChanges
-        public async Task AddAnimal(Animal animal)
+        public async Task AddAnimalAsync(Animal animal)
         {
             await _dbContext.Animals.AddAsync(animal);
             await SaveChangesAsync();
@@ -69,7 +69,7 @@ namespace MicroZoo.AnimalsApi.Repository
         public async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();
 
-        public async Task<Animal> UpdateAnimal(int id, AnimalDto animalDto)
+        public async Task<Animal> UpdateAnimalAsync(int id, AnimalDto animalDto)
         {
             var animalInDb = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == id);
 
@@ -86,6 +86,18 @@ namespace MicroZoo.AnimalsApi.Repository
             await SaveChangesAsync();
 
             return animalInDb;
+        }
+
+        public async Task<Animal> DeleteAnimalAsync(int id)
+        {
+            var animal = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == id);
+            if (animal == null)
+                return default;
+
+            _dbContext.Animals.Remove(animal);
+            await SaveChangesAsync();
+
+            return animal;
         }
     }
 }

@@ -29,17 +29,19 @@ namespace MicroZoo.AnimalsApi.Apis
 
             app.MapGet("/animals/{id}", GetAnimal);
 
+            app.MapPost("animals", AddAnimal);
+
+            app.MapPut("animals/{id}", UpdateAnimal);
+
+            app.MapDelete("animals/{id}", DeleteAnimal);
+
             app.MapGet("animal/getanimalsbytypes", GetAnimalsByTypes);
 
             app.MapGet("animal/getanimalsbytypes2", GetAnimalsByTypes2);
 
             app.MapGet("animal/getallanimaltypes", GetAllAnimalTypes);
 
-            app.MapGet("animal/getanimaltypesbyid", GetAnimalTypesByIds);
-
-            app.MapPost("animals", AddAnimal);
-
-            app.MapPut("animals/{id}", UpdateAnimal);
+            app.MapGet("animal/getanimaltypesbyid", GetAnimalTypesByIds);            
         }
 
         private async Task<IResult> GetAllAnimals(IAnimalsApiService service)
@@ -88,6 +90,14 @@ namespace MicroZoo.AnimalsApi.Apis
         internal async Task<IResult> GetAnimal(int id)
         {
             var response = await GetResponseFromRabbitTask<GetAnimalRequest, Animal>(new GetAnimalRequest(id));
+            return response != null
+                ? Results.Ok(response)
+                : Results.NotFound($"Animal with id = {id} not found");
+        }
+
+        internal async Task<IResult> DeleteAnimal(int id)
+        {
+            var response = await GetResponseFromRabbitTask<DeleteAnimalRequest, Animal>(new DeleteAnimalRequest(id));
             return response != null
                 ? Results.Ok(response)
                 : Results.NotFound($"Animal with id = {id} not found");
