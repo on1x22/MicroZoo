@@ -34,6 +34,8 @@ namespace MicroZoo.AnimalsApi.Apis
             app.MapGet("animal/getanimaltypesbyid", GetAnimalTypesByIds);
 
             app.MapPost("animals", AddAnimal);
+
+            app.MapPut("animals/{id}", UpdateAnimal);
         }
 
         private async Task<IResult> GetAllAnimals(IAnimalsApiService service)
@@ -69,6 +71,14 @@ namespace MicroZoo.AnimalsApi.Apis
         {
             var response = await GetResponseFromRabbitTask<AddAnimalRequest, Animal>(new AddAnimalRequest(animal));
             return Results.Ok(response);
+        }
+
+        internal async Task<IResult> UpdateAnimal(int id, [FromBody] Animal animal)
+        {
+            var response = await GetResponseFromRabbitTask<UpdateAnimalRequest, Animal>(new UpdateAnimalRequest(id, animal));
+            return response is Animal updatedAnimal
+                ? Results.Ok(updatedAnimal)
+                : Results.BadRequest("Invalid data entered");
         }
 
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request)

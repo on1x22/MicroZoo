@@ -11,6 +11,7 @@ namespace MicroZoo.AnimalsApi.Repository
         Task<List<AnimalType>> GetAllAnimalTypes();
         Task<List<AnimalType>> GetAnimalTypesByIds(int[] animalTypeIds);
         Task AddAnimal(Animal animal);
-        Task SaveChanges();
+        Task<Animal> UpdateAnimal(int id, Animal animal);
+        Task SaveChangesAsync();
     }
 }

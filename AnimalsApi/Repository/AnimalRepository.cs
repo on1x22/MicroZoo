@@ -51,7 +51,26 @@ namespace MicroZoo.AnimalsApi.Repository
         public async Task AddAnimal(Animal animal) =>
             await _dbContext.Animals.AddAsync(animal);
 
-        public async Task SaveChanges() =>
+        public async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();
+
+        public async Task<Animal> UpdateAnimal(int id, Animal animal)
+        {
+            var animalInDb = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == id);
+
+            if (animalInDb == null)
+                await Task.CompletedTask;
+
+            if(animal == null)
+                await Task.CompletedTask;
+
+            animalInDb!.Name = animal!.Name;
+            animalInDb!.Link = animal!.Link;
+            animalInDb!.AnimalTypeId = animal!.AnimalTypeId;
+
+            await SaveChangesAsync();
+
+            return animalInDb;
+        }
     }
 }

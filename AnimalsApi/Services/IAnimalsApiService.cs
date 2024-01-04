@@ -5,6 +5,7 @@ namespace MicroZoo.AnimalsApi.Services
     public interface IAnimalsApiService
     {
         Task<List<Animal>> GetAllAnimalsAsync();
-        Task AddAnimal(Animal animal);
+        Task AddAnimalAsync(Animal animal);
+        Task<Animal> UpdateAnimalAsync(int id, Animal animal);
     }
 }

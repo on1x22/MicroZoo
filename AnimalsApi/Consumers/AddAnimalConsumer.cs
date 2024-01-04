@@ -22,7 +22,7 @@ namespace AnimalsApi.Consumers
             if (animal == null)
                 throw new ArgumentNullException("Request does not contain data");
 
-           await _service.AddAnimal(animal);
+           await _service.AddAnimalAsync(animal);
 
            await context.RespondAsync<Animal>(animal);
         }
