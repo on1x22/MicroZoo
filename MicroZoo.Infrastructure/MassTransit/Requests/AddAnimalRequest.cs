@@ -1,4 +1,5 @@
 ﻿using MicroZoo.Infrastructure.Models.Animals;
+using MicroZoo.Infrastructure.Models.Animals.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace MicroZoo.Infrastructure.MassTransit.Requests
     public class AddAnimalRequest
     {
         public Guid OperationId { get; set; }
-        public Animal Animal { get; set; }
+        public AnimalDto AnimalDto { get; set; }
 
-        public AddAnimalRequest(Animal animal)
+        public AddAnimalRequest(AnimalDto animalDto)
         {
             OperationId = Guid.NewGuid();
-            Animal = animal;
+            AnimalDto = animalDto;
         }
     }
 }

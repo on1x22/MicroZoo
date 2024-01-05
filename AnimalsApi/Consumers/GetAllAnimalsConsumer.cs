@@ -16,13 +16,10 @@ namespace MicroZoo.AnimalsApi.Consumers
 
         public async Task Consume(ConsumeContext<GetAllAnimalsRequest> context)
         {
-            var animals = await _service.GetAllAnimalsAsync();
+            var response = await _service.GetAllAnimalsAsync();
+            response.OperationId = context.Message.OperationId;
             
-            await context.RespondAsync<GetAllAnimalsResponse>(new
-            {
-                OperationId = context.Message.OperationId,
-                Animals = animals
-            });
+            await context.RespondAsync<GetAllAnimalsResponse>(response);
         }
     }
 }

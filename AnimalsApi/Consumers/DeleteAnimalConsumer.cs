@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using MicroZoo.AnimalsApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests;
+using MicroZoo.Infrastructure.MassTransit.Responses;
 using MicroZoo.Infrastructure.Models.Animals;
 
 namespace MicroZoo.AnimalsApi.Consumers
@@ -18,9 +19,10 @@ namespace MicroZoo.AnimalsApi.Consumers
         {
             var id = context.Message.Id;
 
-            var animal = await _service.DeleteAnimalAsync(id);
+            var response = await _service.DeleteAnimalAsync(id);
+            response.OperationId = context.Message.OperationId;
 
-            await context.RespondAsync<Animal>(animal);
+            await context.RespondAsync<GetAnimalResponse>(response);
         }
     }
 }

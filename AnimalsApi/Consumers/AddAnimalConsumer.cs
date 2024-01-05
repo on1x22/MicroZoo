@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using microZoo.Infrastructure.Exceptions;
 using MicroZoo.AnimalsApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests;
 using MicroZoo.Infrastructure.MassTransit.Responses;
@@ -17,14 +18,15 @@ namespace AnimalsApi.Consumers
 
         public async Task Consume(ConsumeContext<AddAnimalRequest> context)
         {
-            var animal = context.Message.Animal;
+            var animalDto = context.Message.AnimalDto;
 
-            if (animal == null)
-                throw new ArgumentNullException("Request does not contain data");
-
-           await _service.AddAnimalAsync(animal);
-
-           await context.RespondAsync<Animal>(animal);
+            if (animalDto == null)
+                throw new BadRequestException("Request does not contain data");
+            
+            var response = await _service.AddAnimalAsync(animalDto);
+            response.OperationId = context.Message.OperationId;
+            
+            await context.RespondAsync<GetAnimalResponse>(response);
         }
     }
 }

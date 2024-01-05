@@ -1,4 +1,5 @@
 ﻿using MicroZoo.AnimalsApi.Repository;
+using MicroZoo.Infrastructure.MassTransit.Responses;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 
@@ -12,19 +13,70 @@ namespace MicroZoo.AnimalsApi.Services
             _repository = repository;
         }
 
-        public async Task AddAnimalAsync(Animal animal) =>        
-            await _repository.AddAnimalAsync(animal);
+        public async Task<GetAnimalResponse> AddAnimalAsync(AnimalDto animalDto)
+        {
+            var response = new GetAnimalResponse();
+            if (!await _repository.IsAnimalTypeExist(animalDto.AnimalTypeId))
+                response.ErrorMessage = "The specified animal type is not in the database";
+            else
+                response.Animal = await _repository.AddAnimalAsync(animalDto);
+            
+            return response;
+        }
 
-        public async Task<List<Animal>> GetAllAnimalsAsync() =>
-            await _repository.GetAllAnimalsAsync();
+        public async Task<GetAllAnimalsResponse> GetAllAnimalsAsync()
+        {
+            var response = new GetAllAnimalsResponse();
 
-        public async Task<Animal> GetAnimalAsync(int id) =>
-            await _repository.GetAnimalAsync(id);
+            response.Animals = await _repository.GetAllAnimalsAsync();
+            if (response.Animals == null)
+                response.ErrorMessage = $"Database contains no entries";
 
-        public async Task<Animal> UpdateAnimalAsync(int id, AnimalDto animalDto) =>
-            await _repository.UpdateAnimalAsync(id, animalDto);
+            return response;
+        }
 
-        public async Task<Animal> DeleteAnimalAsync(int id) =>
-            await _repository.DeleteAnimalAsync(id);            
+        public async Task<GetAnimalResponse> GetAnimalAsync(int id)
+        {
+            var response = new GetAnimalResponse();
+
+            response.Animal = await _repository.GetAnimalAsync(id);
+            if (response.Animal == null)
+                response.ErrorMessage = $"Animal with id = {id} not found";
+
+            return response;
+        }
+
+        public async Task<GetAnimalResponse> UpdateAnimalAsync(int id, AnimalDto animalDto)
+        {
+            var response = new GetAnimalResponse();
+
+            var animalFromDb = await _repository.GetAnimalAsync(id);
+
+            if (animalFromDb == null)
+            {
+                response.ErrorMessage = $"Animal with id = {id} not found";
+                return response;
+            }
+
+            if (!await _repository.IsAnimalTypeExist(animalDto.AnimalTypeId))
+            {
+                response.ErrorMessage = "The specified animal type is not in the database";
+                return response;
+            }
+
+            response.Animal = await _repository.UpdateAnimalAsync(id, animalDto);
+            return response;
+        }
+
+        public async Task<GetAnimalResponse> DeleteAnimalAsync(int id)
+        {
+            var response = new GetAnimalResponse();
+
+            response.Animal = await _repository.DeleteAnimalAsync(id);
+            if (response.Animal == null)
+                response.ErrorMessage = $"Animal with id = {id} not found";
+
+            return response;
+        }
     }
 }

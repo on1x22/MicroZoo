@@ -1,6 +1,8 @@
 ﻿using MassTransit;
+using microZoo.Infrastructure.Exceptions;
 using MicroZoo.AnimalsApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests;
+using MicroZoo.Infrastructure.MassTransit.Responses;
 using MicroZoo.Infrastructure.Models.Animals;
 
 namespace MicroZoo.AnimalsApi.Consumers
@@ -17,11 +19,12 @@ namespace MicroZoo.AnimalsApi.Consumers
         {
             var id = context.Message.Id;
 
-            var animalDto = context.Message.AnimalDto ?? throw new ArgumentNullException("Request does not contain data");
+            var animalDto = context.Message.AnimalDto ?? throw new BadRequestException("Request does not contain data");
 
-            var updatedAnimal = await _service.UpdateAnimalAsync(id, animalDto);
+            var response = await _service.UpdateAnimalAsync(id, animalDto);
+            response.OperationId = context.Message.OperationId;
 
-            await context.RespondAsync<Animal>(updatedAnimal);
+            await context.RespondAsync<GetAnimalResponse>(response);
         }
     }
 }

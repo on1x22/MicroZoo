@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace MicroZoo.Infrastructure.MassTransit.Responses
 {
-    public record GetAllAnimalsResponse
+    public record DeleteAnimalResponse
     {
         public Guid OperationId { get; set; }
-        public List<Animal> Animals { get; set; }
-        public string ErrorMessage { get; set; }
+        public Animal Animal { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using microZoo.Infrastructure.Exceptions;
 using MicroZoo.AnimalsApi.DbContexts;
 using MicroZoo.AnimalsApi.Models;
 using MicroZoo.Infrastructure.Models.Animals;
@@ -59,15 +60,17 @@ namespace MicroZoo.AnimalsApi.Repository
                 .Where(t => animalTypeIds.Contains(t.Id)).ToListAsync(); 
         }
 
-        // TODO: Add command SaveChanges
-        public async Task AddAnimalAsync(Animal animal)
+        public async Task<Animal> AddAnimalAsync(AnimalDto animalDto)
         {
+            //if (!await IsAnimalTypeExist(animalDto!.AnimalTypeId))
+            //    return default;
+
+            var animal = AnimalDto.DtoToAnimal(animalDto);
+
             await _dbContext.Animals.AddAsync(animal);
             await SaveChangesAsync();
+            return animal;
         }
-
-        public async Task SaveChangesAsync() =>
-            await _dbContext.SaveChangesAsync();
 
         public async Task<Animal> UpdateAnimalAsync(int id, AnimalDto animalDto)
         {
@@ -76,8 +79,11 @@ namespace MicroZoo.AnimalsApi.Repository
             if (animalInDb == null)
                 await Task.CompletedTask;
 
-            if(animalDto == null)
+            if (animalDto == null)
                 await Task.CompletedTask;
+                        
+            if (!await IsAnimalTypeExist(animalDto!.AnimalTypeId))
+                return default;
 
             animalInDb!.Name = animalDto!.Name;
             animalInDb!.Link = animalDto!.Link;
@@ -99,5 +105,13 @@ namespace MicroZoo.AnimalsApi.Repository
 
             return animal;
         }
+        
+        public async Task<bool> IsAnimalTypeExist(int animalTypeId) =>
+            await _dbContext.AnimalTypes.AnyAsync(t => t.Id == animalTypeId);
+        
+        private async Task SaveChangesAsync() =>
+            await _dbContext.SaveChangesAsync();
+
+        
     }
 }
