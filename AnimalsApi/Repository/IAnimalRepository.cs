@@ -6,15 +6,22 @@ namespace MicroZoo.AnimalsApi.Repository
 {
     public interface IAnimalRepository
     {
+        // Animals
         Task<List<Animal>> GetAllAnimalsAsync();
-        Task<Animal> GetAnimalAsync(int id);
-        Task<List<Animal>> GetAnimalsByTypes(List<int> animalTypeIds);
-        Task<List<Animal>> GetAnimalsByTypes2(int[] animalTypeIds);
-        Task<List<AnimalType>> GetAllAnimalTypes();
-        Task<List<AnimalType>> GetAnimalTypesByIds(int[] animalTypeIds);
+        Task<Animal> GetAnimalAsync(int animalId);
+        Task<List<Animal>> GetAnimalsByTypes(List<int> animalTypeIds);      // ??????
+        Task<List<Animal>> GetAnimalsByTypes2(int[] animalTypeIds);         // ??????        
+        Task<List<AnimalType>> GetAnimalTypesByIds(int[] animalTypeIds);    // ??????
         Task<Animal> AddAnimalAsync(AnimalDto animalDto);
-        Task<Animal> UpdateAnimalAsync(int id, AnimalDto animalDto);
-        Task<Animal> DeleteAnimalAsync(int id);
+        Task<Animal> UpdateAnimalAsync(int animalId, AnimalDto animalDto);
+        Task<Animal> DeleteAnimalAsync(int animalId);
         Task<bool> IsAnimalTypeExist(int animalTypeId);
+        
+        // AnimalTypes
+        Task<List<AnimalType>> GetAllAnimalTypesAsync();
+        Task<AnimalType> GetAnimalTypeAsync(int animalTypeId);
+        Task<AnimalType> AddAnimalTypeAsync(AnimalTypeDto animalTypeDto);
+        Task<AnimalType> UpdateAnimalTypeAsync(int animaltypeId, AnimalTypeDto animalTypeDto);
+        Task<AnimalType> DeleteAnimalTypeAsync(int animalTypeId);
     }
 }

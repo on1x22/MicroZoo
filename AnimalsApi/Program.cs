@@ -7,6 +7,7 @@ using MicroZoo.AnimalsApi.DbContexts;
 using MicroZoo.AnimalsApi.Repository;
 using MicroZoo.AnimalsApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests;
+using System.Reflection;
 using System.Xml.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,9 +31,15 @@ app.Run();
 void RegisterServices(IServiceCollection services)
 {
     services.AddLogging(builder => builder.AddConsole());
+    services.AddControllers();
     services.AddEndpointsApiExplorer();
-    //builder.Services.AddEndpointsApiExplorer();
-    //services.AddSwaggerGen();
+    services.AddSwaggerGen(c =>
+    {
+        // Set the comments path for the Swagger JSON and UI.
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        c.IncludeXmlComments(xmlPath);
+    });
 
     services.AddDbContext<AnimalDbContext>(options =>
     {
@@ -51,6 +58,12 @@ void RegisterServices(IServiceCollection services)
         x.AddConsumer<UpdateAnimalConsumer>();
         x.AddConsumer<DeleteAnimalConsumer>();
 
+        x.AddConsumer<GetAllAnimalTypesConsumer>();
+        x.AddConsumer<GetAnimalTypeConsumer>();
+        x.AddConsumer<AddAnimalTypeConsumer>();
+        x.AddConsumer<UpdateAnimalTypeConsumer>();
+        x.AddConsumer<DeleteAnimalTypeConsumer>();
+
         x.UsingRabbitMq((context, cfg) =>
         {
             cfg.Host(builder.Configuration.GetConnectionString("RabbitMq"));
@@ -64,6 +77,12 @@ void RegisterServices(IServiceCollection services)
                 e.ConfigureConsumer<AddAnimalConsumer>(context);
                 e.ConfigureConsumer<UpdateAnimalConsumer>(context);
                 e.ConfigureConsumer<DeleteAnimalConsumer>(context);
+
+                e.ConfigureConsumer<GetAllAnimalTypesConsumer>(context);
+                e.ConfigureConsumer<GetAnimalTypeConsumer>(context);
+                e.ConfigureConsumer<AddAnimalTypeConsumer>(context);
+                e.ConfigureConsumer<UpdateAnimalTypeConsumer>(context);
+                e.ConfigureConsumer<DeleteAnimalTypeConsumer>(context);
             });
             cfg.ConfigureEndpoints(context);
         });
@@ -77,7 +96,11 @@ void Configure(WebApplication app)
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AnimalDbContext>();
         db.Database.EnsureCreated();
+
+        app.UseSwagger();
+        app.UseSwaggerUI();
     }
 
     app.UseHttpsRedirection();
+    app.MapControllers();
 }

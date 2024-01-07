@@ -1,12 +1,11 @@
 ﻿
 namespace MicroZoo.Infrastructure.MassTransit.Requests
 {
-    public class GetAllAnimalsRequest
+    public class GetAllAnimalTypesRequest
     {
         public Guid OperationId { get; set; }
-        //public List<Animal> Animals { get; set; }
 
-        public GetAllAnimalsRequest()
+        public GetAllAnimalTypesRequest()
         {
             OperationId = Guid.NewGuid();
         }

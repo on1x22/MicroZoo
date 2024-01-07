@@ -1,5 +1,4 @@
-﻿using Infrastructure.MassTransit.Requests;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using MicroZoo.AnimalsApi.Models;
 using MicroZoo.AnimalsApi.Repository;
@@ -35,11 +34,19 @@ namespace MicroZoo.AnimalsApi.Apis
 
             app.MapDelete("animals/{id}", DeleteAnimal);
 
-            app.MapGet("animal/getanimalsbytypes", GetAnimalsByTypes); // Check and delete
+            app.MapGet("animal/getanimalsbytypes", GetAnimalsByTypes)
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true
+                });
 
             app.MapGet("animal/getanimalsbytypes2", GetAnimalsByTypes2);
 
-            app.MapGet("animal/getallanimaltypes", GetAllAnimalTypes);
+            app.MapGet("animal/getallanimaltypes", GetAllAnimalTypes)
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true
+                });
 
             app.MapGet("animal/getanimaltypesbyid", GetAnimalTypesByIds);            
         }
@@ -58,7 +65,7 @@ namespace MicroZoo.AnimalsApi.Apis
             : Results.NotFound("Not all animal type Ids exist in database");
 
         internal static async Task<IResult> GetAllAnimalTypes(IAnimalRepository repository) =>
-            await repository.GetAllAnimalTypes() is List<AnimalType> animalTypes
+            await repository.GetAllAnimalTypesAsync() is List<AnimalType> animalTypes
             ? Results.Ok(animalTypes)
             : Results.NoContent();
 

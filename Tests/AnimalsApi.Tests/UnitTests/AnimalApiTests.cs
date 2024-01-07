@@ -61,7 +61,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
         {
             // Arrange
             var mock = new Mock<IAnimalRepository>();
-            mock.Setup(l => l.GetAllAnimalTypes()).ReturnsAsync(allTypes);
+            mock.Setup(l => l.GetAllAnimalTypesAsync()).ReturnsAsync(allTypes);
             var mockRepository = mock.Object;
 
             // Act
