@@ -29,7 +29,7 @@ namespace MicroZoo.AnimalsApi.Controllers
         public async Task<IActionResult> GetAllAnimalTypes()
         {
             var response = await GetResponseFromRabbitTask<GetAllAnimalTypesRequest,
-                GetAllAnimalTypesResponse>(new GetAllAnimalTypesRequest());
+                GetAnimalTypesResponse>(new GetAllAnimalTypesRequest());
 
             return response.AnimalTypes != null
                 ? Ok(response.AnimalTypes)
@@ -97,6 +97,21 @@ namespace MicroZoo.AnimalsApi.Controllers
             return response.AnimalType != null
                 ? Ok(response.AnimalType)
                 : NotFound(response.ErrorMessage);
+        }
+
+        /// <summary>
+        /// Get animal types by selected Ids
+        /// </summary>
+        /// <param name="animalTypesIds)"></param>
+        /// <returns>List of selected animal types</returns>
+        [HttpGet("byIds")]
+        public async Task<IActionResult> GetAnimalTypesByIds([FromQuery] int[] animalTypesIds)
+        {
+            var response = await GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest,
+                GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds));
+            return response.AnimalTypes != null
+            ? Ok(response.AnimalTypes)
+            : BadRequest(response.ErrorMessage); 
         }
 
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request)

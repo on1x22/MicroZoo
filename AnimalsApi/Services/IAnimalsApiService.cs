@@ -1,4 +1,6 @@
-﻿using MicroZoo.Infrastructure.MassTransit.Responses;
+﻿using MicroZoo.Infrastructure.MassTransit.Requests;
+using MicroZoo.Infrastructure.MassTransit.Responses;
+using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 
 namespace MicroZoo.AnimalsApi.Services
@@ -13,10 +15,11 @@ namespace MicroZoo.AnimalsApi.Services
         Task<GetAnimalResponse> DeleteAnimalAsync(int animalId);
 
         // AnimalTypes
-        Task<GetAllAnimalTypesResponse> GetAllAnimalTypesAsync();
+        Task<GetAnimalTypesResponse> GetAllAnimalTypesAsync();
         Task<GetAnimalTypeResponse> GetAnimalTypeAsync(int animalTypeId);
         Task<GetAnimalTypeResponse> AddAnimalTypeAsync(AnimalTypeDto animalTypeDto);
         Task<GetAnimalTypeResponse> UpdateAnimalTypeAsync(int animalTypeId, AnimalTypeDto animalTypeDto);
         Task<GetAnimalTypeResponse> DeleteAnimalTypeAsync(int animalTypeId);
+        Task<GetAnimalTypesResponse> GetAnimalTypesByIdsAsync(int[] animalTypesIds);
     }
 }

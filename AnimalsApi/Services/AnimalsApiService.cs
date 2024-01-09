@@ -15,9 +15,11 @@ namespace MicroZoo.AnimalsApi.Services
 
         public async Task<GetAllAnimalsResponse> GetAllAnimalsAsync()
         {
-            var response = new GetAllAnimalsResponse();
+            var response = new GetAllAnimalsResponse
+            {
+                Animals = await _repository.GetAllAnimalsAsync()
+            };
 
-            response.Animals = await _repository.GetAllAnimalsAsync();
             if (response.Animals == null)
                 response.ErrorMessage = $"Database contains no entries";
 
@@ -26,9 +28,11 @@ namespace MicroZoo.AnimalsApi.Services
         
         public async Task<GetAnimalResponse> GetAnimalAsync(int animalId)
         {
-            var response = new GetAnimalResponse();
+            var response = new GetAnimalResponse
+            {
+                Animal = await _repository.GetAnimalAsync(animalId)
+            };
 
-            response.Animal = await _repository.GetAnimalAsync(animalId);
             if (response.Animal == null)
                 response.ErrorMessage = $"Animal with id = {animalId} not found";
 
@@ -70,20 +74,24 @@ namespace MicroZoo.AnimalsApi.Services
 
         public async Task<GetAnimalResponse> DeleteAnimalAsync(int animalId)
         {
-            var response = new GetAnimalResponse();
+            var response = new GetAnimalResponse
+            {
+                Animal = await _repository.DeleteAnimalAsync(animalId)
+            };
 
-            response.Animal = await _repository.DeleteAnimalAsync(animalId);
             if (response.Animal == null)
                 response.ErrorMessage = $"Animal with id = {animalId} not found";
 
             return response;
         }
 
-        public async Task<GetAllAnimalTypesResponse> GetAllAnimalTypesAsync()
+        public async Task<GetAnimalTypesResponse> GetAllAnimalTypesAsync()
         {
-            var response = new GetAllAnimalTypesResponse();
+            var response = new GetAnimalTypesResponse
+            {
+                AnimalTypes = await _repository.GetAllAnimalTypesAsync()
+            };
 
-            response.AnimalTypes = await _repository.GetAllAnimalTypesAsync();
             if (response.AnimalTypes == null)
                 response.ErrorMessage = $"Database contains no entries";
 
@@ -92,9 +100,11 @@ namespace MicroZoo.AnimalsApi.Services
 
         public async Task<GetAnimalTypeResponse> GetAnimalTypeAsync(int animalTypeId)
         {
-            var response = new GetAnimalTypeResponse();
+            var response = new GetAnimalTypeResponse
+            {
+                AnimalType = await _repository.GetAnimalTypeAsync(animalTypeId)
+            };
 
-            response.AnimalType = await _repository.GetAnimalTypeAsync(animalTypeId);
             if (response.AnimalType == null)
                 response.ErrorMessage = $"Animal type with id = {animalTypeId} not found";
 
@@ -134,11 +144,29 @@ namespace MicroZoo.AnimalsApi.Services
 
         public async Task<GetAnimalTypeResponse> DeleteAnimalTypeAsync(int animalTypeId)
         {
-            var response = new GetAnimalTypeResponse();
+            var response = new GetAnimalTypeResponse
+            {
+                AnimalType = await _repository.DeleteAnimalTypeAsync(animalTypeId)
+            };
 
-            response.AnimalType = await _repository.DeleteAnimalTypeAsync(animalTypeId);
             if (response.AnimalType == null)
                 response.ErrorMessage = $"Animal type with id = {animalTypeId} not found";
+
+            return response;
+        }
+
+        public async Task<GetAnimalTypesResponse> GetAnimalTypesByIdsAsync(int[] animalTypesIds)
+        {
+            var response = new GetAnimalTypesResponse
+            {
+                AnimalTypes = await _repository.GetAnimalTypesByIdsAsync(animalTypesIds)
+            };
+
+            if (response.AnimalTypes == null || response.AnimalTypes.Count != animalTypesIds.Length)
+            {
+                response.ErrorMessage = $"Not all animal types are found in database";
+                response.AnimalTypes = null;
+            }
 
             return response;
         }

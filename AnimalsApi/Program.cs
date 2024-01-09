@@ -63,6 +63,7 @@ void RegisterServices(IServiceCollection services)
         x.AddConsumer<AddAnimalTypeConsumer>();
         x.AddConsumer<UpdateAnimalTypeConsumer>();
         x.AddConsumer<DeleteAnimalTypeConsumer>();
+        x.AddConsumer<GetAnimalTypesByIdsConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
         {
@@ -83,6 +84,7 @@ void RegisterServices(IServiceCollection services)
                 e.ConfigureConsumer<AddAnimalTypeConsumer>(context);
                 e.ConfigureConsumer<UpdateAnimalTypeConsumer>(context);
                 e.ConfigureConsumer<DeleteAnimalTypeConsumer>(context);
+                e.ConfigureConsumer<GetAnimalTypesByIdsConsumer>(context);
             });
             cfg.ConfigureEndpoints(context);
         });

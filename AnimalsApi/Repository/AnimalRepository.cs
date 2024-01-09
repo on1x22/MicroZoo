@@ -54,11 +54,7 @@ namespace MicroZoo.AnimalsApi.Repository
         public async Task<List<AnimalType>> GetAllAnimalTypesAsync() =>
             await _dbContext.AnimalTypes.ToListAsync();
         
-        public async Task<List<AnimalType>> GetAnimalTypesByIds(int[] animalTypeIds)
-        {
-            return /*animalTypes =*/ await _dbContext.AnimalTypes
-                .Where(t => animalTypeIds.Contains(t.Id)).ToListAsync(); 
-        }
+        
 
         public async Task<Animal> AddAnimalAsync(AnimalDto animalDto)
         {
@@ -154,6 +150,13 @@ namespace MicroZoo.AnimalsApi.Repository
             await SaveChangesAsync();
 
             return animalType;
+        }
+/// <inheritdoc/>
+
+        public async Task<List<AnimalType>> GetAnimalTypesByIdsAsync(int[] animalTypesIds)
+        {
+            return await _dbContext.AnimalTypes
+                .Where(t => animalTypesIds.Contains(t.Id)).ToListAsync();
         }
 
         private async Task SaveChangesAsync() =>

@@ -5,18 +5,18 @@ using MicroZoo.Infrastructure.MassTransit.Responses;
 
 namespace AnimalsApi.Consumers
 {
-    public class GetAllAnimalTypesConsumer : IConsumer<GetAllAnimalTypesRequest>
+    public class GetAnimalTypesByIdsConsumer : IConsumer<GetAnimalTypesByIdsRequest>
     {
         private readonly IAnimalsApiService _service;
 
-        public GetAllAnimalTypesConsumer(IAnimalsApiService service)
+        public GetAnimalTypesByIdsConsumer(IAnimalsApiService service)
         {
             _service = service;
         }
 
-        public async Task Consume(ConsumeContext<GetAllAnimalTypesRequest> context)
+        public async Task Consume(ConsumeContext<GetAnimalTypesByIdsRequest> context)
         {
-            var response = await _service.GetAllAnimalTypesAsync();
+            var response = await _service.GetAnimalTypesByIdsAsync(context.Message.AnimalTypesIds);
             response.OperationId = context.Message.OperationId;
 
             await context.RespondAsync<GetAnimalTypesResponse>(response);
