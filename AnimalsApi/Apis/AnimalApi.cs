@@ -40,7 +40,11 @@ namespace MicroZoo.AnimalsApi.Apis
                     Deprecated = true
                 });
 
-            app.MapGet("animal/getanimalsbytypes2", GetAnimalsByTypes2);
+            app.MapGet("animal/getanimalsbytypes2", GetAnimalsByTypes2)
+                .WithOpenApi(operation => new(operation)
+            {
+                Deprecated = true
+            });
 
             app.MapGet("animal/getallanimaltypes", GetAllAnimalTypes)
                 .WithOpenApi(operation => new(operation)
@@ -58,7 +62,7 @@ namespace MicroZoo.AnimalsApi.Apis
 
         private async Task<IResult> GetAllAnimals(IAnimalsApiService service)
         {
-            var response = await GetResponseFromRabbitTask<GetAllAnimalsRequest, GetAllAnimalsResponse> (new GetAllAnimalsRequest());
+            var response = await GetResponseFromRabbitTask<GetAllAnimalsRequest, GetAnimalsResponse> (new GetAllAnimalsRequest());
             return response.Animals is List<Animal> animals
                 ? Results.Ok(animals)
                 : Results.NoContent();
@@ -75,7 +79,7 @@ namespace MicroZoo.AnimalsApi.Apis
             : Results.NoContent();
 
         internal static async Task<IResult> GetAnimalsByTypes2([FromQuery] int[] animalTypeIds, IAnimalRepository repository) =>
-            await repository.GetAnimalsByTypes2(animalTypeIds) is List<Animal> animals
+            await repository.GetAnimalsByTypesAsync(animalTypeIds) is List<Animal> animals
             ? Results.Ok(animals)
             : Results.NotFound("Not all animal type Ids exist in database");
 

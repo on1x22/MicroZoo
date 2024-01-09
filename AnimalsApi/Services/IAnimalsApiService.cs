@@ -8,11 +8,12 @@ namespace MicroZoo.AnimalsApi.Services
     public interface IAnimalsApiService
     {
         // Animals
-        Task<GetAllAnimalsResponse> GetAllAnimalsAsync();
+        Task<GetAnimalsResponse> GetAllAnimalsAsync();
         Task<GetAnimalResponse> GetAnimalAsync(int animalId);
         Task<GetAnimalResponse> AddAnimalAsync(AnimalDto animalDto);
         Task<GetAnimalResponse> UpdateAnimalAsync(int animalId, AnimalDto animalDto);
         Task<GetAnimalResponse> DeleteAnimalAsync(int animalId);
+        Task<GetAnimalsResponse> GetAnimalsByTypesAsync(int[] animalTypeIds);
 
         // AnimalTypes
         Task<GetAnimalTypesResponse> GetAllAnimalTypesAsync();

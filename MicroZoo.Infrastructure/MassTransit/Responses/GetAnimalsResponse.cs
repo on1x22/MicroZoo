@@ -2,7 +2,7 @@
 
 namespace MicroZoo.Infrastructure.MassTransit.Responses
 {
-    public record GetAllAnimalsResponse
+    public record GetAnimalsResponse
     {
         public Guid OperationId { get; set; }
         public List<Animal> Animals { get; set; }

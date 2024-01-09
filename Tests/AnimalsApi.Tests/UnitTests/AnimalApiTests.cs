@@ -29,7 +29,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             int[] ids = new int[] { 1, 3 };
             var expected = new List<Animal>() { allAnimals[ids[0]], allAnimals[ids[1]] };
             var mock = new Mock<IAnimalRepository>();
-            mock.Setup(l => l.GetAnimalsByTypes2(It.IsAny<int[]>())).ReturnsAsync(expected);
+            mock.Setup(l => l.GetAnimalsByTypesAsync(It.IsAny<int[]>())).ReturnsAsync(expected);
             var mockRepository = mock.Object;            
 
             // Act

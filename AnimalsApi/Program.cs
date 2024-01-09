@@ -57,6 +57,7 @@ void RegisterServices(IServiceCollection services)
         x.AddConsumer<AddAnimalConsumer>();
         x.AddConsumer<UpdateAnimalConsumer>();
         x.AddConsumer<DeleteAnimalConsumer>();
+        x.AddConsumer<GetAnimalsByTypesConsumer>();
 
         x.AddConsumer<GetAllAnimalTypesConsumer>();
         x.AddConsumer<GetAnimalTypeConsumer>();
@@ -78,6 +79,7 @@ void RegisterServices(IServiceCollection services)
                 e.ConfigureConsumer<AddAnimalConsumer>(context);
                 e.ConfigureConsumer<UpdateAnimalConsumer>(context);
                 e.ConfigureConsumer<DeleteAnimalConsumer>(context);
+                e.ConfigureConsumer<GetAnimalsByTypesConsumer>(context);
 
                 e.ConfigureConsumer<GetAllAnimalTypesConsumer>(context);
                 e.ConfigureConsumer<GetAnimalTypeConsumer>(context);

@@ -13,9 +13,9 @@ namespace MicroZoo.AnimalsApi.Services
             _repository = repository;
         }
 
-        public async Task<GetAllAnimalsResponse> GetAllAnimalsAsync()
+        public async Task<GetAnimalsResponse> GetAllAnimalsAsync()
         {
-            var response = new GetAllAnimalsResponse
+            var response = new GetAnimalsResponse
             {
                 Animals = await _repository.GetAllAnimalsAsync()
             };
@@ -82,6 +82,19 @@ namespace MicroZoo.AnimalsApi.Services
             if (response.Animal == null)
                 response.ErrorMessage = $"Animal with id = {animalId} not found";
 
+            return response;
+        }
+
+        public async Task<GetAnimalsResponse> GetAnimalsByTypesAsync(int[] animalTypeIds)
+        {
+            var response = new GetAnimalsResponse
+            {
+                Animals = await _repository.GetAnimalsByTypesAsync(animalTypeIds)
+            };
+
+            if (response.Animals == null)            
+                response.ErrorMessage = "Not all animal type Ids exist in database";
+            
             return response;
         }
 
@@ -170,5 +183,7 @@ namespace MicroZoo.AnimalsApi.Services
 
             return response;
         }
+
+        
     }
 }

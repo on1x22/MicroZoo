@@ -41,15 +41,7 @@ namespace MicroZoo.AnimalsApi.Repository
             return await _dbContext.Animals.Where(a => animalTypeIds.Contains(a.AnimalTypeId)).ToListAsync();                                                                    ;
         }
 
-        public async Task<List<Animal>> GetAnimalsByTypes2(int[] animalTypeIds)
-        {
-            var typesFromDb = _dbContext.AnimalTypes.Select(at => at.Id);
-            var allTypesExistInDb = typesFromDb.All(x => animalTypeIds.Contains(x));
-
-            if (allTypesExistInDb) return null;
-
-            return await _dbContext.Animals.Where(a => animalTypeIds.Contains(a.AnimalTypeId)).ToListAsync(); ;
-        }
+        
 
         public async Task<List<AnimalType>> GetAllAnimalTypesAsync() =>
             await _dbContext.AnimalTypes.ToListAsync();
@@ -101,7 +93,17 @@ namespace MicroZoo.AnimalsApi.Repository
 
             return animal;
         }
-        
+
+        public async Task<List<Animal>> GetAnimalsByTypesAsync(int[] animalTypeIds)
+        {
+            var typesFromDb = _dbContext.AnimalTypes.Select(at => at.Id);
+            var allTypesExistInDb = typesFromDb.All(x => animalTypeIds.Contains(x));
+
+            if (allTypesExistInDb) return null;
+
+            return await _dbContext.Animals.Where(a => animalTypeIds.Contains(a.AnimalTypeId)).ToListAsync(); ;
+        }
+
         public async Task<bool> IsAnimalTypeExist(int animalTypeId) =>
             await _dbContext.AnimalTypes.AnyAsync(t => t.Id == animalTypeId);
 
