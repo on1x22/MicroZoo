@@ -22,17 +22,37 @@ namespace MicroZoo.AnimalsApi.Apis
 
         public void Register(WebApplication app)
         {
-            app.MapGet("/", () => "Hello AnimalsApi!");
+            //app.MapGet("/", () => "Hello AnimalsApi!");
 
-            app.MapGet("/animals", GetAllAnimals);
+            app.MapGet("/animals_old", GetAllAnimals)
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true
+                });
 
-            app.MapGet("/animals/{id}", GetAnimal);
+            app.MapGet("/animals_old/{id}", GetAnimal)
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true
+                });
 
-            app.MapPost("animals", AddAnimal);
+            app.MapPost("animals_old", AddAnimal)
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true
+                });
 
-            app.MapPut("animals/{id}", UpdateAnimal);
+            app.MapPut("animals_old/{id}", UpdateAnimal)
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true
+                });
 
-            app.MapDelete("animals/{id}", DeleteAnimal);
+            app.MapDelete("animals_old/{id}", DeleteAnimal)
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true
+                });
 
             app.MapGet("animal/getanimalsbytypes", GetAnimalsByTypes)
                 .WithOpenApi(operation => new(operation)

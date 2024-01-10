@@ -40,7 +40,7 @@ namespace MicroZoo.AnimalsApi.Controllers
         /// Get info about selected animal type
         /// </summary>
         /// <param name="animalTypeId"></param>
-        /// <returns>c</returns>
+        /// <returns>Animal type info</returns>
         [HttpGet("{animalTypeId}")]
         public async Task<IActionResult> GetAnimalType(int animalTypeId)
         {

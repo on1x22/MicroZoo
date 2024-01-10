@@ -1,7 +1,10 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using MicroZoo.AnimalsApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests;
 using MicroZoo.Infrastructure.MassTransit.Responses;
+using MicroZoo.Infrastructure.Models.Animals;
+using MicroZoo.Infrastructure.Models.Animals.Dto;
 
 namespace MicroZoo.AnimalsApi.Controllers
 {
@@ -15,6 +18,77 @@ namespace MicroZoo.AnimalsApi.Controllers
         public AnimalsController(IServiceProvider provider)
         {
             _provider = provider;
+        }
+
+        /// <summary>
+        /// Get all animals
+        /// </summary>
+        /// <returns>List of animals</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetAllAnimals(/*IAnimalsApiService service*/)
+        {
+            var response = await GetResponseFromRabbitTask<GetAllAnimalsRequest, GetAnimalsResponse>(new GetAllAnimalsRequest());
+            return response.Animals != null
+                ? Ok(response.Animals)
+                : NoContent();
+        }
+
+        /// <summary>
+        /// Get info about selected animal
+        /// </summary>
+        /// <param name="animalId"></param>
+        /// <returns>Animal info</returns>
+        [HttpGet("{animalId}")]
+        public async Task<IActionResult> GetAnimal(int animalId)
+        {
+            var response = await GetResponseFromRabbitTask<GetAnimalRequest, GetAnimalResponse>(new GetAnimalRequest(animalId));
+
+            return response.Animal != null
+                ? Ok(response.Animal)
+                : NotFound(response.ErrorMessage);
+        }
+
+        /// <summary>
+        /// Create new animal
+        /// </summary>
+        /// <param name="animalDto"></param>
+        /// <returns>Created animal</returns>
+        [HttpPost]
+        public async Task<IActionResult> AddAnimal([FromBody] AnimalDto animalDto)
+        {
+            var response = await GetResponseFromRabbitTask<AddAnimalRequest, GetAnimalResponse>(new AddAnimalRequest(animalDto));
+            return response.Animal != null
+                ? Ok(response.Animal)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        /// <summary>
+        /// Change data about selected animal
+        /// </summary>
+        /// <param name="animalId"></param>
+        /// <param name="animalDto"></param>
+        /// <returns>Changed info about selected animal</returns>
+        [HttpPut("{animalId}")]
+        public async Task<IActionResult> UpdateAnimal(int animalId, [FromBody] AnimalDto animalDto)
+        {
+            var response = await GetResponseFromRabbitTask<UpdateAnimalRequest, GetAnimalResponse>(new UpdateAnimalRequest(animalId, animalDto));
+            return response.Animal != null
+                ? Ok(response.Animal)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        /// <summary>
+        /// Delete selected animal
+        /// </summary>
+        /// <param name="animalId"></param>
+        /// <returns>Deleted animal</returns>
+        [HttpDelete("{animalId}")]
+        public async Task<IActionResult> DeleteAnimal(int animalId)
+        {
+            var response = await GetResponseFromRabbitTask<DeleteAnimalRequest, GetAnimalResponse>(new DeleteAnimalRequest(animalId));
+            return response.Animal != null
+                ? Ok(response.Animal)
+                : NotFound(response.ErrorMessage);
         }
 
         /// <summary>
