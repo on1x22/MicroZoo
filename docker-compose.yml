@@ -65,6 +65,26 @@ services:
     - 7020:80
     networks:
     - microzoo_net
+    depends_on:
+    - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    restart: always
+    volumes:
+    -  d:/data/rabbitmq/microzoo:/var/lib/rabbitmq
+    ports:
+    - "5672:5672"
+    - 15672:15672
+    expose:
+    - "15672"
+    - "5672"
+    networks: 
+    - microzoo_net
+
+
 
 networks:
   microzoo_net:
