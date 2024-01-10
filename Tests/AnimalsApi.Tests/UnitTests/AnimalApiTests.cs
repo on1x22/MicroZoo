@@ -29,7 +29,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             int[] ids = new int[] { 1, 3 };
             var expected = new List<Animal>() { allAnimals[ids[0]], allAnimals[ids[1]] };
             var mock = new Mock<IAnimalRepository>();
-            mock.Setup(l => l.GetAnimalsByTypes2(It.IsAny<int[]>())).ReturnsAsync(expected);
+            mock.Setup(l => l.GetAnimalsByTypesAsync(It.IsAny<int[]>())).ReturnsAsync(expected);
             var mockRepository = mock.Object;            
 
             // Act
@@ -61,7 +61,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
         {
             // Arrange
             var mock = new Mock<IAnimalRepository>();
-            mock.Setup(l => l.GetAllAnimalTypes()).ReturnsAsync(allTypes);
+            mock.Setup(l => l.GetAllAnimalTypesAsync()).ReturnsAsync(allTypes);
             var mockRepository = mock.Object;
 
             // Act
@@ -95,7 +95,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             int[] ids = new int[] { 1, 2 };
             var expected = new List<AnimalType>() { allTypes[ids[0]], allTypes[ids[1]] };
             var mock = new Mock<IAnimalRepository>();
-            mock.Setup(l => l.GetAnimalTypesByIds(It.IsAny<int[]>())).ReturnsAsync(expected);
+            mock.Setup(l => l.GetAnimalTypesByIdsAsync(It.IsAny<int[]>())).ReturnsAsync(expected);
             var mockRepository = mock.Object;
 
             // Act
