@@ -25,8 +25,14 @@ namespace MicroZoo.PersonsApi.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<Person> GetPersonById(int id) => 
-            await _dbContext.Persons.FirstOrDefaultAsync(x => x.Id == id);
+        public async Task<Person> GetPersonAsync(int personId)
+        {
+            var person = await _dbContext.Persons.FirstOrDefaultAsync(x => x.Id == personId);
+            if (person == null)
+                return default;
+
+            return person;
+        }
         
 
         public Task<List<Person>> GetEmployeesOfManager(int id)

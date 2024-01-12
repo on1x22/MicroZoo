@@ -22,7 +22,7 @@ namespace MicroZoo.PersonsApi.Tests.UnitTests
             // Arrange            
             int id = 1;
             var mock = new Mock<IPersonRepository>();
-            mock.Setup(l => l.GetPersonById(It.IsAny<int>())).ReturnsAsync(_persons[id]);
+            mock.Setup(l => l.GetPersonAsync(It.IsAny<int>())).ReturnsAsync(_persons[id]);
             var mockRepository = mock.Object;
             string expected = _persons[id].FirstName + " " + _persons[id].LastName;
 

@@ -16,7 +16,7 @@ namespace MicroZoo.PersonsApi.Apis
         }
 
         internal static async Task<IResult> GetPersonById(int id, IPersonRepository repository) =>
-            await repository.GetPersonById(id) is Person person
+            await repository.GetPersonAsync(id) is Person person
             ? Results.Ok(person)
             : Results.NotFound();
 

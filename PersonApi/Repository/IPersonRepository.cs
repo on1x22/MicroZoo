@@ -5,7 +5,7 @@ namespace MicroZoo.PersonsApi.Repository
 {
     public interface IPersonRepository
     {
-        Task<Person> GetPersonById(int id);
+        Task<Person> GetPersonAsync(int personId);
         Task<List<Person>> GetEmployeesOfManager(int id);
         Task<Person> CreateNewPerson(Person employee);
         Task UpdatePerson(Person employee);
