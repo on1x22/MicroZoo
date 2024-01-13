@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MicroZoo.Infrastructure.MassTransit.Requests;
 using MicroZoo.Infrastructure.MassTransit.Responses;
+using MicroZoo.Infrastructure.Models.Persons.Dto;
+using MicroZoo.Infrastructure.Models.Persons;
 
 namespace MicroZoo.PersonsApi.Controllers
 {
@@ -18,14 +20,56 @@ namespace MicroZoo.PersonsApi.Controllers
             _provider = provider;
         }
 
-        [HttpGet("personId")]
+        [HttpGet("{personId}")]
         public async Task<IActionResult> GetPerson(int personId)
         {
-            var response = await GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(new GetPersonRequest(personId));
+            var response = await GetResponseFromRabbitTask<GetPersonRequest, 
+                GetPersonResponse>(new GetPersonRequest(personId));
 
             return response.Person != null
                 ? Ok(response.Person)
                 : NotFound(response.ErrorMessage);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPerson([FromBody] PersonDto personDto)
+        {
+            var response = await GetResponseFromRabbitTask<AddPersonRequest,
+                GetPersonResponse>(new AddPersonRequest(personDto));
+
+            return response.Person != null
+                ? Ok(response.Person)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        [HttpPut("{personId}")]
+        public async Task<IActionResult> UpdatePerson(int personId, [FromBody] PersonDto personDto)
+        {
+            var response = await GetResponseFromRabbitTask<UpdatePersonRequest, 
+                GetPersonResponse>(new UpdatePersonRequest(personId, personDto));
+
+            return response.Person != null
+                ? Ok(response.Person)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        [HttpDelete("{personId}")]
+        public async Task<IActionResult> DeletePerson(int personId)
+        {
+            var response = await GetResponseFromRabbitTask<DeletePersonRequest, GetPersonResponse>(new DeletePersonRequest(personId));
+            return response.Person != null
+                ? Ok(response.Person)
+                : NotFound(response.ErrorMessage);
+        }
+
+        [HttpGet("{personId}/subordinatePersonnel")]
+        public async Task<IActionResult> GetSubordinatePersonnel(int personId)
+        {
+            var response = await GetResponseFromRabbitTask<GetSubordinatePersonnelRequest,
+                GetPersonsResponse>(new GetSubordinatePersonnelRequest(personId));
+            return response.Persons != null
+            ? Ok(response.Persons)
+            : BadRequest(response.ErrorMessage);
         }
 
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request)

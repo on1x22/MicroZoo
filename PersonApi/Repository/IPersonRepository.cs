@@ -1,14 +1,16 @@
-﻿using MicroZoo.PersonsApi.Models;
-using MicroZoo.Infrastructure.Models.Persons;
+﻿using MicroZoo.Infrastructure.Models.Persons;
+using MicroZoo.Infrastructure.Models.Persons.Dto;
 
 namespace MicroZoo.PersonsApi.Repository
 {
     public interface IPersonRepository
     {
-        Task<Person> GetPersonAsync(int personId);
-        Task<List<Person>> GetEmployeesOfManager(int id);
-        Task<Person> CreateNewPerson(Person employee);
-        Task UpdatePerson(Person employee);
-        Task DeletePerson(int id);
+        Task<Person> GetPersonAsync(int personId);        
+        Task<Person> AddPersonAsync(PersonDto person);
+        Task<Person> UpdatePersonAsync(int personId, PersonDto personDto);
+        Task<Person> DeletePersonAsync(int personId);
+        Task<bool> CheckPersonIsManager(int personId);
+
+        Task<List<Person>> GetSubordinatePersonnelAsync(int personId);
     }
 }

@@ -1,5 +1,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using MicroZoo.Infrastructure.MassTransit.Requests;
 using MicroZoo.PersonsApi.Apis;
 using MicroZoo.PersonsApi.Consumers;
 using MicroZoo.PersonsApi.DbContexts;
@@ -50,6 +51,11 @@ void RegisterServices(IServiceCollection services)
     services.AddMassTransit(x =>
     {
         x.AddConsumer<GetPersonConsumer>();
+        x.AddConsumer<AddPersonConsumer>();
+        x.AddConsumer<UpdatePersonConsumer>();
+        x.AddConsumer<DeletePersonConsumer>();
+
+        x.AddConsumer<GetSubordinatePersonnelConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
         {
@@ -59,7 +65,12 @@ void RegisterServices(IServiceCollection services)
                 e.PrefetchCount = 20;
                 e.UseMessageRetry(r => r.Interval(2, 100));
 
-                e.ConfigureConsumer<GetPersonConsumer>(context);               
+                e.ConfigureConsumer<GetPersonConsumer>(context);
+                e.ConfigureConsumer<AddPersonConsumer>(context);                
+                e.ConfigureConsumer<UpdatePersonConsumer>(context);
+                e.ConfigureConsumer<DeletePersonConsumer>(context);
+
+                e.ConfigureConsumer<GetSubordinatePersonnelConsumer>(context);
             });
             cfg.ConfigureEndpoints(context);
         });

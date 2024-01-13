@@ -55,7 +55,7 @@ namespace MicroZoo.PersonsApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("personapi");
+                    b.ToTable("personapi", (string)null);
                 });
 #pragma warning restore 612, 618
         }

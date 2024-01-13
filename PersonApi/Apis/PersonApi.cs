@@ -8,11 +8,19 @@ namespace MicroZoo.PersonsApi.Apis
     {
         public void Register(WebApplication app)
         {
-            app.MapGet("/", () => "Hello PersonApi!");
+            //app.MapGet("/", () => "Hello PersonApi!");
 
-            app.MapGet("/person/{id}", GetPersonById);
+            app.MapGet("/person/{id}", GetPersonById)
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true
+                });
 
-            app.MapPut("/person", UpdatePerson);
+            app.MapPut("/person", UpdatePersonApi)
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true
+                });
         }
 
         internal static async Task<IResult> GetPersonById(int id, IPersonRepository repository) =>
@@ -20,9 +28,9 @@ namespace MicroZoo.PersonsApi.Apis
             ? Results.Ok(person)
             : Results.NotFound();
 
-        internal static async Task<IResult> UpdatePerson(Person person, IPersonRepository repository)
+        internal static async Task<IResult> UpdatePersonApi(Person person, IPersonRepository repository)
         {
-            await repository.UpdatePerson(person);
+            //await repository.UpdatePersonAsync(person);
             return Results.NoContent();
         }
 
