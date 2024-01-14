@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MicroZoo.PersonsApi.DbContexts;
-using MicroZoo.PersonsApi.Models;
-using System.Reflection.Metadata.Ecma335;
 using MicroZoo.Infrastructure.Models.Persons;
+using MicroZoo.Infrastructure.Models.Persons.Dto;
 
 namespace MicroZoo.PersonsApi.Repository
 {
@@ -12,40 +11,84 @@ namespace MicroZoo.PersonsApi.Repository
 
         public PersonRepository(PersonDbContext dbContext)
         {
-            this._dbContext = dbContext;
+            _dbContext = dbContext;
         }
 
-        public Task<Person> CreateNewPerson(Person employee)
+        public async Task<Person> GetPersonAsync(int personId)
         {
-            throw new NotImplementedException();
+            var person = await _dbContext.Persons.FirstOrDefaultAsync(p => p.Id == personId);
+            if (person == null)
+                return default;
+
+            return person;
         }
 
-        public Task DeletePerson(int id)
+        public async Task<Person> AddPersonAsync(PersonDto personDto)
         {
-            throw new NotImplementedException();
-        }
+            var person = personDto.ToPerson();
 
-        public async Task<Person> GetPersonById(int id) => 
-            await _dbContext.Persons.FirstOrDefaultAsync(x => x.Id == id);
+            await _dbContext.Persons.AddAsync(person);
+            await SaveChangesAsync();
+
+            return person;
+        }
         
-
-        public Task<List<Person>> GetEmployeesOfManager(int id)
+        public async Task<Person> UpdatePersonAsync(int personId, PersonDto personDto)
         {
-            throw new NotImplementedException();
+            if (personDto == null)
+                return default;
+
+            var person = await _dbContext.Persons.FirstOrDefaultAsync(p => p.Id == personId);
+
+            if (person == null)
+                return default;
+
+            person!.FirstName = personDto!.FirstName;
+            person!.LastName = personDto!.LastName;
+            person!.Email = personDto!.Email;
+            person!.IsManager = personDto!.IsManager;
+            person!.ManagerId = personDto!.ManagerId;
+
+            await SaveChangesAsync();
+
+            return person;
         }
 
-        public async Task UpdatePerson(Person employee)
+        public async Task<Person> DeletePersonAsync(int personId)
         {
-            var person = await _dbContext.Persons.FirstOrDefaultAsync(p => p.Id == employee.Id);
+            var person = await _dbContext.Persons.FirstOrDefaultAsync(p => p.Id == personId);
+            if (person == null)
+                return default;
 
-            if (person == null) return;
+            _dbContext.Persons.Remove(person);
+            await SaveChangesAsync();
 
-            person.FirstName = employee.FirstName; 
-            person.LastName = employee.LastName;
-            person.Email = employee.Email;
-            person.IsManager = employee.IsManager;
-            person.ManagerId = employee.ManagerId;
+            return person;
+        }
+
+        public async Task<List<Person>> GetSubordinatePersonnelAsync(int personId) =>       
+            await _dbContext.Persons.Where(p => p.ManagerId == personId).ToListAsync();
+
+        private async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();
+
+        public async Task<bool> CheckPersonIsManager(int personId)
+        {
+            var person = await _dbContext.Persons.FirstOrDefaultAsync(p => p.Id == personId);
+            if (person == null) 
+                return false;
+
+            return person.IsManager;
+        }
+
+        public async Task<List<Person>> ChangeManagerForSubordinatePersonnel(int currentManagerId, int newManagerId)
+        {
+            var subordinatePersonnel = await _dbContext.Persons.Where(p => p.ManagerId == currentManagerId).ToListAsync();
+            subordinatePersonnel.ForEach(sp => sp.ManagerId = newManagerId);
+            
+            await SaveChangesAsync();
+            
+            return subordinatePersonnel;
         }
     }
 }
