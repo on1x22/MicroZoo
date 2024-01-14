@@ -20,6 +20,11 @@ namespace MicroZoo.PersonsApi.Controllers
             _provider = provider;
         }
 
+        /// <summary>
+        /// Get info about selected person
+        /// </summary>
+        /// <param name="personId"></param>
+        /// <returns>Person info</returns>
         [HttpGet("{personId}")]
         public async Task<IActionResult> GetPerson(int personId)
         {
@@ -31,6 +36,11 @@ namespace MicroZoo.PersonsApi.Controllers
                 : NotFound(response.ErrorMessage);
         }
 
+        /// <summary>
+        /// Create new person
+        /// </summary>
+        /// <param name="personDto"></param>
+        /// <returns>Created person</returns>
         [HttpPost]
         public async Task<IActionResult> AddPerson([FromBody] PersonDto personDto)
         {
@@ -42,6 +52,12 @@ namespace MicroZoo.PersonsApi.Controllers
                 : BadRequest(response.ErrorMessage);
         }
 
+        /// <summary>
+        /// Change info about selected person
+        /// </summary>
+        /// <param name="personId"></param>
+        /// <param name="personDto"></param>
+        /// <returns>Changed info about selected person</returns>
         [HttpPut("{personId}")]
         public async Task<IActionResult> UpdatePerson(int personId, [FromBody] PersonDto personDto)
         {
@@ -53,6 +69,11 @@ namespace MicroZoo.PersonsApi.Controllers
                 : BadRequest(response.ErrorMessage);
         }
 
+        /// <summary>
+        /// Delete selected person
+        /// </summary>
+        /// <param name="personId"></param>
+        /// <returns>Deleted person</returns>
         [HttpDelete("{personId}")]
         public async Task<IActionResult> DeletePerson(int personId)
         {
@@ -62,11 +83,36 @@ namespace MicroZoo.PersonsApi.Controllers
                 : NotFound(response.ErrorMessage);
         }
 
+        /// <summary>
+        /// Get information about directly subordinate personnel
+        /// </summary>
+        /// <param name="personId"></param>
+        /// <returns>List of subordinate personnel</returns>
         [HttpGet("{personId}/subordinatePersonnel")]
         public async Task<IActionResult> GetSubordinatePersonnel(int personId)
         {
             var response = await GetResponseFromRabbitTask<GetSubordinatePersonnelRequest,
                 GetPersonsResponse>(new GetSubordinatePersonnelRequest(personId));
+            return response.Persons != null
+            ? Ok(response.Persons)
+            : BadRequest(response.ErrorMessage);
+        }
+
+        /// <summary>
+        /// Change manager Id for all directly subordinate personnel
+        /// </summary>
+        /// <param name="currentId"></param>
+        /// <param name="newId"></param>
+        /// <returns>Subordinate personnel with changer manager Id</returns>
+        [HttpPut("Manager/{currentId}/{newId}")]
+        public async Task<IActionResult> ChangeManagerForSubordinatePersonnel(
+            int currentId,
+            int newId
+            )
+        {
+            var response = await GetResponseFromRabbitTask<ChangeManagerForSubordinatePersonnelRequest,
+                GetPersonsResponse>(new ChangeManagerForSubordinatePersonnelRequest(currentId, 
+                                                                                    newId));
             return response.Persons != null
             ? Ok(response.Persons)
             : BadRequest(response.ErrorMessage);

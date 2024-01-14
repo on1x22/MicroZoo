@@ -56,6 +56,7 @@ void RegisterServices(IServiceCollection services)
         x.AddConsumer<DeletePersonConsumer>();
 
         x.AddConsumer<GetSubordinatePersonnelConsumer>();
+        x.AddConsumer<ChangeManagerForSubordinatePersonnelConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
         {
@@ -71,6 +72,7 @@ void RegisterServices(IServiceCollection services)
                 e.ConfigureConsumer<DeletePersonConsumer>(context);
 
                 e.ConfigureConsumer<GetSubordinatePersonnelConsumer>(context);
+                e.ConfigureConsumer<ChangeManagerForSubordinatePersonnelConsumer>(context);
             });
             cfg.ConfigureEndpoints(context);
         });

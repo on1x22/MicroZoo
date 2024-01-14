@@ -1,6 +1,7 @@
 ﻿using MicroZoo.Infrastructure.MassTransit.Requests;
 using MicroZoo.Infrastructure.MassTransit.Responses;
 using MicroZoo.Infrastructure.Models.Animals;
+using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Persons.Dto;
 using MicroZoo.PersonsApi.Repository;
 
@@ -85,6 +86,34 @@ namespace MicroZoo.PersonsApi.Services
             return response;
         }
 
-        
+        public async Task<GetPersonsResponse> ChangeManagerForSubordinatePersonnel(int currentManagerId, 
+                                                                             int newManagerId)
+        {
+            var response = new GetPersonsResponse();
+
+            if (!await _repository.CheckPersonIsManager(currentManagerId))
+            {
+                response.ErrorMessage = $"Manager with id={currentManagerId} is not exist";
+                return response;
+            }
+
+            if (!await _repository.CheckPersonIsManager(newManagerId))
+            {
+                response.ErrorMessage = $"Manager with id={newManagerId} is not exist";
+                return response;
+            }
+
+            response.Persons = await _repository.ChangeManagerForSubordinatePersonnel(currentManagerId,
+                                                                                      newManagerId);
+
+            if(response.Persons == null || response.Persons.Count == 0)
+            {
+                response.Persons = null;
+                response.ErrorMessage = $"Manager with id={currentManagerId} has no subordinate " +
+                    $"personnel, therefore thera are no changes";
+            }
+
+            return response;
+        }
     }
 }

@@ -12,5 +12,7 @@ namespace MicroZoo.PersonsApi.Services
         
 
         Task<GetPersonsResponse> GetSubordinatePersonnelAsync(int personId);
+        Task<GetPersonsResponse> ChangeManagerForSubordinatePersonnel(int currentManagerId,
+                                                                      int newManagerId);
     }
 }

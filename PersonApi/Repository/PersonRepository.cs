@@ -80,5 +80,15 @@ namespace MicroZoo.PersonsApi.Repository
 
             return person.IsManager;
         }
+
+        public async Task<List<Person>> ChangeManagerForSubordinatePersonnel(int currentManagerId, int newManagerId)
+        {
+            var subordinatePersonnel = await _dbContext.Persons.Where(p => p.ManagerId == currentManagerId).ToListAsync();
+            subordinatePersonnel.ForEach(sp => sp.ManagerId = newManagerId);
+            
+            await SaveChangesAsync();
+            
+            return subordinatePersonnel;
+        }
     }
 }

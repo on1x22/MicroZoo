@@ -12,5 +12,7 @@ namespace MicroZoo.PersonsApi.Repository
         Task<bool> CheckPersonIsManager(int personId);
 
         Task<List<Person>> GetSubordinatePersonnelAsync(int personId);
+        Task<List<Person>> ChangeManagerForSubordinatePersonnel(int currentManagerId,
+                                                                int newManagerId);
     }
 }
