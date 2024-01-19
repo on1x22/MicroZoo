@@ -27,7 +27,8 @@ namespace MicroZoo.ZookeepersApi.Apis
 
             // new functionality:
             app.MapGet("/zookeeper/{id}", GetZookepeerInfoAsync)
-                .WithTags("Index");
+                .WithTags("Index")
+                .WithDescription("ewgwegq");
 
             app.MapGet("/zookeeper/speciality/all", GetAllZookeperSpecialitiesAsync)
                 .WithTags("Speciality");

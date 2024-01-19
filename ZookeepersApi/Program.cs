@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using MicroZoo.ZookeepersApi.Apis;
 using Microsoft.AspNetCore.Http.Json;
 using MicroZoo.ZookeepersApi.Services;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +31,15 @@ void RegisterServices(IServiceCollection services)
 {
     services.AddHttpClient();
     services.AddLogging(builder => builder.AddConsole());
+    services.AddControllers();
     services.AddEndpointsApiExplorer();
-    services.AddSwaggerGen();
+    services.AddSwaggerGen(c =>
+    {
+        // Set the comments path for the Swagger JSON and UI.
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        c.IncludeXmlComments(xmlPath);
+    });
 
     services.AddDbContext<ZookeeperDBContext>(options =>
     {
@@ -56,4 +64,5 @@ void Configure(WebApplication app)
     }
 
     app.UseHttpsRedirection();
+    app.MapControllers();
 }
