@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimalsApi", "AnimalsApi\An
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonsApi", "PersonApi\PersonsApi.csproj", "{D637C01D-442F-47AC-A851-5E6D20520965}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "MicroZoo.Infrastructure\Infrastructure.csproj", "{F399BB20-CE31-491B-AAC7-9874647BB26D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.Infrastructure", "MicroZoo.Infrastructure\MicroZoo.Infrastructure.csproj", "{F399BB20-CE31-491B-AAC7-9874647BB26D}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2950EADF-3337-45ED-A1E7-A91C7E55F305}"
 EndProject
@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimalsApi.Tests", "Tests\A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZookeepersApi.Tests", "Tests\ZookeepersApi.Tests\ZookeepersApi.Tests.csproj", "{50F81E8A-2DCB-47C8-BA33-2046EA0658A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagersApi", "ManagersApi\ManagersApi.csproj", "{FA9F0DA8-5A5C-41D8-B086-B5AB263B85AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagersApi", "ManagersApi\ManagersApi.csproj", "{FA9F0DA8-5A5C-41D8-B086-B5AB263B85AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

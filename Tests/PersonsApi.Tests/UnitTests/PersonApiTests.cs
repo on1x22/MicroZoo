@@ -29,7 +29,7 @@ namespace MicroZoo.PersonsApi.Tests.UnitTests
             string expected = _persons[id].FirstName + " " + _persons[id].LastName;
 
             // Act
-            var person = await PersonApi.GetPersonById(id, mockRepository);    
+            var person = await Apis.PersonsApi.GetPersonById(id, mockRepository);    
             var result = (person as Ok<Person>)?.Value;
             string actual = result?.FirstName + " " + result?.LastName;
 

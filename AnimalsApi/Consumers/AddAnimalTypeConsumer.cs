@@ -1,8 +1,8 @@
 ﻿using MassTransit;
 using MicroZoo.AnimalsApi.Services;
 using microZoo.Infrastructure.Exceptions;
-using MicroZoo.Infrastructure.MassTransit.Requests;
-using MicroZoo.Infrastructure.MassTransit.Responses;
+using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 
 namespace MicroZoo.AnimalsApi.Consumers
 {

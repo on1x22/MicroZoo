@@ -1,10 +1,10 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MicroZoo.Infrastructure.MassTransit.Requests;
-using MicroZoo.Infrastructure.MassTransit.Responses;
 using MicroZoo.Infrastructure.Models.Persons.Dto;
 using MicroZoo.Infrastructure.Models.Persons;
+using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 
 namespace MicroZoo.PersonsApi.Controllers
 {

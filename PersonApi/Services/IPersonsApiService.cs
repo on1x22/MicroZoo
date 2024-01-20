@@ -1,4 +1,4 @@
-﻿using MicroZoo.Infrastructure.MassTransit.Responses;
+﻿using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.Models.Persons.Dto;
 
 namespace MicroZoo.PersonsApi.Services

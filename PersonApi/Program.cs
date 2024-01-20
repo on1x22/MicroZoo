@@ -46,7 +46,7 @@ void RegisterServices(IServiceCollection services)
 
     services.AddScoped<IPersonRepository, PersonRepository>();
     services.AddScoped<IPersonsApiService, PersonsApiService>();
-    services.AddTransient<IApi, PersonApi>();
+    services.AddTransient<IApi, PersonsApi>();
 
     services.AddMassTransit(x =>
     {
