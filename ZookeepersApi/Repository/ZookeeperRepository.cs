@@ -179,5 +179,21 @@ namespace MicroZoo.ZookeepersApi.Repository
                 await _dBContext.SaveChangesAsync();
             }
         }
+
+        /// <summary>
+        /// Returns true, if one o more zokeepers with speciality exist in database
+        /// </summary>
+        /// <param name="animalTypeId"></param>
+        /// <returns>True of false</returns>
+        public async Task<bool> CheckZokeepersWithSpecialityAreExistAsync(int animalTypeId) =>        
+            await _dBContext.Specialities.AnyAsync(s => s.AnimalTypeId == animalTypeId);
+
+        /// <summary>
+        /// Returns true, if a zookeeper is exists in database
+        /// </summary>
+        /// <param name="zookeeperId"></param>
+        /// <returns>True of false</returns>
+        public async Task<bool> CheckZookeeperIsExistAsync(int zookeeperId) =>
+            await _dBContext.Specialities.AnyAsync(s => s.ZookeeperId == zookeeperId);
     }
 }

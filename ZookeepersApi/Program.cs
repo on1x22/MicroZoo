@@ -8,6 +8,8 @@ using MicroZoo.ZookeepersApi.Apis;
 using Microsoft.AspNetCore.Http.Json;
 using MicroZoo.ZookeepersApi.Services;
 using System.Reflection;
+using MassTransit;
+using MicroZoo.ZookeepersApi.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,8 +50,25 @@ void RegisterServices(IServiceCollection services)
 
     services.AddScoped<IZookeeperRepository, ZookeeperRepository>();
     services.AddScoped<IZookeeperApiService, ZookeeperApiService>();
-    services.AddTransient<IApi, ZookeepersApi>();
+    services.AddTransient<IApi, MicroZoo.ZookeepersApi.Apis.ZookeepersApi>();
     services.AddTransient<RequestHelper>();
+
+    services.AddMassTransit(x =>
+    {
+        x.AddConsumer<CheckZokeepersWithSpecialityAreExistConsumer>();
+
+        x.UsingRabbitMq((context, cfg) =>
+        {
+            cfg.Host(builder.Configuration.GetConnectionString("RabbitMq"));
+            cfg.ReceiveEndpoint("zookeepers-queue", e =>
+            {
+                e.PrefetchCount = 20;
+                e.UseMessageRetry(r => r.Interval(2, 100));
+
+                e.ConfigureConsumer<CheckZokeepersWithSpecialityAreExistConsumer>(context);
+            });
+        });
+    });
 }
 
 void Configure(WebApplication app)

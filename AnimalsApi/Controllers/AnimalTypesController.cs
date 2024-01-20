@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 using System.Runtime.CompilerServices;
@@ -14,7 +16,7 @@ namespace MicroZoo.AnimalsApi.Controllers
     public class AnimalTypesController : ControllerBase
     {
         private readonly IServiceProvider _provider;
-        private readonly Uri _rabbitMqUrl = new Uri("rabbitmq://localhost/animals-queue");
+        //private readonly Uri _rabbitMqUrl = new Uri("rabbitmq://localhost/animals-queue");
         private readonly Uri _animalsApiUrl;
         private readonly Uri _zookeepersApiUrl;
 
@@ -97,6 +99,17 @@ namespace MicroZoo.AnimalsApi.Controllers
         [HttpDelete("{animalTypeId}")]
         public async Task<IActionResult> DeleteAnimalType(int animalTypeId)
         {
+            var isThereZokeeperWithSpecialty = await
+                GetResponseFromRabbitTask<CheckZokeepersWithSpecialityAreExistRequest, 
+                CheckZokeepersWithSpecialityAreExistResponse>
+                (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.AnimalType, animalTypeId), 
+                _zookeepersApiUrl);
+
+            if (isThereZokeeperWithSpecialty.IsThereZookeeperWithThisSpeciality)
+                return BadRequest($"There are zookeepers with specialization {animalTypeId}. " +
+                    "Before deleting a specialty, you must remove the zookeepers " +
+                    "association with that specialty.");
+
             var response = await GetResponseFromRabbitTask<DeleteAnimalTypeRequest,
                 GetAnimalTypeResponse>(new DeleteAnimalTypeRequest(animalTypeId), _animalsApiUrl);
             return response.AnimalType != null

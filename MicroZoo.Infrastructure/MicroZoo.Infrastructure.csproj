@@ -6,9 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="MassTransit\Requests\ZookeepersApi\" />
-    <Folder Include="MassTransit\Responses\ZokeepersApi\" />
-  </ItemGroup>
-
 </Project>

@@ -5,6 +5,9 @@ using MicroZoo.Infrastructure.Models.Persons.Dto;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
+using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
+using MicroZoo.Infrastructure.Models.Animals;
 
 namespace MicroZoo.PersonsApi.Controllers
 {
@@ -14,10 +17,14 @@ namespace MicroZoo.PersonsApi.Controllers
     {
         private readonly IServiceProvider _provider;
         private readonly Uri _rabbitMqUrl = new Uri("rabbitmq://localhost/persons-queue");
+        private readonly Uri _personsApiUrl;
+        private readonly Uri _zookeepersApiUrl;
 
-        public PersonsController(IServiceProvider provider)
+        public PersonsController(IServiceProvider provider, IConfiguration configuration)
         {
             _provider = provider;
+            _personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
+            _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
 
         /// <summary>
@@ -29,7 +36,7 @@ namespace MicroZoo.PersonsApi.Controllers
         public async Task<IActionResult> GetPerson(int personId)
         {
             var response = await GetResponseFromRabbitTask<GetPersonRequest, 
-                GetPersonResponse>(new GetPersonRequest(personId));
+                GetPersonResponse>(new GetPersonRequest(personId), _personsApiUrl);
 
             return response.Person != null
                 ? Ok(response.Person)
@@ -45,7 +52,7 @@ namespace MicroZoo.PersonsApi.Controllers
         public async Task<IActionResult> AddPerson([FromBody] PersonDto personDto)
         {
             var response = await GetResponseFromRabbitTask<AddPersonRequest,
-                GetPersonResponse>(new AddPersonRequest(personDto));
+                GetPersonResponse>(new AddPersonRequest(personDto), _personsApiUrl);
 
             return response.Person != null
                 ? Ok(response.Person)
@@ -62,7 +69,7 @@ namespace MicroZoo.PersonsApi.Controllers
         public async Task<IActionResult> UpdatePerson(int personId, [FromBody] PersonDto personDto)
         {
             var response = await GetResponseFromRabbitTask<UpdatePersonRequest, 
-                GetPersonResponse>(new UpdatePersonRequest(personId, personDto));
+                GetPersonResponse>(new UpdatePersonRequest(personId, personDto), _personsApiUrl);
 
             return response.Person != null
                 ? Ok(response.Person)
@@ -77,7 +84,19 @@ namespace MicroZoo.PersonsApi.Controllers
         [HttpDelete("{personId}")]
         public async Task<IActionResult> DeletePerson(int personId)
         {
-            var response = await GetResponseFromRabbitTask<DeletePersonRequest, GetPersonResponse>(new DeletePersonRequest(personId));
+            var isZookeeperExists = await
+                GetResponseFromRabbitTask<CheckZokeepersWithSpecialityAreExistRequest,
+                CheckZokeepersWithSpecialityAreExistResponse>
+                (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.Person, personId), 
+                _zookeepersApiUrl);
+
+            if (isZookeeperExists.IsThereZookeeperWithThisSpeciality)
+                return BadRequest($"There is zookeeper with id={personId}. " +
+                    "Before deleting a zookeeper, you must remove the zookeeper " +
+                    "associations with all specialties.");
+
+            var response = await GetResponseFromRabbitTask<DeletePersonRequest, GetPersonResponse>(
+                new DeletePersonRequest(personId), _personsApiUrl);
             return response.Person != null
                 ? Ok(response.Person)
                 : NotFound(response.ErrorMessage);
@@ -92,7 +111,7 @@ namespace MicroZoo.PersonsApi.Controllers
         public async Task<IActionResult> GetSubordinatePersonnel(int personId)
         {
             var response = await GetResponseFromRabbitTask<GetSubordinatePersonnelRequest,
-                GetPersonsResponse>(new GetSubordinatePersonnelRequest(personId));
+                GetPersonsResponse>(new GetSubordinatePersonnelRequest(personId), _personsApiUrl);
             return response.Persons != null
             ? Ok(response.Persons)
             : BadRequest(response.ErrorMessage);
@@ -112,19 +131,20 @@ namespace MicroZoo.PersonsApi.Controllers
         {
             var response = await GetResponseFromRabbitTask<ChangeManagerForSubordinatePersonnelRequest,
                 GetPersonsResponse>(new ChangeManagerForSubordinatePersonnelRequest(currentId, 
-                                                                                    newId));
+                                                                                    newId), 
+                                                                                    _personsApiUrl);
             return response.Persons != null
             ? Ok(response.Persons)
             : BadRequest(response.ErrorMessage);
         }
 
-        private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request)
+        private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
             where TIn : class
             where TOut : class
         {
             var clientFactory = _provider.GetRequiredService<IClientFactory>();
 
-            var client = clientFactory.CreateRequestClient<TIn>(_rabbitMqUrl);
+            var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
             var response = await client.GetResponse<TOut>(request);
             return response.Message;
         }
