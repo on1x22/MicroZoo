@@ -33,7 +33,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             var mockRepository = mock.Object;            
 
             // Act
-            var listOfAnimals = await AnimalApi.GetAnimalsByTypes2(ids, mockRepository);
+            var listOfAnimals = await Apis.AnimalsApi.GetAnimalsByTypes2(ids, mockRepository);
             var result = (listOfAnimals as Ok<List<Animal>>)?.Value;
 
             //Assert
@@ -50,7 +50,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             var mockRepository = mock.Object;
 
             // Act
-            var result = await AnimalApi.GetAnimalsByTypes2(null, mockRepository);            
+            var result = await Apis.AnimalsApi.GetAnimalsByTypes2(null, mockRepository);            
 
             //Assert
             Assert.IsType<NotFound<string>>(result);            
@@ -65,7 +65,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             var mockRepository = mock.Object;
 
             // Act
-            var listOfTypes = await AnimalApi.GetAllAnimalTypes(mockRepository);
+            var listOfTypes = await Apis.AnimalsApi.GetAllAnimalTypes(mockRepository);
             var result = (listOfTypes as Ok<List<AnimalType>>)?.Value;
 
             //Assert
@@ -82,7 +82,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             var mockRepository = mock.Object;
 
             // Act
-            var result = await AnimalApi.GetAllAnimalTypes(mockRepository);
+            var result = await Apis.AnimalsApi.GetAllAnimalTypes(mockRepository);
 
             //Assert
             Assert.IsType<NoContent>(result);
@@ -99,7 +99,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             var mockRepository = mock.Object;
 
             // Act
-            var listOfTypes = await AnimalApi.GetAnimalTypesByIds(ids, mockRepository);
+            var listOfTypes = await Apis.AnimalsApi.GetAnimalTypesByIds(ids, mockRepository);
             var result = (listOfTypes as Ok<List<AnimalType>>)?.Value;
 
             //Assert
@@ -117,7 +117,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             var mockRepository = mock.Object;
 
             // Act
-            var result = await AnimalApi.GetAnimalTypesByIds(null, mockRepository);
+            var result = await Apis.AnimalsApi.GetAnimalTypesByIds(null, mockRepository);
 
             //Assert
             Assert.IsType<NotFound<string>>(result);

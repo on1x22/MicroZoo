@@ -48,7 +48,7 @@ void RegisterServices(IServiceCollection services)
 
     services.AddScoped<IZookeeperRepository, ZookeeperRepository>();
     services.AddScoped<IZookeeperApiService, ZookeeperApiService>();
-    services.AddTransient<IApi, ZookeeperApi>();
+    services.AddTransient<IApi, ZookeepersApi>();
     services.AddTransient<RequestHelper>();
 }
 

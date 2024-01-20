@@ -1,5 +1,5 @@
 ﻿using MicroZoo.Infrastructure.MassTransit.Requests;
-using MicroZoo.Infrastructure.MassTransit.Responses;
+using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Persons.Dto;
