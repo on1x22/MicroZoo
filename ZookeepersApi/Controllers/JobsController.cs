@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MicroZoo.ZookeepersApi.Controllers
+namespace MicroZoo.Infrastructure.Controllers
 {
     [Route("[controller]")]
     [ApiController]

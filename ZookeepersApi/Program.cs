@@ -1,15 +1,18 @@
 using Microsoft.EntityFrameworkCore;
-using MicroZoo.ZookeepersApi.DBContext;
-using MicroZoo.ZookeepersApi.Models;
-using MicroZoo.ZookeepersApi.Repository;
+using MicroZoo.Infrastructure.DBContext;
+using MicroZoo.Infrastructure.Models.Specialities;
+using MicroZoo.Infrastructure.Repository;
 using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
-using MicroZoo.ZookeepersApi.Apis;
+using MicroZoo.Infrastructure.Apis;
 using Microsoft.AspNetCore.Http.Json;
-using MicroZoo.ZookeepersApi.Services;
+using MicroZoo.Infrastructure.Services;
 using System.Reflection;
 using MassTransit;
-using MicroZoo.ZookeepersApi.Consumers;
+using MicroZoo.Infrastructure.Consumers;
+using MicroZoo.ZookeepersApi.Services;
+using MicroZoo.ZookeepersApi.Repository;
+using ZookeepersApi.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,13 +52,16 @@ void RegisterServices(IServiceCollection services)
     });
 
     services.AddScoped<IZookeeperRepository, ZookeeperRepository>();
+    services.AddScoped<ISpecialitiesRepository, SpecialitiesRepository>();
     services.AddScoped<IZookeeperApiService, ZookeeperApiService>();
-    services.AddTransient<IApi, MicroZoo.ZookeepersApi.Apis.ZookeepersApi>();
+    services.AddScoped<ISpecialitiesService, SpecialitiesService>();
+    services.AddTransient<IApi, MicroZoo.Infrastructure.Apis.ZookeepersApi>();
     services.AddTransient<RequestHelper>();
 
     services.AddMassTransit(x =>
     {
         x.AddConsumer<CheckZokeepersWithSpecialityAreExistConsumer>();
+        x.AddConsumer<ChangeRelationBetweenZookeeperAndSpecialityConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
         {
@@ -66,6 +72,7 @@ void RegisterServices(IServiceCollection services)
                 e.UseMessageRetry(r => r.Interval(2, 100));
 
                 e.ConfigureConsumer<CheckZokeepersWithSpecialityAreExistConsumer>(context);
+                e.ConfigureConsumer<ChangeRelationBetweenZookeeperAndSpecialityConsumer>(context);
             });
         });
     });

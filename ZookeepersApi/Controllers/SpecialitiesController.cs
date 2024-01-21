@@ -1,8 +1,13 @@
 ﻿using MassTransit;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
+using MicroZoo.Infrastructure.Models.Specialities;
+using MicroZoo.Infrastructure.Models.Specialities.Dto;
 
 namespace ZookeepersApi.Controllers
 {
@@ -23,10 +28,19 @@ namespace ZookeepersApi.Controllers
             _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> Test()
+        /// <summary>
+        /// Get all animal types
+        /// </summary>
+        /// <returns>List of animal types</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetAllSpecialities()
         {
-            return Ok();
+            var response = await GetResponseFromRabbitTask<GetAllAnimalTypesRequest,
+                GetAnimalTypesResponse>(new GetAllAnimalTypesRequest(), _animalsApiUrl);
+
+            return response.AnimalTypes != null
+                ? Ok(response.AnimalTypes)
+                : NotFound(response.ErrorMessage);
         }
 
         /// <summary>
@@ -45,7 +59,7 @@ namespace ZookeepersApi.Controllers
 
             return Ok(response.IsThereZookeeperWithThisSpeciality);
         }
-
+         
         /// <summary>
         /// Check that zookeeper is associated with any specialty
         /// </summary>
@@ -63,6 +77,44 @@ namespace ZookeepersApi.Controllers
             return Ok(response.IsThereZookeeperWithThisSpeciality);
         }
 
+        /// <summary>
+        /// Change relation between zookeeper and speciality
+        /// </summary>
+        /// <param name="relationId"></param>
+        /// <param name="specialityDto"></param>
+        /// <returns>Speciality</returns>
+        [HttpPut("{relationId}")]
+        public async Task<IActionResult> ChangeRelationBetweenZookeeperAndSpeciality(int relationId,
+            [FromBody] SpecialityDto specialityDto)
+        {
+            var person = await GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                new GetPersonRequest(specialityDto.ZookeeperId), _personsApiUrl);
+
+            var animalType = await GetResponseFromRabbitTask<GetAnimalTypeRequest,
+                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId), _animalsApiUrl);
+
+            string errorMessage = string.Empty;
+
+            if (person.Person == null)
+                errorMessage += person.ErrorMessage + ".\n";
+
+            if (animalType.AnimalType == null)
+                errorMessage += animalType.ErrorMessage;
+
+            var response = new GetSpecialityResponse();
+
+            if (errorMessage != string.Empty)
+                return BadRequest(errorMessage);
+                
+            response = await GetResponseFromRabbitTask<
+                ChangeRelationBetweenZookeeperAndSpecialityRequest, GetSpecialityResponse>(
+                new ChangeRelationBetweenZookeeperAndSpecialityRequest(relationId, specialityDto), 
+                _zookeepersApiUrl);
+
+            return response.Speciality != null
+                ? Ok(response.Speciality)
+                : NotFound(response.ErrorMessage);
+        }
 
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
             where TIn : class

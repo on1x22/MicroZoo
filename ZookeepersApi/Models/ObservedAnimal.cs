@@ -1,4 +1,4 @@
-﻿namespace MicroZoo.ZookeepersApi.Models
+﻿namespace MicroZoo.Infrastructure.Models.Specialities
 {
     public class ObservedAnimal
     {

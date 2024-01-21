@@ -2,12 +2,12 @@
 
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Persons;
-using MicroZoo.ZookeepersApi.Models;
-using MicroZoo.ZookeepersApi.Repository;
-using MicroZoo.ZookeepersApi.Services;
+using MicroZoo.Infrastructure.Models.Specialities;
+using MicroZoo.Infrastructure.Repository;
+using MicroZoo.Infrastructure.Services;
 using Moq;
 
-namespace microZoo.ZookeepersApi.Tests.UnitTests
+namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 {
     public class ZookeeperApiServiceTests
     {

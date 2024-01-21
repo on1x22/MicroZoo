@@ -1,8 +1,8 @@
-﻿using MicroZoo.ZookeepersApi.Models;
+﻿using MicroZoo.Infrastructure.Models.Specialities;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Animals;
 
-namespace MicroZoo.ZookeepersApi.Models
+namespace MicroZoo.Infrastructure.Models.Specialities
 {
     public class ZookeeperInfo
     {

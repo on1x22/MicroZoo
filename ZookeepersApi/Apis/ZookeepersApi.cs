@@ -1,10 +1,10 @@
-﻿using MicroZoo.ZookeepersApi.Models;
-using MicroZoo.ZookeepersApi.Repository;
+﻿using MicroZoo.Infrastructure.Models.Specialities;
+using MicroZoo.Infrastructure.Repository;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Animals;
-using MicroZoo.ZookeepersApi.Services;
+using MicroZoo.Infrastructure.Services;
 
-namespace MicroZoo.ZookeepersApi.Apis
+namespace MicroZoo.Infrastructure.Apis
 {
     public class ZookeepersApi : IApi
     {
@@ -31,7 +31,12 @@ namespace MicroZoo.ZookeepersApi.Apis
                 .WithDescription("ewgwegq");
 
             app.MapGet("/zookeeper/speciality/all", GetAllZookeperSpecialitiesAsync)
-                .WithTags("Speciality");
+                .WithTags("Speciality")
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true,
+                    Summary = "Moved to [GET] /Specialities"
+                });
 
             // TODO: Now works only INSERT operation/ DELETE not supports
             app.MapPut("/zookeeper/speciality", ChangeSpecialitiesAsync)

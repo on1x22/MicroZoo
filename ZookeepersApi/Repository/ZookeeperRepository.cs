@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MicroZoo.ZookeepersApi.DBContext;
-using MicroZoo.ZookeepersApi.Models;
+using MicroZoo.Infrastructure.DBContext;
+using MicroZoo.Infrastructure.Models.Specialities;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Animals;
 
-namespace MicroZoo.ZookeepersApi.Repository
+namespace MicroZoo.Infrastructure.Repository
 {
     public class ZookeeperRepository : IZookeeperRepository
     {

@@ -3,9 +3,9 @@ using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
-using MicroZoo.ZookeepersApi.Services;
+using MicroZoo.Infrastructure.Services;
 
-namespace MicroZoo.ZookeepersApi.Consumers
+namespace MicroZoo.Infrastructure.Consumers
 {
     public class CheckZokeepersWithSpecialityAreExistConsumer : 
         IConsumer<CheckZokeepersWithSpecialityAreExistRequest>

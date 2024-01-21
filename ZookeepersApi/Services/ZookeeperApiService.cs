@@ -2,10 +2,10 @@
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Persons;
-using MicroZoo.ZookeepersApi.Models;
-using MicroZoo.ZookeepersApi.Repository;
+using MicroZoo.Infrastructure.Models.Specialities;
+using MicroZoo.Infrastructure.Repository;
 
-namespace MicroZoo.ZookeepersApi.Services
+namespace MicroZoo.Infrastructure.Services
 {
     public class ZookeeperApiService : IZookeeperApiService
     {

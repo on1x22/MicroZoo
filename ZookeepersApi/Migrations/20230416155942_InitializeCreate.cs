@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace MicroZoo.ZookeepersApi.Migrations
+namespace MicroZoo.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitializeCreate : Migration

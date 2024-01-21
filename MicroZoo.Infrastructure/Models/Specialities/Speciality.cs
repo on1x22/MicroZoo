@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MicroZoo.Infrastructure.Models.Specialities
 {
-    /*[Table("specialities")]
+    [Table("specialities")]
     [Index(nameof(ZookeeperId), nameof(AnimalTypeId), 
         Name = "IX_Speciality", IsUnique = true)]
     public class Speciality
@@ -18,5 +18,5 @@ namespace MicroZoo.Infrastructure.Models.Specialities
 
         [Column("animaltypeid")]
         public int AnimalTypeId { get; set; }
-    }*/
+    }
 }

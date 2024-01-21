@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
-namespace MicroZoo.ZookeepersApi.Models
+namespace MicroZoo.Infrastructure.Models.Specialities
 {
     [Table("jobs")]
     public class Job
