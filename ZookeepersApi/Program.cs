@@ -1,18 +1,16 @@
 using Microsoft.EntityFrameworkCore;
-using MicroZoo.Infrastructure.DBContext;
 using MicroZoo.Infrastructure.Models.Specialities;
-using MicroZoo.Infrastructure.Repository;
 using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
-using MicroZoo.Infrastructure.Apis;
 using Microsoft.AspNetCore.Http.Json;
-using MicroZoo.Infrastructure.Services;
 using System.Reflection;
 using MassTransit;
-using MicroZoo.Infrastructure.Consumers;
 using MicroZoo.ZookeepersApi.Services;
 using MicroZoo.ZookeepersApi.Repository;
-using ZookeepersApi.Consumers;
+using MicroZoo.ZookeepersApi.Apis;
+using MicroZoo.ZookeepersApi.DBContext;
+using MicroZoo.ZookeepersApi.Consumers;
+using MicroZoo.ZookeepersApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,7 +53,7 @@ void RegisterServices(IServiceCollection services)
     services.AddScoped<ISpecialitiesRepository, SpecialitiesRepository>();
     services.AddScoped<IZookeeperApiService, ZookeeperApiService>();
     services.AddScoped<ISpecialitiesService, SpecialitiesService>();
-    services.AddTransient<IApi, MicroZoo.Infrastructure.Apis.ZookeepersApi>();
+    services.AddTransient<IApi, ZookeepersApi>();
     services.AddTransient<RequestHelper>();
 
     services.AddMassTransit(x =>

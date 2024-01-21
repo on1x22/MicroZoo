@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MicroZoo.Infrastructure.Models.Specialities
+namespace MicroZoo.ZookeepersApi.Models
 {
     [Table("zookeeper")]
     public class Zookeeper

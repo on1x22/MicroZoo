@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MicroZoo.Infrastructure.Models.Specialities
+namespace MicroZoo.ZookeepersApi.Models
 {
     /*[Table("specialities")]
     [Index(nameof(ZookeeperId), nameof(AnimalTypeId), 

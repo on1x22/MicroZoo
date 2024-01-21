@@ -3,7 +3,7 @@ using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.ZookeepersApi.Services;
 
-namespace ZookeepersApi.Consumers
+namespace MicroZoo.ZookeepersApi.Consumers
 {
     public class ChangeRelationBetweenZookeeperAndSpecialityConsumer : 
         IConsumer<ChangeRelationBetweenZookeeperAndSpecialityRequest>

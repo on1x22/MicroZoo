@@ -1,4 +1,3 @@
-using AnimalsApi.Consumers;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.AnimalsApi.Apis;

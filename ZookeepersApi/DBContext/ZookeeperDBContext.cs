@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MicroZoo.Infrastructure.Models.Specialities;
+using MicroZoo.ZookeepersApi.Models;
 
-namespace MicroZoo.Infrastructure.DBContext
+namespace MicroZoo.ZookeepersApi.DBContext
 {
     public class ZookeeperDBContext : DbContext
     {

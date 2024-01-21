@@ -1,4 +1,4 @@
-﻿namespace MicroZoo.Infrastructure.Apis
+﻿namespace MicroZoo.ZookeepersApi.Apis
 {
     public interface IApi
     {

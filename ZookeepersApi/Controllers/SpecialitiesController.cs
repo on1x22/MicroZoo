@@ -9,7 +9,7 @@ using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Specialities;
 using MicroZoo.Infrastructure.Models.Specialities.Dto;
 
-namespace ZookeepersApi.Controllers
+namespace MicroZoo.ZookeepersApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]

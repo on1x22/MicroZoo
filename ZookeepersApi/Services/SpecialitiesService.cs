@@ -1,5 +1,4 @@
-﻿using microZoo.Infrastructure.Exceptions;
-using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
+﻿using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Specialities;
 using MicroZoo.Infrastructure.Models.Specialities.Dto;
 using MicroZoo.ZookeepersApi.Repository;

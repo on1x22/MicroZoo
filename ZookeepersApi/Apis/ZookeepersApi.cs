@@ -1,10 +1,11 @@
 ﻿using MicroZoo.Infrastructure.Models.Specialities;
-using MicroZoo.Infrastructure.Repository;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Animals;
-using MicroZoo.Infrastructure.Services;
+using MicroZoo.ZookeepersApi.Repository;
+using MicroZoo.ZookeepersApi.Models;
+using MicroZoo.ZookeepersApi.Services;
 
-namespace MicroZoo.Infrastructure.Apis
+namespace MicroZoo.ZookeepersApi.Apis
 {
     public class ZookeepersApi : IApi
     {

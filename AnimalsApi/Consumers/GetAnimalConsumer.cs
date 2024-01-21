@@ -4,7 +4,7 @@ using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 using MicroZoo.Infrastructure.Models.Animals;
 
-namespace AnimalsApi.Consumers
+namespace MicroZoo.AnimalsApi.Consumers
 {
     public class GetAnimalConsumer : IConsumer<GetAnimalRequest>
     {

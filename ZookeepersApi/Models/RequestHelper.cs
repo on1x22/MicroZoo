@@ -1,4 +1,4 @@
-﻿namespace MicroZoo.Infrastructure.Models.Specialities
+﻿namespace MicroZoo.ZookeepersApi.Models
 {
     public class RequestHelper
     {

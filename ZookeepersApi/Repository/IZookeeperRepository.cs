@@ -2,8 +2,9 @@
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
+using MicroZoo.ZookeepersApi.Models;
 
-namespace MicroZoo.Infrastructure.Repository
+namespace MicroZoo.ZookeepersApi.Repository
 {
     public interface IZookeeperRepository
     {
