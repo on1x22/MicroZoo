@@ -11,6 +11,7 @@ using MicroZoo.ZookeepersApi.Apis;
 using MicroZoo.ZookeepersApi.DBContext;
 using MicroZoo.ZookeepersApi.Consumers;
 using MicroZoo.ZookeepersApi.Models;
+using ZookeepersApi.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,11 +54,12 @@ void RegisterServices(IServiceCollection services)
     services.AddScoped<ISpecialitiesRepository, SpecialitiesRepository>();
     services.AddScoped<IZookeeperApiService, ZookeeperApiService>();
     services.AddScoped<ISpecialitiesService, SpecialitiesService>();
-    services.AddTransient<IApi, ZookeepersApi>();
+    services.AddTransient<IApi, MicroZoo.ZookeepersApi.Apis.ZookeepersApi>();
     services.AddTransient<RequestHelper>();
 
     services.AddMassTransit(x =>
     {
+        x.AddConsumer<DeleteSpecialityConsumer>();
         x.AddConsumer<CheckZokeepersWithSpecialityAreExistConsumer>();
         x.AddConsumer<ChangeRelationBetweenZookeeperAndSpecialityConsumer>();
 
@@ -69,6 +71,7 @@ void RegisterServices(IServiceCollection services)
                 e.PrefetchCount = 20;
                 e.UseMessageRetry(r => r.Interval(2, 100));
 
+                e.ConfigureConsumer<DeleteSpecialityConsumer>(context);
                 e.ConfigureConsumer<CheckZokeepersWithSpecialityAreExistConsumer>(context);
                 e.ConfigureConsumer<ChangeRelationBetweenZookeeperAndSpecialityConsumer>(context);
             });

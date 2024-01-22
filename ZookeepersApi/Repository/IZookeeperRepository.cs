@@ -28,19 +28,7 @@ namespace MicroZoo.ZookeepersApi.Repository
         Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities);
         Task DeleteSpecialityAsync(int zookeeperid, int animaltypeid);
         
-        /// <summary>
-        /// Returns true, if one o more zokeepers with speciality exist in database
-        /// </summary>
-        /// <param name="animalTypeId"></param>
-        /// <returns>True of false</returns>
-        Task<bool> CheckZokeepersWithSpecialityAreExistAsync(int animalTypeId);
-
-        /// <summary>
-        /// Returns true, if a zookeeper is exists in database
-        /// </summary>
-        /// <param name="zookeeperId"></param>
-        /// <returns>True of false</returns>
-        Task<bool> CheckZookeeperIsExistAsync(int zookeeperId);
+        
 
 
         Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id);

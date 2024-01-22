@@ -116,6 +116,30 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 : NotFound(response.ErrorMessage);
         }
 
+        /// <summary>
+        /// Delete the specialty specified in the request body
+        /// </summary>
+        /// <param name="specialityDto"></param>
+        /// <returns>List of zookeeper specialities</returns>
+        [HttpDelete]
+        public async Task<IActionResult> DeleteSpeciality([FromBody] SpecialityDto specialityDto)
+        {
+            var specialities = await GetResponseFromRabbitTask<DeleteSpecialityRequest,
+                GetSpecialitiesResponse>(new DeleteSpecialityRequest(specialityDto), _zookeepersApiUrl);
+
+            if(specialities == null)
+                return BadRequest(specialities.ErrorMessage);
+
+            var animalTypesIds = specialities.Specialities.Select(x => x.AnimalTypeId).ToArray();
+
+            var response = await GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest,
+                GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds), _animalsApiUrl);
+
+            return response.AnimalTypes != null
+            ? Ok(response.AnimalTypes)
+            : BadRequest(response.ErrorMessage);
+        }
+
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
             where TIn : class
             where TOut : class

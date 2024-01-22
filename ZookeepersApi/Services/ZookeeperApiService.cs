@@ -60,6 +60,7 @@ namespace MicroZoo.ZookeepersApi.Services
             return await _repository.GetPersonByIdFromPersonsApiAsync(requestString);
         }
 
+        [Obsolete("Old solution")]
         public async Task<List<AnimalType>> GetAllAnimalTypesFromAnimalsApiAsync()
         {
             string requestString = $"{_animalsApi}/animal/getallanimaltypes";
@@ -67,6 +68,7 @@ namespace MicroZoo.ZookeepersApi.Services
             return await _repository.GetAllAnimalTypesFromAnimalsApiAsync(requestString);
         }
 
+        [Obsolete("Old solution")]
         public async Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities) =>        
             await _repository.ChangeSpecialitiesAsync(newSpecialities);
         
@@ -93,39 +95,5 @@ namespace MicroZoo.ZookeepersApi.Services
 
         public async Task FinishJobAsync(int id, Job job) =>
             await _repository.FinishJobAsync(id, job);
-
-        /// <summary>
-        /// Returns true, if one o more zokeepers with speciality exist in database
-        /// </summary>
-        /// <param name="checkType"></param>
-        /// <param name="objectId"></param>
-        /// <returns>True of false</returns>
-        public async Task<CheckZokeepersWithSpecialityAreExistResponse> 
-            CheckZokeepersWithSpecialityAreExistAsync(CheckType checkType, int objectId)
-        {
-            var response = new CheckZokeepersWithSpecialityAreExistResponse();
-
-            switch (checkType)
-            {
-                case CheckType.AnimalType:
-                    response.IsThereZookeeperWithThisSpeciality = await _repository
-                        .CheckZokeepersWithSpecialityAreExistAsync(objectId);
-                    break;
-                case CheckType.Person:
-                    response.IsThereZookeeperWithThisSpeciality = await _repository
-                        .CheckZookeeperIsExistAsync(objectId);
-                    break;
-            }
-
-            /*if(response.IsThereZookeeperWithThisSpeciality)
-            {
-                response.ErrorMessage = $"There are zookeepers with specialization {animalTypeId}. " +
-                    "Before deleting a specialty, you must remove the zookeepers " +
-                    "association with that specialty.";
-            }*/
-
-            return response;            
-        }
-        
     }
 }

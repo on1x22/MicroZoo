@@ -28,8 +28,7 @@ namespace MicroZoo.ZookeepersApi.Apis
 
             // new functionality:
             app.MapGet("/zookeeper/{id}", GetZookepeerInfoAsync)
-                .WithTags("Index")
-                .WithDescription("ewgwegq");
+                .WithTags("Index");
 
             app.MapGet("/zookeeper/speciality/all", GetAllZookeperSpecialitiesAsync)
                 .WithTags("Speciality")
@@ -41,7 +40,12 @@ namespace MicroZoo.ZookeepersApi.Apis
 
             // TODO: Now works only INSERT operation/ DELETE not supports
             app.MapPut("/zookeeper/speciality", ChangeSpecialitiesAsync)
-                .WithTags("Speciality");
+                .WithTags("Speciality")
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true,
+                    Summary = "Improved and moved to [PUT] /Specialities/{relationId}"
+                });
 
             app.MapDelete("/zookeeper/{zookeeperid}/speciality/{animaltypeid}", DeleteSpecialityAsync)
                 .WithTags("Speciality");
@@ -98,11 +102,13 @@ namespace MicroZoo.ZookeepersApi.Apis
             ? Results.Ok(zookeeper)
             : Results.NotFound("Zookeeper is not found");
 
+        [Obsolete("Please use GetAllSpecialities() in SpecialitiesController instead.")]
         private async Task<IResult> GetAllZookeperSpecialitiesAsync(IZookeeperApiService service) =>
             await service.GetAllAnimalTypesFromAnimalsApiAsync() is List<AnimalType> animalTypes
             ? Results.Ok(animalTypes)
             : Results.NotFound();
 
+        [Obsolete("Please use GetAllSpecialities() in SpecialitiesController instead.")]
         private async Task<IResult> ChangeSpecialitiesAsync(List<Speciality> animalTypes,
                                                             IZookeeperApiService service)
         {

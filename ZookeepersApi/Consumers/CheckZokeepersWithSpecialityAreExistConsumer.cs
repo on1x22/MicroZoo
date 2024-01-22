@@ -8,9 +8,9 @@ namespace MicroZoo.ZookeepersApi.Consumers
     public class CheckZokeepersWithSpecialityAreExistConsumer : 
         IConsumer<CheckZokeepersWithSpecialityAreExistRequest>
     {
-        private readonly IZookeeperApiService _service;
+        private readonly ISpecialitiesService _service;
 
-        public CheckZokeepersWithSpecialityAreExistConsumer(IZookeeperApiService service)
+        public CheckZokeepersWithSpecialityAreExistConsumer(ISpecialitiesService service)
         {
             _service = service;
         }
