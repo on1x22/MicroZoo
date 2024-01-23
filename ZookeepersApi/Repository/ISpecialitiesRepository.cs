@@ -6,9 +6,6 @@ namespace MicroZoo.ZookeepersApi.Repository
     public interface ISpecialitiesRepository
     {
         Task<List<Speciality>> GetSpecialitiesByZookeeperIdAsync(int zookeeperId);
-        
-        Task<Speciality> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId,
-            SpecialityDto specialityDto);
 
         /// <summary>
         /// Returns true, if one o more zokeepers with speciality exist in database
@@ -23,6 +20,11 @@ namespace MicroZoo.ZookeepersApi.Repository
         /// <param name="zookeeperId"></param>
         /// <returns>True of false</returns>
         Task<bool> CheckZookeeperIsExistAsync(int zookeeperId);
+
+        Task<Speciality> AddSpecialityAsync(SpecialityDto specialityDto);
+
+        Task<Speciality> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId,
+            SpecialityDto specialityDto);
 
         Task DeleteSpecialityAsync(SpecialityDto specialityDto);
     }

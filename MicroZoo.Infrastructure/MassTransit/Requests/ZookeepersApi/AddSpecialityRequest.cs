@@ -2,12 +2,12 @@
 
 namespace MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi
 {
-    public class DeleteSpecialityRequest
+    public class AddSpecialityRequest
     {
         public Guid OperationId { get; set; }
         public SpecialityDto SpecialityDto { get; set; }
 
-        public DeleteSpecialityRequest(SpecialityDto specialityDto)
+        public AddSpecialityRequest(SpecialityDto specialityDto)
         {
             OperationId = Guid.NewGuid();
             SpecialityDto = specialityDto;

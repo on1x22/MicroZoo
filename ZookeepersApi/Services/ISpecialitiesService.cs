@@ -6,10 +6,7 @@ using MicroZoo.Infrastructure.Models.Specialities.Dto;
 namespace MicroZoo.ZookeepersApi.Services
 {
     public interface ISpecialitiesService
-    {
-        Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId, 
-            SpecialityDto specialityDto);
-
+    {        
         /// <summary>
         /// Returns true, if one o more zokeepers with speciality exist in database
         /// </summary>
@@ -18,6 +15,11 @@ namespace MicroZoo.ZookeepersApi.Services
         /// <returns>True of false</returns>
         Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZokeepersWithSpecialityAreExistAsync(
             CheckType checkType, int objectId);
+        
+        Task<GetSpecialityResponse> AddSpecialityAsync(SpecialityDto specialityDto);
+
+        Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId,
+            SpecialityDto specialityDto);
 
         Task<GetSpecialitiesResponse> DeleteSpecialityAsync(SpecialityDto specialityDto);
     }

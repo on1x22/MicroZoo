@@ -16,21 +16,6 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         public async Task<List<Speciality>> GetSpecialitiesByZookeeperIdAsync(int zookeeperId) =>
             await _dBContext.Specialities.Where(s => s.ZookeeperId == zookeeperId).ToListAsync();
-        
-
-        public async Task<Speciality> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId, SpecialityDto specialityDto)
-        {
-            var speciality = await _dBContext.Specialities.FirstOrDefaultAsync(s => s.Id == relationId);
-
-            if (speciality == null)
-                return default;
-
-            speciality.ZookeeperId = specialityDto.ZookeeperId;
-            speciality.AnimalTypeId = specialityDto.AnimalTypeId;
-            await SaveChangesAsync();
-
-            return speciality;
-        }
 
         /// <summary>
         /// Returns true, if one o more zokeepers with speciality exist in database
@@ -48,6 +33,30 @@ namespace MicroZoo.ZookeepersApi.Repository
         public async Task<bool> CheckZookeeperIsExistAsync(int zookeeperId) =>
             await _dBContext.Specialities.AnyAsync(s => s.ZookeeperId == zookeeperId);
 
+        public async Task<Speciality> AddSpecialityAsync(SpecialityDto specialityDto)
+        {
+            var speciality = specialityDto.ToSpeciality();
+
+            await _dBContext.Specialities.AddAsync(speciality);
+            await SaveChangesAsync();
+
+            return speciality;
+        }
+
+        public async Task<Speciality> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId, SpecialityDto specialityDto)
+        {
+            var speciality = await _dBContext.Specialities.FirstOrDefaultAsync(s => s.Id == relationId);
+
+            if (speciality == null)
+                return default;
+
+            speciality.ZookeeperId = specialityDto.ZookeeperId;
+            speciality.AnimalTypeId = specialityDto.AnimalTypeId;
+            await SaveChangesAsync();
+
+            return speciality;
+        }
+
         public async Task DeleteSpecialityAsync(SpecialityDto specialityDto)
         {
             await _dBContext.Specialities.Where(s => s.ZookeeperId == specialityDto.ZookeeperId &&
@@ -56,6 +65,7 @@ namespace MicroZoo.ZookeepersApi.Repository
 
             _dBContext.SaveChanges();
         }
+
 
         private async Task SaveChangesAsync() =>
             await _dBContext.SaveChangesAsync();

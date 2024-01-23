@@ -59,21 +59,8 @@ namespace MicroZoo.ZookeepersApi.Services
 
             return await _repository.GetPersonByIdFromPersonsApiAsync(requestString);
         }
-
-        [Obsolete("Old solution")]
-        public async Task<List<AnimalType>> GetAllAnimalTypesFromAnimalsApiAsync()
-        {
-            string requestString = $"{_animalsApi}/animal/getallanimaltypes";
-
-            return await _repository.GetAllAnimalTypesFromAnimalsApiAsync(requestString);
-        }
-
-        [Obsolete("Old solution")]
-        public async Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities) =>        
-            await _repository.ChangeSpecialitiesAsync(newSpecialities);
         
-        public async Task DeleteSpecialityAsync(int zookeeperId, int animalTypeId) =>        
-            await _repository.DeleteSpecialityAsync(zookeeperId, animalTypeId);        
+               
 
         public async Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id) =>        
             await _repository.GetCurrentJobsOfZookeeperAsync(id);
@@ -95,5 +82,27 @@ namespace MicroZoo.ZookeepersApi.Services
 
         public async Task FinishJobAsync(int id, Job job) =>
             await _repository.FinishJobAsync(id, job);
+
+
+
+
+
+
+
+        [Obsolete("Old solution")]
+        public async Task<List<AnimalType>> GetAllAnimalTypesFromAnimalsApiAsync()
+        {
+            string requestString = $"{_animalsApi}/animal/getallanimaltypes";
+
+            return await _repository.GetAllAnimalTypesFromAnimalsApiAsync(requestString);
+        }
+
+        [Obsolete("Old solution")]
+        public async Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities) =>
+            await _repository.ChangeSpecialitiesAsync(newSpecialities);
+
+        [Obsolete("Old solution")]
+        public async Task DeleteSpecialityAsync(int zookeeperId, int animalTypeId) =>
+            await _repository.DeleteSpecialityAsync(zookeeperId, animalTypeId);
     }
 }

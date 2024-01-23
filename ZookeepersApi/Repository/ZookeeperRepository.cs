@@ -100,27 +100,6 @@ namespace MicroZoo.ZookeepersApi.Repository
                  AnimalType = animalType.Description
              }).ToList();
 
-        public async Task<List<AnimalType>> GetAllAnimalTypesFromAnimalsApiAsync(string requestString) =>        
-            await _requestHelper.GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
-                                                                     requestUri: requestString);
-        
-        public async Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities)
-        {
-            foreach (Speciality speciality in newSpecialities)
-            {
-                await _dBContext.Database.ExecuteSqlInterpolatedAsync(
-                    $"INSERT INTO Specialities (zookeeperid, animaltypeid) VALUES ({speciality.ZookeeperId}, {speciality.AnimalTypeId}) ON CONFLICT DO NOTHING");
-            }
-        }
-
-        public async Task DeleteSpecialityAsync(int zookeeperId, int animalTypeId)
-        {
-            await _dBContext.Specialities.Where(s => s.ZookeeperId == zookeeperId && 
-                                                s.AnimalTypeId == animalTypeId).ExecuteDeleteAsync();
-            _dBContext.SaveChanges();
-
-        }
-
         public async Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id) =>        
             await _dBContext.Jobs.Where(j => j.ZookeeperId == id && 
                                                     j.FinishTime == null)
@@ -181,6 +160,34 @@ namespace MicroZoo.ZookeepersApi.Repository
             }
         }
 
-        
+
+
+
+
+
+
+
+        [Obsolete("Old solution")]
+        public async Task<List<AnimalType>> GetAllAnimalTypesFromAnimalsApiAsync(string requestString) =>
+            await _requestHelper.GetResponseAsync<List<AnimalType>>(method: HttpMethod.Get,
+                                                                     requestUri: requestString);
+
+        [Obsolete("Old solution")]
+        public async Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities)
+        {
+            foreach (Speciality speciality in newSpecialities)
+            {
+                await _dBContext.Database.ExecuteSqlInterpolatedAsync(
+                    $"INSERT INTO Specialities (zookeeperid, animaltypeid) VALUES ({speciality.ZookeeperId}, {speciality.AnimalTypeId}) ON CONFLICT DO NOTHING");
+            }
+        }
+
+        [Obsolete("Old solution")]
+        public async Task DeleteSpecialityAsync(int zookeeperId, int animalTypeId)
+        {
+            await _dBContext.Specialities.Where(s => s.ZookeeperId == zookeeperId &&
+                                                s.AnimalTypeId == animalTypeId).ExecuteDeleteAsync();
+            _dBContext.SaveChanges();
+        }
     }
 }

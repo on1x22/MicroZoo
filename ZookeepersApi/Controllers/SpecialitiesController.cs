@@ -6,7 +6,6 @@ using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
-using MicroZoo.Infrastructure.Models.Specialities;
 using MicroZoo.Infrastructure.Models.Specialities.Dto;
 
 namespace MicroZoo.ZookeepersApi.Controllers
@@ -75,6 +74,42 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 _zookeepersApiUrl);
 
             return Ok(response.IsThereZookeeperWithThisSpeciality);
+        }
+
+        /// <summary>
+        /// Add new speciality
+        /// </summary>
+        /// <param name="specialityDto"></param>
+        /// <returns>Speciality</returns>
+        [HttpPost]
+        public async Task<IActionResult> AddSpeciality([FromBody] SpecialityDto specialityDto)
+        {
+            var person = await GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                new GetPersonRequest(specialityDto.ZookeeperId), _personsApiUrl);
+
+            var animalType = await GetResponseFromRabbitTask<GetAnimalTypeRequest,
+                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId), _animalsApiUrl);
+
+            string errorMessage = string.Empty;
+
+            if (person.Person == null)
+                errorMessage += person.ErrorMessage + ".\n";
+
+            if (animalType.AnimalType == null)
+                errorMessage += animalType.ErrorMessage;
+
+            var response = new GetSpecialityResponse();
+
+            if (errorMessage != string.Empty)
+                return BadRequest(errorMessage);
+
+            response = await GetResponseFromRabbitTask<
+                AddSpecialityRequest, GetSpecialityResponse>(new AddSpecialityRequest(specialityDto),
+                _zookeepersApiUrl);
+
+            return response.Speciality != null
+                ? Ok(response.Speciality)
+                : NotFound(response.ErrorMessage);
         }
 
         /// <summary>

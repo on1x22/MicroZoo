@@ -17,36 +17,6 @@ namespace MicroZoo.ZookeepersApi.Services
             _logger = logger;
         }
 
-        public async Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId, SpecialityDto specialityDto)
-        {
-            var response = new GetSpecialityResponse();
-
-            var speciality = new Speciality();
-
-            try
-            {
-                speciality = await _repository.ChangeRelationBetweenZookeeperAndSpecialityAsync(
-                    relationId, specialityDto);
-            }
-            /*catch(BadRequestException ex)
-            {
-                response.ErrorMessage = $"Association between specified zookeeper and animal type " +
-                    $"already exist";
-            }*/
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                response.ErrorMessage = $"Association between specified zookeeper and animal type " +
-                    $"already exist";
-            }
-
-            if(speciality.Id == 0 && response.ErrorMessage != null)
-                return response;
-
-            response.Speciality = speciality;
-            return response;
-        }
-
         /// <summary>
         /// Returns true, if one o more zokeepers with speciality exist in database
         /// </summary>
@@ -80,6 +50,55 @@ namespace MicroZoo.ZookeepersApi.Services
             return response;
         }
 
+        public async Task<GetSpecialityResponse> AddSpecialityAsync(SpecialityDto specialityDto)
+        {
+            var response = new GetSpecialityResponse();
+
+            var speciality = new Speciality();
+
+            try
+            {
+                speciality = await _repository.AddSpecialityAsync(specialityDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                response.ErrorMessage = $"Association between specified zookeeper and animal type " +
+                    $"already exist";
+            }
+
+            if (speciality.Id == 0 && response.ErrorMessage != null)
+                return response;
+
+            response.Speciality = speciality;
+            return response;
+        }
+
+        public async Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId, SpecialityDto specialityDto)
+        {
+            var response = new GetSpecialityResponse();
+
+            var speciality = new Speciality();
+
+            try
+            {
+                speciality = await _repository.ChangeRelationBetweenZookeeperAndSpecialityAsync(
+                    relationId, specialityDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                response.ErrorMessage = $"Association between specified zookeeper and animal type " +
+                    $"already exist";
+            }
+
+            if (speciality.Id == 0 && response.ErrorMessage != null)
+                return response;
+
+            response.Speciality = speciality;
+            return response;
+        }
+
         public async Task<GetSpecialitiesResponse> DeleteSpecialityAsync(SpecialityDto specialityDto)
         {
             var response = new GetSpecialitiesResponse();
@@ -94,6 +113,6 @@ namespace MicroZoo.ZookeepersApi.Services
                     $"with id={specialityDto.ZookeeperId} are not exist";
 
             return response;
-        }
+        }        
     }
 }

@@ -24,13 +24,6 @@ namespace MicroZoo.ZookeepersApi.Repository
         List<ObservedAnimal> GetObservedAnimals(List<Animal> animals, List<AnimalType> animalTypes);
 
 
-        Task<List<AnimalType>> GetAllAnimalTypesFromAnimalsApiAsync(string requestString);
-        Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities);
-        Task DeleteSpecialityAsync(int zookeeperid, int animaltypeid);
-        
-        
-
-
         Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id);
         Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom);
         Task<List<Job>> GetAllJobsOfZookeeperAsync(int id);
@@ -38,5 +31,21 @@ namespace MicroZoo.ZookeepersApi.Repository
         Task DeleteJobAsync(int id, int jobId);
         Task UpdateJobByZookeeperAsync(int id, Job job);
         Task FinishJobAsync(int id, Job job);
+
+
+
+
+
+
+
+        [Obsolete("Old solution")]
+        Task<List<AnimalType>> GetAllAnimalTypesFromAnimalsApiAsync(string requestString);
+
+        [Obsolete("Old solution")]
+        Task ChangeSpecialitiesAsync(List<Speciality> newSpecialities);
+
+
+        [Obsolete("Old solution")]
+        Task DeleteSpecialityAsync(int zookeeperid, int animaltypeid);
     }
 }

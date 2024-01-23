@@ -38,7 +38,6 @@ namespace MicroZoo.ZookeepersApi.Apis
                     Summary = "Moved to [GET] /Specialities"
                 });
 
-            // TODO: Now works only INSERT operation/ DELETE not supports
             app.MapPut("/zookeeper/speciality", ChangeSpecialitiesAsync)
                 .WithTags("Speciality")
                 .WithOpenApi(operation => new(operation)
@@ -48,7 +47,12 @@ namespace MicroZoo.ZookeepersApi.Apis
                 });
 
             app.MapDelete("/zookeeper/{zookeeperid}/speciality/{animaltypeid}", DeleteSpecialityAsync)
-                .WithTags("Speciality");
+                .WithTags("Speciality")
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true,
+                    Summary = "Moved to [DELETE] /Specialities"
+                });
 
             app.MapGet("/zookeeper/{zookeeperid}/jobs/current", GetCurrentJobsOfZookeeperAsync)
                 .WithTags("Jobs");
@@ -102,30 +106,6 @@ namespace MicroZoo.ZookeepersApi.Apis
             ? Results.Ok(zookeeper)
             : Results.NotFound("Zookeeper is not found");
 
-        [Obsolete("Please use GetAllSpecialities() in SpecialitiesController instead.")]
-        private async Task<IResult> GetAllZookeperSpecialitiesAsync(IZookeeperApiService service) =>
-            await service.GetAllAnimalTypesFromAnimalsApiAsync() is List<AnimalType> animalTypes
-            ? Results.Ok(animalTypes)
-            : Results.NotFound();
-
-        [Obsolete("Please use GetAllSpecialities() in SpecialitiesController instead.")]
-        private async Task<IResult> ChangeSpecialitiesAsync(List<Speciality> animalTypes,
-                                                            IZookeeperApiService service)
-        {
-           await service.ChangeSpecialitiesAsync(animalTypes);
-            
-           return animalTypes.FirstOrDefault().ZookeeperId is int id
-                ? await GetZookepeerInfoAsync(id, service)
-                : Results.BadRequest(id);
-        }
-
-        private async Task<IResult> DeleteSpecialityAsync(int zookeeperId, int animaltypeId,
-                                                          IZookeeperApiService service)
-        { 
-            await service.DeleteSpecialityAsync(zookeeperId, animaltypeId);
-            return await GetZookepeerInfoAsync(zookeeperId, service);
-        }
-
         // TODO: Need to figure out how to display the time
         private async Task<IResult> GetCurrentJobsOfZookeeperAsync(int zookeeperId,
                                                                    IZookeeperApiService service) =>
@@ -175,6 +155,37 @@ namespace MicroZoo.ZookeepersApi.Apis
         {
             await service.FinishJobAsync(zookeeperid, job);
             return await GetZookepeerInfoAsync(zookeeperid, service);
+        }
+
+
+
+
+
+
+
+        [Obsolete("Please use GetAllSpecialities() in SpecialitiesController instead.")]
+        private async Task<IResult> GetAllZookeperSpecialitiesAsync(IZookeeperApiService service) =>
+            await service.GetAllAnimalTypesFromAnimalsApiAsync() is List<AnimalType> animalTypes
+            ? Results.Ok(animalTypes)
+            : Results.NotFound();
+
+        [Obsolete("Please use ChangeRelationBetweenZookeeperAndSpeciality() in SpecialitiesController instead.")]
+        private async Task<IResult> ChangeSpecialitiesAsync(List<Speciality> animalTypes,
+                                                            IZookeeperApiService service)
+        {
+            await service.ChangeSpecialitiesAsync(animalTypes);
+
+            return animalTypes.FirstOrDefault().ZookeeperId is int id
+                 ? await GetZookepeerInfoAsync(id, service)
+                 : Results.BadRequest(id);
+        }
+
+        [Obsolete("Please use DeleteSpeciality() in SpecialitiesController instead.")]
+        private async Task<IResult> DeleteSpecialityAsync(int zookeeperId, int animaltypeId,
+                                                          IZookeeperApiService service)
+        {
+            await service.DeleteSpecialityAsync(zookeeperId, animaltypeId);
+            return await GetZookepeerInfoAsync(zookeeperId, service);
         }
     }
 }

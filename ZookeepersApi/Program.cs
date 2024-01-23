@@ -59,9 +59,11 @@ void RegisterServices(IServiceCollection services)
 
     services.AddMassTransit(x =>
     {
-        x.AddConsumer<DeleteSpecialityConsumer>();
+        
         x.AddConsumer<CheckZokeepersWithSpecialityAreExistConsumer>();
+        x.AddConsumer<AddSpecialityConsumer>();
         x.AddConsumer<ChangeRelationBetweenZookeeperAndSpecialityConsumer>();
+        x.AddConsumer<DeleteSpecialityConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
         {
@@ -71,9 +73,10 @@ void RegisterServices(IServiceCollection services)
                 e.PrefetchCount = 20;
                 e.UseMessageRetry(r => r.Interval(2, 100));
 
-                e.ConfigureConsumer<DeleteSpecialityConsumer>(context);
                 e.ConfigureConsumer<CheckZokeepersWithSpecialityAreExistConsumer>(context);
+                e.ConfigureConsumer<AddSpecialityConsumer>(context);
                 e.ConfigureConsumer<ChangeRelationBetweenZookeeperAndSpecialityConsumer>(context);
+                e.ConfigureConsumer<DeleteSpecialityConsumer>(context);
             });
         });
     });
