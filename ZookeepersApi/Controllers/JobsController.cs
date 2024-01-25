@@ -1,6 +1,10 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 
 namespace MicroZoo.ZookeepersApi.Controllers
 {
@@ -11,18 +15,30 @@ namespace MicroZoo.ZookeepersApi.Controllers
         private readonly IServiceProvider _provider;
         private readonly Uri _animalsApiUrl;
         private readonly Uri _personsApiUrl;
+        private readonly Uri _zookeepersApiUrl;
 
         public JobsController(IServiceProvider provider, IConfiguration configuration)
         {
             _provider = provider;
             _animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
             _personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
+            _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
 
-        [HttpGet("test")]
-        public async Task<IActionResult> Test()
+        /// <summary>
+        /// Get all jobs of specified zookeeper
+        /// </summary>
+        /// <param name="zookeeperId"></param>
+        /// <returns>List of jobs</returns>
+        [HttpGet("{zookeeperId}")]
+        public async Task<IActionResult> GetAllJobsOfZookeeper(int zookeeperId)
         {
-            return Ok();
+            var response = await GetResponseFromRabbitTask<GetAllJobsOfZookeeperRequest,
+                GetJobsResponse>(new GetAllJobsOfZookeeperRequest(zookeeperId), _zookeepersApiUrl);
+
+            return response.Jobs != null
+                ? Ok(response.Jobs)
+                : BadRequest(response.ErrorMessage);
         }
 
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)

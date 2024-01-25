@@ -50,16 +50,19 @@ void RegisterServices(IServiceCollection services)
         options.UseNpgsql(builder.Configuration.GetConnectionString("ZookeepersAPI"));
     });
 
-    services.AddScoped<IZookeeperRepository, ZookeeperRepository>();
+    services.AddScoped<__IZookeeperRepository, __ZookeeperRepository>();
+    services.AddScoped<IJobsRepository, JobsRepository>();
     services.AddScoped<ISpecialitiesRepository, SpecialitiesRepository>();
-    services.AddScoped<IZookeeperApiService, ZookeeperApiService>();
+    services.AddScoped<__IZookeeperApiService, __ZookeeperApiService>();
+    services.AddScoped<IJobsService, JobsService>();
     services.AddScoped<ISpecialitiesService, SpecialitiesService>();
     services.AddTransient<IApi, MicroZoo.ZookeepersApi.Apis.ZookeepersApi>();
     services.AddTransient<RequestHelper>();
 
     services.AddMassTransit(x =>
     {
-        
+        x.AddConsumer<GetAllJobsOfZookeeperConsumer>();
+
         x.AddConsumer<CheckZokeepersWithSpecialityAreExistConsumer>();
         x.AddConsumer<AddSpecialityConsumer>();
         x.AddConsumer<ChangeRelationBetweenZookeeperAndSpecialityConsumer>();
@@ -72,6 +75,8 @@ void RegisterServices(IServiceCollection services)
             {
                 e.PrefetchCount = 20;
                 e.UseMessageRetry(r => r.Interval(2, 100));
+
+                e.ConfigureConsumer<GetAllJobsOfZookeeperConsumer>(context);
 
                 e.ConfigureConsumer<CheckZokeepersWithSpecialityAreExistConsumer>(context);
                 e.ConfigureConsumer<AddSpecialityConsumer>(context);

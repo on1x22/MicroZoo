@@ -1,6 +1,7 @@
 ﻿using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Animals;
+using MicroZoo.Infrastructure.Models.Jobs;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Specialities;
 using MicroZoo.ZookeepersApi.Models;
@@ -8,14 +9,14 @@ using MicroZoo.ZookeepersApi.Repository;
 
 namespace MicroZoo.ZookeepersApi.Services
 {
-    public class ZookeeperApiService : IZookeeperApiService
+    public class __ZookeeperApiService : __IZookeeperApiService
     {
-        private readonly IZookeeperRepository _repository;
+        private readonly __IZookeeperRepository _repository;
         //private readonly RequestHelper _requestHelper;
         private readonly string _personsApi;
         private readonly string _animalsApi;
 
-        public ZookeeperApiService(IZookeeperRepository repository/*, RequestHelper requestHelper*/) 
+        public __ZookeeperApiService(__IZookeeperRepository repository/*, RequestHelper requestHelper*/) 
         {
             _repository = repository;
             //_requestHelper = requestHelper;
@@ -67,10 +68,7 @@ namespace MicroZoo.ZookeepersApi.Services
 
         public async Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom) =>        
             await _repository.GetJobsOfZookeeperFromAsync(id, dateTimeFrom);
-        
-        public async Task<List<Job>> GetAllJobsOfZookeeperAsync(int id) =>        
-            await _repository.GetAllJobsOfZookeeperAsync(id);
-        
+                
         public async Task AddJobAsync(int id, Job job) =>        
             await _repository.AddJobAsync(id, job);
 
@@ -104,5 +102,9 @@ namespace MicroZoo.ZookeepersApi.Services
         [Obsolete("Old solution")]
         public async Task DeleteSpecialityAsync(int zookeeperId, int animalTypeId) =>
             await _repository.DeleteSpecialityAsync(zookeeperId, animalTypeId);
+
+        [Obsolete("Old solution")]
+        public async Task<List<Job>> GetAllJobsOfZookeeperAsync(int id) =>
+            await _repository.GetAllJobsOfZookeeperAsync(id);
     }
 }

@@ -1,13 +1,14 @@
 ﻿using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Animals;
+using MicroZoo.Infrastructure.Models.Jobs;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Specialities;
 using MicroZoo.ZookeepersApi.Models;
 
 namespace MicroZoo.ZookeepersApi.Services
 {
-    public interface IZookeeperApiService
+    public interface __IZookeeperApiService
     {
         Task<ZookeeperInfo> GetZookepeerInfoAsync(int id);
         
@@ -16,8 +17,6 @@ namespace MicroZoo.ZookeepersApi.Services
         Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id);
         
         Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom);
-        
-        Task<List<Job>> GetAllJobsOfZookeeperAsync(int id);
         
         Task AddJobAsync(int id, Job job);
        
@@ -40,5 +39,10 @@ namespace MicroZoo.ZookeepersApi.Services
 
         [Obsolete("Old solution")]
         Task DeleteSpecialityAsync(int zookeeperId, int animalTypeId);
+
+
+
+        [Obsolete("Old solution")]
+        Task<List<Job>> GetAllJobsOfZookeeperAsync(int id);
     }
 }

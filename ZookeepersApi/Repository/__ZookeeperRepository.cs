@@ -4,17 +4,18 @@ using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.ZookeepersApi.Models;
 using MicroZoo.ZookeepersApi.DBContext;
+using MicroZoo.Infrastructure.Models.Jobs;
 
 namespace MicroZoo.ZookeepersApi.Repository
 {
-    public class ZookeeperRepository : IZookeeperRepository
+    public class __ZookeeperRepository : __IZookeeperRepository
     {
         private readonly ZookeeperDBContext _dBContext;
         private readonly RequestHelper _requestHelper;
         private readonly string _personsApi;
         private readonly string _animalsApi;
 
-        public ZookeeperRepository(ZookeeperDBContext dBContext, RequestHelper requestHelper)
+        public __ZookeeperRepository(ZookeeperDBContext dBContext, RequestHelper requestHelper)
         {
             _dBContext = dBContext;
             _requestHelper = requestHelper;
@@ -109,11 +110,7 @@ namespace MicroZoo.ZookeepersApi.Repository
             await _dBContext.Jobs.Where(j => j.ZookeeperId == id &&
                                                j.StartTime >= dateTimeFrom)
                                         .OrderBy(j => j.StartTime).ToListAsync();
-        
-        public async Task<List<Job>> GetAllJobsOfZookeeperAsync(int id) =>
-            await _dBContext.Jobs.Where(j => j.ZookeeperId == id)
-                                        .OrderBy(j => j.StartTime).ToListAsync();
-        
+                       
         public async Task AddJobAsync(int id, Job job)
         {
             if (id == job.ZookeeperId && job.StartTime >= DateTime.UtcNow && job.FinishTime == null)
@@ -189,5 +186,10 @@ namespace MicroZoo.ZookeepersApi.Repository
                                                 s.AnimalTypeId == animalTypeId).ExecuteDeleteAsync();
             _dBContext.SaveChanges();
         }
+
+        [Obsolete("Old solution")]
+        public async Task<List<Job>> GetAllJobsOfZookeeperAsync(int id) =>
+            await _dBContext.Jobs.Where(j => j.ZookeeperId == id)
+                                        .OrderBy(j => j.StartTime).ToListAsync();
     }
 }

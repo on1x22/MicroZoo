@@ -4,6 +4,7 @@ using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.ZookeepersApi.Repository;
 using MicroZoo.ZookeepersApi.Models;
 using MicroZoo.ZookeepersApi.Services;
+using MicroZoo.Infrastructure.Models.Jobs;
 
 namespace MicroZoo.ZookeepersApi.Apis
 {
@@ -28,10 +29,10 @@ namespace MicroZoo.ZookeepersApi.Apis
 
             // new functionality:
             app.MapGet("/zookeeper/{id}", GetZookepeerInfoAsync)
-                .WithTags("Index");
+                .WithTags("IndexOld");
 
             app.MapGet("/zookeeper/speciality/all", GetAllZookeperSpecialitiesAsync)
-                .WithTags("Speciality")
+                .WithTags("SpecialityOld")
                 .WithOpenApi(operation => new(operation)
                 {
                     Deprecated = true,
@@ -39,7 +40,7 @@ namespace MicroZoo.ZookeepersApi.Apis
                 });
 
             app.MapPut("/zookeeper/speciality", ChangeSpecialitiesAsync)
-                .WithTags("Speciality")
+                .WithTags("SpecialityOld")
                 .WithOpenApi(operation => new(operation)
                 {
                     Deprecated = true,
@@ -47,7 +48,7 @@ namespace MicroZoo.ZookeepersApi.Apis
                 });
 
             app.MapDelete("/zookeeper/{zookeeperid}/speciality/{animaltypeid}", DeleteSpecialityAsync)
-                .WithTags("Speciality")
+                .WithTags("SpecialityOld")
                 .WithOpenApi(operation => new(operation)
                 {
                     Deprecated = true,
@@ -55,44 +56,49 @@ namespace MicroZoo.ZookeepersApi.Apis
                 });
 
             app.MapGet("/zookeeper/{zookeeperid}/jobs/current", GetCurrentJobsOfZookeeperAsync)
-                .WithTags("Jobs");
+                .WithTags("JobsOld");
 
             app.MapGet("/zookeeper/{zookeeperid}/jobs/from/{datetimefrom}", GetJobsOfZookeeperFromAsync)
-                .WithTags("Jobs");
+                .WithTags("JobsOld");
 
             app.MapGet("/zookeeper/{zookeeperid}/jobs/all", GetAllJobsOfZookeeperAsync)
-                .WithTags("Jobs");
+                .WithTags("JobsOld")
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true,
+                    Summary = "Moved to [GET] /Jobs/{zookeeperId}"
+                });
 
             app.MapPost("/zookeeper/{zookeeperid}/jobs", AddJobAsync)
-                .WithTags("Jobs");
+                .WithTags("JobsOld");
 
             app.MapDelete("/zookeeper/{zookeeperid}/jobs/{jobid}", DeleteJobAsync)
-                .WithTags("Jobs");
+                .WithTags("JobsOld");
 
             app.MapPut("/zookeeper/{zookeeperid}/jobs", UpdateJobByZookeeperAsync)
-                .WithTags("Jobs");
+                .WithTags("JobsOld");
 
             app.MapPut("/zookeeper/{zookeeperid}/jobs/finish", FinishJobAsync)
-                .WithTags("Jobs");
+                .WithTags("JobsOld");
         }
         #region
-        private async Task<IResult> GetByName(string name, IZookeeperRepository repository) =>
+        private async Task<IResult> GetByName(string name, __IZookeeperRepository repository) =>
             await repository.GetByNameAsync(name) is Zookeeper zookepeer
             ? Results.Ok(zookepeer) 
             : Results.NotFound();
 
-        internal static async Task<IResult> GetById(int id, IZookeeperRepository repository,
-                                                    IZookeeperApiService service) =>
+        internal static async Task<IResult> GetById(int id, __IZookeeperRepository repository,
+                                                    __IZookeeperApiService service) =>
             await service.GetPersonByIdFromPersonsApiAsync(id) is Person zookepeer
             ? Results.Ok(zookepeer)
             : Results.NotFound();
 
-        private async Task<IResult> GetAll(IZookeeperRepository repository) =>
+        private async Task<IResult> GetAll(__IZookeeperRepository repository) =>
             await repository.GetAllAsync() is List<Zookeeper> all
             ? Results.Ok(all)
             : Results.NotFound();
 
-        private async Task<IResult> GetBySpeciality(string speciality, IZookeeperRepository repository) =>
+        private async Task<IResult> GetBySpeciality(string speciality, __IZookeeperRepository repository) =>
             await repository.GetBySpecialityAsync(speciality) is List<Zookeeper> zookeepres
             ? Results.Ok(zookeepres) 
             : Results.NotFound();
@@ -101,14 +107,14 @@ namespace MicroZoo.ZookeepersApi.Apis
         // new functionality:
 
         private async Task<IResult> GetZookepeerInfoAsync(int id,
-                                                          IZookeeperApiService service) =>
+                                                          __IZookeeperApiService service) =>
             await service.GetZookepeerInfoAsync(id) is ZookeeperInfo zookeeper
             ? Results.Ok(zookeeper)
             : Results.NotFound("Zookeeper is not found");
 
         // TODO: Need to figure out how to display the time
         private async Task<IResult> GetCurrentJobsOfZookeeperAsync(int zookeeperId,
-                                                                   IZookeeperApiService service) =>
+                                                                   __IZookeeperApiService service) =>
             await service.GetCurrentJobsOfZookeeperAsync(zookeeperId) is List<Job> jobs
             ? Results.Ok(jobs)
             : Results.NotFound();
@@ -116,42 +122,38 @@ namespace MicroZoo.ZookeepersApi.Apis
         // TODO: Need to figure out how to display the time
         private async Task<IResult> GetJobsOfZookeeperFromAsync(int zookeeperid,
                                                                 DateTime datetimefrom,
-                                                                IZookeeperApiService service) =>
+                                                                __IZookeeperApiService service) =>
             await service.GetJobsOfZookeeperFromAsync(zookeeperid, datetimefrom) 
             is List<Job> jobs
             ? Results.Ok(jobs)
             : Results.NotFound();
 
         // TODO: Need to figure out how to display the time
-        private async Task<IResult> GetAllJobsOfZookeeperAsync(int zookeeperid,
-                                                               IZookeeperApiService service) =>
-            await service.GetAllJobsOfZookeeperAsync(zookeeperid) is List<Job> jobs
-            ? Results.Ok(jobs)
-            : Results.NotFound();
+        
 
         private async Task<IResult> AddJobAsync(int zookeeperid, Job job,
-                                                IZookeeperApiService service)
+                                                __IZookeeperApiService service)
         {
             await service.AddJobAsync(zookeeperid, job);
             return await GetZookepeerInfoAsync(zookeeperid, service);
         }
             
         private async Task<IResult> DeleteJobAsync(int zookeeperid, int jobid,
-                                                   IZookeeperApiService service)
+                                                   __IZookeeperApiService service)
         {
             await service.DeleteJobAsync(zookeeperid, jobid);
             return await GetZookepeerInfoAsync(zookeeperid, service);
         }
 
         private async Task<IResult> UpdateJobByZookeeperAsync(int zookeeperid, Job job,
-                                                              IZookeeperApiService service)
+                                                              __IZookeeperApiService service)
         {
             await service.UpdateJobByZookeeperAsync(zookeeperid, job);
             return await GetZookepeerInfoAsync(zookeeperid, service);
         }
 
         private async Task<IResult> FinishJobAsync(int zookeeperid, Job job,
-                                                   IZookeeperApiService service)
+                                                   __IZookeeperApiService service)
         {
             await service.FinishJobAsync(zookeeperid, job);
             return await GetZookepeerInfoAsync(zookeeperid, service);
@@ -164,14 +166,14 @@ namespace MicroZoo.ZookeepersApi.Apis
 
 
         [Obsolete("Please use GetAllSpecialities() in SpecialitiesController instead.")]
-        private async Task<IResult> GetAllZookeperSpecialitiesAsync(IZookeeperApiService service) =>
+        private async Task<IResult> GetAllZookeperSpecialitiesAsync(__IZookeeperApiService service) =>
             await service.GetAllAnimalTypesFromAnimalsApiAsync() is List<AnimalType> animalTypes
             ? Results.Ok(animalTypes)
             : Results.NotFound();
 
         [Obsolete("Please use ChangeRelationBetweenZookeeperAndSpeciality() in SpecialitiesController instead.")]
         private async Task<IResult> ChangeSpecialitiesAsync(List<Speciality> animalTypes,
-                                                            IZookeeperApiService service)
+                                                            __IZookeeperApiService service)
         {
             await service.ChangeSpecialitiesAsync(animalTypes);
 
@@ -182,10 +184,19 @@ namespace MicroZoo.ZookeepersApi.Apis
 
         [Obsolete("Please use DeleteSpeciality() in SpecialitiesController instead.")]
         private async Task<IResult> DeleteSpecialityAsync(int zookeeperId, int animaltypeId,
-                                                          IZookeeperApiService service)
+                                                          __IZookeeperApiService service)
         {
             await service.DeleteSpecialityAsync(zookeeperId, animaltypeId);
             return await GetZookepeerInfoAsync(zookeeperId, service);
         }
+
+
+
+        [Obsolete("Please use GetAllJobsOfZookeeper() in JobsController instead.")]
+        private async Task<IResult> GetAllJobsOfZookeeperAsync(int zookeeperid,
+                                                               __IZookeeperApiService service) =>
+            await service.GetAllJobsOfZookeeperAsync(zookeeperid) is List<Job> jobs
+            ? Results.Ok(jobs)
+            : Results.NotFound();
     }
 }

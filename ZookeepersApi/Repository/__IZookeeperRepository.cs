@@ -1,12 +1,12 @@
 ﻿using MicroZoo.Infrastructure.Models.Specialities;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Animals;
-using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.ZookeepersApi.Models;
+using MicroZoo.Infrastructure.Models.Jobs;
 
 namespace MicroZoo.ZookeepersApi.Repository
 {
-    public interface IZookeeperRepository
+    public interface __IZookeeperRepository
     {
         // TODO: remove not actual methods
         Task<Zookeeper> GetByNameAsync(string name);
@@ -26,7 +26,7 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id);
         Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom);
-        Task<List<Job>> GetAllJobsOfZookeeperAsync(int id);
+        
         Task AddJobAsync(int id, Job job);        
         Task DeleteJobAsync(int id, int jobId);
         Task UpdateJobByZookeeperAsync(int id, Job job);
@@ -47,5 +47,10 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         [Obsolete("Old solution")]
         Task DeleteSpecialityAsync(int zookeeperid, int animaltypeid);
+
+
+
+        [Obsolete("Old solution")]
+        Task<List<Job>> GetAllJobsOfZookeeperAsync(int id);
     }
 }

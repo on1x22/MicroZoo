@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MicroZoo.Infrastructure.Models.Jobs;
 using MicroZoo.Infrastructure.Models.Specialities;
 using MicroZoo.ZookeepersApi.Models;
 
