@@ -62,6 +62,7 @@ void RegisterServices(IServiceCollection services)
     services.AddMassTransit(x =>
     {
         x.AddConsumer<GetAllJobsOfZookeeperConsumer>();
+        x.AddConsumer<GetCurrentJobsOfZookeeperCustomer>();
 
         x.AddConsumer<CheckZokeepersWithSpecialityAreExistConsumer>();
         x.AddConsumer<AddSpecialityConsumer>();
@@ -77,6 +78,7 @@ void RegisterServices(IServiceCollection services)
                 e.UseMessageRetry(r => r.Interval(2, 100));
 
                 e.ConfigureConsumer<GetAllJobsOfZookeeperConsumer>(context);
+                e.ConfigureConsumer<GetCurrentJobsOfZookeeperCustomer>(context);
 
                 e.ConfigureConsumer<CheckZokeepersWithSpecialityAreExistConsumer>(context);
                 e.ConfigureConsumer<AddSpecialityConsumer>(context);

@@ -56,7 +56,12 @@ namespace MicroZoo.ZookeepersApi.Apis
                 });
 
             app.MapGet("/zookeeper/{zookeeperid}/jobs/current", GetCurrentJobsOfZookeeperAsync)
-                .WithTags("JobsOld");
+                .WithTags("JobsOld")
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true,
+                    Summary = "Moved to [GET] /Jobs/{zookeeperId}/current"
+                });
 
             app.MapGet("/zookeeper/{zookeeperid}/jobs/from/{datetimefrom}", GetJobsOfZookeeperFromAsync)
                 .WithTags("JobsOld");
@@ -112,12 +117,8 @@ namespace MicroZoo.ZookeepersApi.Apis
             ? Results.Ok(zookeeper)
             : Results.NotFound("Zookeeper is not found");
 
-        // TODO: Need to figure out how to display the time
-        private async Task<IResult> GetCurrentJobsOfZookeeperAsync(int zookeeperId,
-                                                                   __IZookeeperApiService service) =>
-            await service.GetCurrentJobsOfZookeeperAsync(zookeeperId) is List<Job> jobs
-            ? Results.Ok(jobs)
-            : Results.NotFound();
+        
+        
 
         // TODO: Need to figure out how to display the time
         private async Task<IResult> GetJobsOfZookeeperFromAsync(int zookeeperid,
@@ -196,6 +197,13 @@ namespace MicroZoo.ZookeepersApi.Apis
         private async Task<IResult> GetAllJobsOfZookeeperAsync(int zookeeperid,
                                                                __IZookeeperApiService service) =>
             await service.GetAllJobsOfZookeeperAsync(zookeeperid) is List<Job> jobs
+            ? Results.Ok(jobs)
+            : Results.NotFound();
+
+        [Obsolete("Please use GetCurrentJobsOfZookeeper() in JobsController instead.")]
+        private async Task<IResult> GetCurrentJobsOfZookeeperAsync(int zookeeperId,
+                                                                   __IZookeeperApiService service) =>
+            await service.GetCurrentJobsOfZookeeperAsync(zookeeperId) is List<Job> jobs
             ? Results.Ok(jobs)
             : Results.NotFound();
     }

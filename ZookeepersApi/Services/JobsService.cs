@@ -1,5 +1,6 @@
 ﻿using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
+using MicroZoo.Infrastructure.Models.Jobs;
 using MicroZoo.ZookeepersApi.Repository;
 
 namespace MicroZoo.ZookeepersApi.Services
@@ -19,6 +20,12 @@ namespace MicroZoo.ZookeepersApi.Services
             new GetJobsResponse()
             {
                 Jobs = await _repository.GetAllJobsOfZookeeperAsync(zookeeperId)
+            };
+
+        public async Task<GetJobsResponse> GetCurrentJobsOfZookeeperAsync(int zookeeperId) =>
+            new GetJobsResponse()
+            {
+                Jobs = await _repository.GetCurrentJobsOfZookeeperAsync(zookeeperId)
             };
     }
 }

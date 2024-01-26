@@ -24,7 +24,7 @@ namespace MicroZoo.ZookeepersApi.Repository
         List<ObservedAnimal> GetObservedAnimals(List<Animal> animals, List<AnimalType> animalTypes);
 
 
-        Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id);
+        
         Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom);
         
         Task AddJobAsync(int id, Job job);        
@@ -52,5 +52,8 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         [Obsolete("Old solution")]
         Task<List<Job>> GetAllJobsOfZookeeperAsync(int id);
+
+        [Obsolete("Old solution")]
+        Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id);
     }
 }

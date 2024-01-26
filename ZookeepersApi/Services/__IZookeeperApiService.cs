@@ -13,8 +13,6 @@ namespace MicroZoo.ZookeepersApi.Services
         Task<ZookeeperInfo> GetZookepeerInfoAsync(int id);
         
         Task<Person> GetPersonByIdFromPersonsApiAsync(int id);
-
-        Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id);
         
         Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom);
         
@@ -44,5 +42,8 @@ namespace MicroZoo.ZookeepersApi.Services
 
         [Obsolete("Old solution")]
         Task<List<Job>> GetAllJobsOfZookeeperAsync(int id);
+
+        [Obsolete("Old solution")]
+        Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id);
     }
 }

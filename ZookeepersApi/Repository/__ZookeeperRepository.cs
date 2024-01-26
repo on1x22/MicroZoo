@@ -100,12 +100,7 @@ namespace MicroZoo.ZookeepersApi.Repository
                  Name = animal.Name,
                  AnimalType = animalType.Description
              }).ToList();
-
-        public async Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id) =>        
-            await _dBContext.Jobs.Where(j => j.ZookeeperId == id && 
-                                                    j.FinishTime == null)
-                                        .OrderBy(j => j.StartTime).ToListAsync();
-        
+                
         public async Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom) =>        
             await _dBContext.Jobs.Where(j => j.ZookeeperId == id &&
                                                j.StartTime >= dateTimeFrom)
@@ -190,6 +185,12 @@ namespace MicroZoo.ZookeepersApi.Repository
         [Obsolete("Old solution")]
         public async Task<List<Job>> GetAllJobsOfZookeeperAsync(int id) =>
             await _dBContext.Jobs.Where(j => j.ZookeeperId == id)
+                                        .OrderBy(j => j.StartTime).ToListAsync();
+
+        [Obsolete("Old solution")]
+        public async Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id) =>
+            await _dBContext.Jobs.Where(j => j.ZookeeperId == id &&
+                                                    j.FinishTime == null)
                                         .OrderBy(j => j.StartTime).ToListAsync();
     }
 }

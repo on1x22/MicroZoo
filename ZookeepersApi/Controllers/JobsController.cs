@@ -41,6 +41,22 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 : BadRequest(response.ErrorMessage);
         }
 
+        /// <summary>
+        /// Get unfinished jobs of specified zookeeper
+        /// </summary>
+        /// <param name="zookeeperId"></param>
+        /// <returns>List of jobs</returns>
+        [HttpGet("{zookeeperId}/current")]
+        public async Task<IActionResult> GetCurrentJobsOfZookeeper(int zookeeperId)
+        {
+            var response = await GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
+                GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(zookeeperId), _zookeepersApiUrl);
+
+            return response.Jobs != null
+                ? Ok(response.Jobs)
+                : BadRequest(response.ErrorMessage);
+        }
+
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
             where TIn : class
             where TOut : class
