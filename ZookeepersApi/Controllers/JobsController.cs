@@ -5,6 +5,7 @@ using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
+using System.ComponentModel.DataAnnotations;
 
 namespace MicroZoo.ZookeepersApi.Controllers
 {
@@ -51,6 +52,22 @@ namespace MicroZoo.ZookeepersApi.Controllers
         {
             var response = await GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
                 GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(zookeeperId), _zookeepersApiUrl);
+
+            return response.Jobs != null
+                ? Ok(response.Jobs)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        [HttpGet("{zookeeperId}/range")]
+        public async Task<IActionResult> GetZookeeperJobsForTimeRange(int zookeeperId,
+            [FromQuery, Required] DateTime startDateTime, [FromQuery] DateTime finishDateTime)
+        {
+            if (startDateTime >= finishDateTime)
+                return BadRequest("Start time more or equals finish time");
+            
+            var response = await GetResponseFromRabbitTask<GetZookeeperJobsForTimeRangeRequest,
+                GetJobsResponse>(new GetZookeeperJobsForTimeRangeRequest(zookeeperId, startDateTime, 
+                finishDateTime), _zookeepersApiUrl);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
