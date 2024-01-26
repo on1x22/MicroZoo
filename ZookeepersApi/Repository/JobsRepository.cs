@@ -21,6 +21,17 @@ namespace MicroZoo.ZookeepersApi.Repository
             await _dBContext.Jobs.Where(j => j.ZookeeperId == zookeeperId && j.FinishTime == null)
                                  .OrderBy(j => j.StartTime).ToListAsync();
 
+        public async Task<List<Job>> GetAllJobsForTimeRangeAsync(DateTime startDateTime, 
+            DateTime finishDateTime) =>
+            await _dBContext.Jobs.Where(j => j.StartTime >= startDateTime && 
+            (j.FinishTime <= finishDateTime || j.FinishTime == null)).ToListAsync();
+
+        public async Task<List<Job>> GetZookeeperJobsForTimeRangeAsync(int zookeeperId,
+            DateTime startDateTime, DateTime finishDateTime) =>
+            await _dBContext.Jobs.Where(j => j.ZookeeperId == zookeeperId &&
+            j.StartTime >= startDateTime && (j.FinishTime <= finishDateTime ||
+            j.FinishTime == null)).ToListAsync();
+
         private async Task SaveChangesAsync() =>
             await _dBContext.SaveChangesAsync();
     }

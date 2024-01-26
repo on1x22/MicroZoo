@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using System.ComponentModel.DataAnnotations;
 
@@ -27,11 +29,12 @@ namespace MicroZoo.ZookeepersApi.Controllers
         }
 
         /// <summary>
-        /// Get all jobs of specified zookeeper
+        /// !!!Use [GET] /Jobs endpoint!!! Get all jobs of specified zookeeper
         /// </summary>
         /// <param name="zookeeperId"></param>
         /// <returns>List of jobs</returns>
         [HttpGet("{zookeeperId}")]
+
         public async Task<IActionResult> GetAllJobsOfZookeeper(int zookeeperId)
         {
             var response = await GetResponseFromRabbitTask<GetAllJobsOfZookeeperRequest,
@@ -58,20 +61,43 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 : BadRequest(response.ErrorMessage);
         }
 
-        [HttpGet("{zookeeperId}/range")]
-        public async Task<IActionResult> GetZookeeperJobsForTimeRange(int zookeeperId,
-            [FromQuery, Required] DateTime startDateTime, [FromQuery] DateTime finishDateTime)
+        /// <summary>
+        /// Get jobs for selected time range
+        /// </summary>
+        /// <param name="startDateTime"></param>
+        /// <param name="finishDateTime"></param>
+        /// <param name="zookeeperId"></param>
+        /// <returns>List of jobs</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetJobsForTimeRange(
+            [FromQuery, Required] DateTime startDateTime, [FromQuery] DateTime finishDateTime, 
+            int zookeeperId = 0)
         {
+            if (zookeeperId < 0)
+                return BadRequest("Zookeeper with negative id doesn't exist");
+
+            if (finishDateTime == default)
+                finishDateTime = DateTime.UtcNow;
+
             if (startDateTime >= finishDateTime)
                 return BadRequest("Start time more or equals finish time");
-            
-            var response = await GetResponseFromRabbitTask<GetZookeeperJobsForTimeRangeRequest,
-                GetJobsResponse>(new GetZookeeperJobsForTimeRangeRequest(zookeeperId, startDateTime, 
-                finishDateTime), _zookeepersApiUrl);
+
+            if (zookeeperId > 0)
+            {
+                var personResponse = await GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                    new GetPersonRequest(zookeeperId), _personsApiUrl);
+
+                if (personResponse.Person == null || personResponse.Person.IsManager == true)
+                    return BadRequest($"Zookeeper with id={zookeeperId} doesn't exist");
+            }
+
+            var response = await GetResponseFromRabbitTask<GetJobsForTimeRangeRequest,
+                    GetJobsResponse>(new GetJobsForTimeRangeRequest(zookeeperId, startDateTime,
+                    finishDateTime), _zookeepersApiUrl);
 
             return response.Jobs != null
-                ? Ok(response.Jobs)
-                : BadRequest(response.ErrorMessage);
+                    ? Ok(response.Jobs)
+                    : BadRequest(response.ErrorMessage);
         }
 
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)

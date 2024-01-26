@@ -1,14 +1,14 @@
 ﻿
 namespace MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi
 {
-    public class GetZookeeperJobsForTimeRangeRequest
+    public class GetJobsForTimeRangeRequest
     {
         public Guid OperationId { get; set; }
         public int ZookeeperId { get; set; }
-        DateTime StartDateTime { get; set; }
-        DateTime FinishDateTime { get; set; }
+        public DateTime StartDateTime { get; set; }
+        public DateTime FinishDateTime { get; set; }
 
-        public GetZookeeperJobsForTimeRangeRequest(int zookeeperId, DateTime startDateTime,
+        public GetJobsForTimeRangeRequest(int zookeeperId, DateTime startDateTime,
             DateTime finishDateTime)
         {
             OperationId = Guid.NewGuid();
