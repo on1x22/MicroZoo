@@ -7,19 +7,23 @@ namespace MicroZoo.ZookeepersApi.Consumers
 {
     public class AddJobConsumer : IConsumer<AddJobRequest>
     {
-        private readonly IJobsService _service;
+        //private readonly IJobsService _service_old;
+        private readonly IRequestReceivingService _service;
 
-        public AddJobConsumer(IJobsService service)
+        public AddJobConsumer(/*IJobsService service_old*/ IRequestReceivingService servise)
         {
-            _service = service;
+            //_service_old = service_old;
+            _service = servise;
         }
 
         public async Task Consume(ConsumeContext<AddJobRequest> context)
         {
+            //var response = await _service_old.AddJobAsync(context.Message.JobDto);
             var response = await _service.AddJobAsync(context.Message.JobDto);
             response.OperationId = context.Message.OperationId;
 
-            await context.RespondAsync<GetJobResponse>(response);
+            //await context.RespondAsync<GetJobResponse>(response);
+            await context.RespondAsync<GetJobsResponse>(response);
         }
     }
 }

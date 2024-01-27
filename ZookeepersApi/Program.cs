@@ -12,6 +12,7 @@ using MicroZoo.ZookeepersApi.DBContext;
 using MicroZoo.ZookeepersApi.Consumers;
 using MicroZoo.ZookeepersApi.Models;
 using ZookeepersApi.Consumers;
+using MicroZoo.Infrastructure.MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +57,8 @@ void RegisterServices(IServiceCollection services)
     services.AddScoped<__IZookeeperApiService, __ZookeeperApiService>();
     services.AddScoped<IJobsService, JobsService>();
     services.AddScoped<ISpecialitiesService, SpecialitiesService>();
+    services.AddTransient<IRequestReceivingService,RequestReceivingService>();
+    services.AddTransient<IResponsesReceiverFromRabbitMq, ResponsesReceiverFromRabbitMq>();
     services.AddTransient<IApi, MicroZoo.ZookeepersApi.Apis.ZookeepersApi>();
     services.AddTransient<RequestHelper>();
 
