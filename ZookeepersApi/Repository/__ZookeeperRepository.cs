@@ -105,16 +105,7 @@ namespace MicroZoo.ZookeepersApi.Repository
             await _dBContext.Jobs.Where(j => j.ZookeeperId == id &&
                                                j.StartTime >= dateTimeFrom)
                                         .OrderBy(j => j.StartTime).ToListAsync();
-                       
-        public async Task AddJobAsync(int id, Job job)
-        {
-            if (id == job.ZookeeperId && job.StartTime >= DateTime.UtcNow && job.FinishTime == null)
-            {
-                await _dBContext.Jobs.AddAsync(job);
-                await _dBContext.SaveChangesAsync();
-            }
-        }
-
+                   
         public async Task DeleteJobAsync(int id, int jobId)
         {
             {
@@ -192,5 +183,15 @@ namespace MicroZoo.ZookeepersApi.Repository
             await _dBContext.Jobs.Where(j => j.ZookeeperId == id &&
                                                     j.FinishTime == null)
                                         .OrderBy(j => j.StartTime).ToListAsync();
+
+        [Obsolete("Old solution")]
+        public async Task AddJobAsync(int id, Job job)
+        {
+            if (id == job.ZookeeperId && job.StartTime >= DateTime.UtcNow && job.FinishTime == null)
+            {
+                await _dBContext.Jobs.AddAsync(job);
+                await _dBContext.SaveChangesAsync();
+            }
+        }
     }
 }

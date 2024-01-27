@@ -7,6 +7,8 @@ using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
+using MicroZoo.Infrastructure.Models.Jobs.Dto;
+using MicroZoo.ZookeepersApi.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace MicroZoo.ZookeepersApi.Controllers
@@ -98,6 +100,34 @@ namespace MicroZoo.ZookeepersApi.Controllers
             return response.Jobs != null
                     ? Ok(response.Jobs)
                     : BadRequest(response.ErrorMessage);
+        }
+
+        /// <summary>
+        /// Add new job
+        /// </summary>
+        /// <param name="jobDto"></param>
+        /// <returns>List of current jobs</returns>
+        [HttpPost]
+        public async Task<IActionResult> AddJob([FromBody] JobDto jobDto)
+        {   
+            if (jobDto.StartTime != default && jobDto.StartTime < DateTime.UtcNow)
+                return BadRequest("Start time less than current time");
+
+            if (jobDto.StartTime == default)
+                    jobDto.StartTime = DateTime.UtcNow;
+
+            var jobResponse = await GetResponseFromRabbitTask<AddJobRequest, GetJobResponse>(
+                new AddJobRequest(jobDto), _zookeepersApiUrl);
+
+            if (jobResponse.Job == null)
+                return BadRequest(jobResponse.ErrorMessage);
+
+            var response = await GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
+                GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(jobDto.ZookeeperId), _zookeepersApiUrl);
+
+            return response.Jobs != null
+                ? Ok(response.Jobs)
+                : BadRequest(response.ErrorMessage);
         }
 
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)

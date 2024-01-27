@@ -1,6 +1,7 @@
 ﻿using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Jobs;
+using MicroZoo.Infrastructure.Models.Jobs.Dto;
 using MicroZoo.ZookeepersApi.Repository;
 
 namespace MicroZoo.ZookeepersApi.Services
@@ -40,6 +41,19 @@ namespace MicroZoo.ZookeepersApi.Services
                 response.Jobs = await _repository.GetZookeeperJobsForTimeRangeAsync(zookeeperId, 
                     startDateTime, finishDateTime);
             
+            return response;
+        }
+
+        public async Task<GetJobResponse> AddJobAsync(JobDto jobDto)
+        {
+            var response = new GetJobResponse()
+            {
+                Job = await _repository.AddJobAsync(jobDto)
+            };
+
+            if (response == null)            
+                response.ErrorMessage = "Failed to create a new task. Please check the entered data";
+             
             return response;
         }
     }

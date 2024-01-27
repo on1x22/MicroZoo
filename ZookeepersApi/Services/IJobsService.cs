@@ -1,6 +1,7 @@
 ﻿using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Jobs;
+using MicroZoo.Infrastructure.Models.Jobs.Dto;
 using MicroZoo.ZookeepersApi.Models;
 
 namespace MicroZoo.ZookeepersApi.Services
@@ -13,5 +14,7 @@ namespace MicroZoo.ZookeepersApi.Services
 
         Task<GetJobsResponse> GetJobsForTimeRangeAsync(int zookeeperId, DateTime startDateTime,
             DateTime finishDateTime);
+
+        Task<GetJobResponse> AddJobAsync(JobDto jobDto);
     }
 }

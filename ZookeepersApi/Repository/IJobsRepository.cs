@@ -1,4 +1,5 @@
 ﻿using MicroZoo.Infrastructure.Models.Jobs;
+using MicroZoo.Infrastructure.Models.Jobs.Dto;
 
 namespace MicroZoo.ZookeepersApi.Repository
 {
@@ -12,5 +13,7 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         Task<List<Job>> GetZookeeperJobsForTimeRangeAsync(int zookeeperId,
             DateTime startDateTime, DateTime finishDateTime);
+
+        Task<Job> AddJobAsync(JobDto jobDto);
     }
 }

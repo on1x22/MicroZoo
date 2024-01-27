@@ -61,16 +61,9 @@ namespace MicroZoo.ZookeepersApi.Services
             return await _repository.GetPersonByIdFromPersonsApiAsync(requestString);
         }
         
-               
-
-        
-
         public async Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom) =>        
             await _repository.GetJobsOfZookeeperFromAsync(id, dateTimeFrom);
-                
-        public async Task AddJobAsync(int id, Job job) =>        
-            await _repository.AddJobAsync(id, job);
-
+            
         public async Task DeleteJobAsync(int id, int jobId) =>        
             await _repository.DeleteJobAsync(id, jobId);
 
@@ -109,5 +102,9 @@ namespace MicroZoo.ZookeepersApi.Services
         [Obsolete("Old solution")]
         public async Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int id) =>
             await _repository.GetCurrentJobsOfZookeeperAsync(id);
+
+        [Obsolete("Old solution")]
+        public async Task AddJobAsync(int id, Job job) =>
+            await _repository.AddJobAsync(id, job);
     }
 }

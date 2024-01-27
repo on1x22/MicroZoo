@@ -80,7 +80,12 @@ namespace MicroZoo.ZookeepersApi.Apis
                 });
 
             app.MapPost("/zookeeper/{zookeeperid}/jobs", AddJobAsync)
-                .WithTags("JobsOld");
+                .WithTags("JobsOld")
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true,
+                    Summary = "Moved to [POST] /Jobs"
+                });
 
             app.MapDelete("/zookeeper/{zookeeperid}/jobs/{jobid}", DeleteJobAsync)
                 .WithTags("JobsOld");
@@ -121,14 +126,7 @@ namespace MicroZoo.ZookeepersApi.Apis
             await service.GetZookepeerInfoAsync(id) is ZookeeperInfo zookeeper
             ? Results.Ok(zookeeper)
             : Results.NotFound("Zookeeper is not found");
-        
-        private async Task<IResult> AddJobAsync(int zookeeperid, Job job,
-                                                __IZookeeperApiService service)
-        {
-            await service.AddJobAsync(zookeeperid, job);
-            return await GetZookepeerInfoAsync(zookeeperid, service);
-        }
-            
+                
         private async Task<IResult> DeleteJobAsync(int zookeeperid, int jobid,
                                                    __IZookeeperApiService service)
         {
@@ -205,5 +203,13 @@ namespace MicroZoo.ZookeepersApi.Apis
             is List<Job> jobs
             ? Results.Ok(jobs)
             : Results.NotFound();
+
+        [Obsolete("Please use AddJob() in JobsController instead.")]
+        private async Task<IResult> AddJobAsync(int zookeeperid, Job job,
+                                                __IZookeeperApiService service)
+        {
+            await service.AddJobAsync(zookeeperid, job);
+            return await GetZookepeerInfoAsync(zookeeperid, service);
+        }
     }
 }

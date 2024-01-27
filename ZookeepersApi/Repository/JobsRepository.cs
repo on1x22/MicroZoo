@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MicroZoo.Infrastructure.Models.Jobs;
+using MicroZoo.Infrastructure.Models.Jobs.Dto;
 using MicroZoo.ZookeepersApi.DBContext;
 
 namespace MicroZoo.ZookeepersApi.Repository
@@ -31,6 +32,16 @@ namespace MicroZoo.ZookeepersApi.Repository
             await _dBContext.Jobs.Where(j => j.ZookeeperId == zookeeperId &&
             j.StartTime >= startDateTime && (j.FinishTime <= finishDateTime ||
             j.FinishTime == null)).ToListAsync();
+
+        public async Task<Job> AddJobAsync(JobDto jobDto)
+        {
+            var job = jobDto.ToJob();
+
+            await _dBContext.Jobs.AddAsync(job);
+            await SaveChangesAsync();
+
+            return job;
+        }
 
         private async Task SaveChangesAsync() =>
             await _dBContext.SaveChangesAsync();
