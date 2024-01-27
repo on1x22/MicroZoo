@@ -43,7 +43,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
 
         public async Task<IActionResult> GetAllJobsOfZookeeper(int zookeeperId)
         {
-            var response = await GetResponseFromRabbitTask<GetAllJobsOfZookeeperRequest,
+            var response = await _receiver.GetResponseFromRabbitTask<GetAllJobsOfZookeeperRequest,
                 GetJobsResponse>(new GetAllJobsOfZookeeperRequest(zookeeperId), _zookeepersApiUrl);
 
             return response.Jobs != null
@@ -59,7 +59,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [HttpGet("{zookeeperId}/current")]
         public async Task<IActionResult> GetCurrentJobsOfZookeeper(int zookeeperId)
         {
-            var response = await GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
+            var response = await _receiver.GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
                 GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(zookeeperId), _zookeepersApiUrl);
 
             return response.Jobs != null
@@ -79,25 +79,25 @@ namespace MicroZoo.ZookeepersApi.Controllers
             [FromQuery, Required] DateTime startDateTime, [FromQuery] DateTime finishDateTime, 
             int zookeeperId = 0)
         {
-            if (zookeeperId < 0)
+            /*if (zookeeperId < 0)
                 return BadRequest("Zookeeper with negative id doesn't exist");
 
             if (finishDateTime == default)
-                finishDateTime = DateTime.UtcNow;
+                finishDateTime = DateTime.MaxValue;
 
             if (startDateTime >= finishDateTime)
                 return BadRequest("Start time more or equals finish time");
 
             if (zookeeperId > 0)
             {
-                var personResponse = await GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
-                    new GetPersonRequest(zookeeperId), _personsApiUrl);
+                var personResponse = await GetResponseFromRabbitTask<GetPersonRequest,
+                    GetPersonResponse>(new GetPersonRequest(zookeeperId), _personsApiUrl);
 
                 if (personResponse.Person == null || personResponse.Person.IsManager == true)
                     return BadRequest($"Zookeeper with id={zookeeperId} doesn't exist");
-            }
+            }*/
 
-            var response = await GetResponseFromRabbitTask<GetJobsForTimeRangeRequest,
+            var response = await _receiver.GetResponseFromRabbitTask<GetJobsForTimeRangeRequest,
                     GetJobsResponse>(new GetJobsForTimeRangeRequest(zookeeperId, startDateTime,
                     finishDateTime), _zookeepersApiUrl);
 
@@ -131,7 +131,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 : BadRequest(response.ErrorMessage);
         }
 
-        [Obsolete("Use _receiver.GetResponseFromRabbitTask()")]
+        /*[Obsolete("Use _receiver.GetResponseFromRabbitTask()")]
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
             where TIn : class
             where TOut : class
@@ -141,6 +141,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
             var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
             var response = await client.GetResponse<TOut>(request);
             return response.Message;
-        }
+        }*/
     }
 }

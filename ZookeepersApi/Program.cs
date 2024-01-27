@@ -57,7 +57,7 @@ void RegisterServices(IServiceCollection services)
     services.AddScoped<__IZookeeperApiService, __ZookeeperApiService>();
     services.AddScoped<IJobsService, JobsService>();
     services.AddScoped<ISpecialitiesService, SpecialitiesService>();
-    services.AddTransient<IRequestReceivingService,RequestReceivingService>();
+    services.AddTransient<IJobsRequestReceivingService,JobsRequestReceivingService>();
     services.AddTransient<IResponsesReceiverFromRabbitMq, ResponsesReceiverFromRabbitMq>();
     services.AddTransient<IApi, MicroZoo.ZookeepersApi.Apis.ZookeepersApi>();
     services.AddTransient<RequestHelper>();

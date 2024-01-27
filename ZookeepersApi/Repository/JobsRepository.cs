@@ -24,14 +24,15 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         public async Task<List<Job>> GetAllJobsForTimeRangeAsync(DateTime startDateTime, 
             DateTime finishDateTime) =>
-            await _dBContext.Jobs.Where(j => j.StartTime >= startDateTime && 
+            await _dBContext.Jobs.Where(j => (j.StartTime >= startDateTime && 
+            j.StartTime < finishDateTime) &&
             (j.FinishTime <= finishDateTime || j.FinishTime == null)).ToListAsync();
 
         public async Task<List<Job>> GetZookeeperJobsForTimeRangeAsync(int zookeeperId,
             DateTime startDateTime, DateTime finishDateTime) =>
             await _dBContext.Jobs.Where(j => j.ZookeeperId == zookeeperId &&
-            j.StartTime >= startDateTime && (j.FinishTime <= finishDateTime ||
-            j.FinishTime == null)).ToListAsync();
+            (j.StartTime >= startDateTime && j.StartTime < finishDateTime) && 
+            (j.FinishTime <= finishDateTime || j.FinishTime == null)).ToListAsync();
 
         public async Task<Job> AddJobAsync(JobDto jobDto)
         {

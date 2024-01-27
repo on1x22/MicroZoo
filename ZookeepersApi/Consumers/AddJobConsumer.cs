@@ -8,12 +8,12 @@ namespace MicroZoo.ZookeepersApi.Consumers
     public class AddJobConsumer : IConsumer<AddJobRequest>
     {
         //private readonly IJobsService _service_old;
-        private readonly IRequestReceivingService _service;
+        private readonly IJobsRequestReceivingService _service;
 
-        public AddJobConsumer(/*IJobsService service_old*/ IRequestReceivingService servise)
+        public AddJobConsumer(/*IJobsService service_old*/ IJobsRequestReceivingService service)
         {
             //_service_old = service_old;
-            _service = servise;
+            _service = service;
         }
 
         public async Task Consume(ConsumeContext<AddJobRequest> context)
