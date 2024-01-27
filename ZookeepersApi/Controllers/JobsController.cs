@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
@@ -18,13 +19,16 @@ namespace MicroZoo.ZookeepersApi.Controllers
     public class JobsController : ControllerBase
     {
         private readonly IServiceProvider _provider;
+        private readonly IResponsesReceiverFromRabbitMq _receiver;
         private readonly Uri _animalsApiUrl;
         private readonly Uri _personsApiUrl;
         private readonly Uri _zookeepersApiUrl;
 
-        public JobsController(IServiceProvider provider, IConfiguration configuration)
+        public JobsController(IServiceProvider provider, IResponsesReceiverFromRabbitMq receiver,
+            IConfiguration configuration)
         {
             _provider = provider;
+            _receiver = receiver;
             _animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
             _personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
             _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
@@ -116,20 +120,18 @@ namespace MicroZoo.ZookeepersApi.Controllers
             if (jobDto.StartTime == default)
                     jobDto.StartTime = DateTime.UtcNow;
 
-            var jobResponse = await GetResponseFromRabbitTask<AddJobRequest, GetJobResponse>(
+            //var response_old = await GetResponseFromRabbitTask<AddJobRequest, GetJobsResponse>(
+            //    new AddJobRequest(jobDto), _zookeepersApiUrl);
+
+            var response = await _receiver.GetResponseFromRabbitTask<AddJobRequest, GetJobsResponse>(
                 new AddJobRequest(jobDto), _zookeepersApiUrl);
-
-            if (jobResponse.Job == null)
-                return BadRequest(jobResponse.ErrorMessage);
-
-            var response = await GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
-                GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(jobDto.ZookeeperId), _zookeepersApiUrl);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
                 : BadRequest(response.ErrorMessage);
         }
 
+        [Obsolete("Use _receiver.GetResponseFromRabbitTask()")]
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
             where TIn : class
             where TOut : class
