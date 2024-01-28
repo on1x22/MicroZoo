@@ -1,6 +1,4 @@
-﻿using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
-using MicroZoo.Infrastructure.Models.Animals;
+﻿using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Jobs;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Specialities;
@@ -61,17 +59,11 @@ namespace MicroZoo.ZookeepersApi.Services
             return await _repository.GetPersonByIdFromPersonsApiAsync(requestString);
         }
         
-        public async Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom) =>        
-            await _repository.GetJobsOfZookeeperFromAsync(id, dateTimeFrom);
+        
             
-        public async Task DeleteJobAsync(int id, int jobId) =>        
-            await _repository.DeleteJobAsync(id, jobId);
+        
 
-        public async Task UpdateJobByZookeeperAsync(int id, Job job) =>
-            await _repository.UpdateJobByZookeeperAsync(id, job);
-
-        public async Task FinishJobAsync(int id, Job job) =>
-            await _repository.FinishJobAsync(id, job);
+        
 
 
 
@@ -104,7 +96,23 @@ namespace MicroZoo.ZookeepersApi.Services
             await _repository.GetCurrentJobsOfZookeeperAsync(id);
 
         [Obsolete("Old solution")]
+        public async Task<List<Job>> GetJobsOfZookeeperFromAsync(int id, DateTime dateTimeFrom) =>
+            await _repository.GetJobsOfZookeeperFromAsync(id, dateTimeFrom);
+
+        [Obsolete("Old solution")]
         public async Task AddJobAsync(int id, Job job) =>
             await _repository.AddJobAsync(id, job);
+
+        [Obsolete("Old solution")]
+        public async Task UpdateJobByZookeeperAsync(int id, Job job) =>
+            await _repository.UpdateJobByZookeeperAsync(id, job);
+
+        [Obsolete("Old solution")]
+        public async Task FinishJobAsync(int id, Job job) =>
+            await _repository.FinishJobAsync(id, job);
+
+        [Obsolete("Old solution")]
+        public async Task DeleteJobAsync(int id, int jobId) =>
+            await _repository.DeleteJobAsync(id, jobId);
     }
 }

@@ -131,6 +131,39 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 : BadRequest(response.ErrorMessage);
         }
 
+        /// <summary>
+        /// Update task info
+        /// </summary>
+        /// <param name="jobId"></param>
+        /// <param name="jobDto"></param>
+        /// <returns>List of current jobs</returns>
+        [HttpPut("{jobId}")]
+        public async Task<IActionResult> UpdateJob(int jobId, [FromBody] JobWithoutStartTimeDto jobDto)
+        {
+            var response = await _receiver.GetResponseFromRabbitTask<UpdateJobRequest, GetJobsResponse>(
+                new UpdateJobRequest(jobId, jobDto), _zookeepersApiUrl);
+
+            return response.Jobs != null
+                ? Ok(response.Jobs)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        /// <summary>
+        /// Finish selected jod
+        /// </summary>
+        /// <param name="jobId"></param>
+        /// <returns>List of current jobs</returns>
+        [HttpPut("{jobId}/finish")]
+        public async Task<IActionResult> FinishJob(int jobId)
+        {
+            var response = await _receiver.GetResponseFromRabbitTask<FinishJobRequest, GetJobsResponse>(
+                new FinishJobRequest(jobId), _zookeepersApiUrl);
+
+            return response.Jobs != null
+                ? Ok(response.Jobs)
+                : BadRequest(response.ErrorMessage);
+        }
+
         /*[Obsolete("Use _receiver.GetResponseFromRabbitTask()")]
         private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
             where TIn : class

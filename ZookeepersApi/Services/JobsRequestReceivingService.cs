@@ -1,9 +1,12 @@
-﻿using MicroZoo.Infrastructure.MassTransit;
+﻿using MassTransit;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
+using MicroZoo.ZookeepersApi.Models;
+using System.Net;
 
 namespace MicroZoo.ZookeepersApi.Services
 {
@@ -89,6 +92,71 @@ namespace MicroZoo.ZookeepersApi.Services
             //    GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(jobDto.ZookeeperId), 
             //    _zookeepersApiUrl);
             response = await _jobService.GetCurrentJobsOfZookeeperAsync(jobDto.ZookeeperId);
+
+            return response;
+        }
+
+        public async Task<GetJobsResponse> UpdateJobAsync(int jobId, JobWithoutStartTimeDto jobDto)
+        {
+            var response = new GetJobsResponse();
+
+            if (jobId <= 0)
+            {
+                response.ErrorMessage = "Task with negative or zero id doesn't exist";
+                return response;
+            }
+
+            if (jobDto.ZookeeperId <= 0)
+            {
+                response.ErrorMessage = "Zookeeper with negative or zero id doesn't exist";
+                return response;
+            }
+
+            if (jobDto.Description.Length < 10)
+            {
+                response.ErrorMessage = "Task description must consist of 10 or more symbols";
+                return response;
+            }
+
+            var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest,
+                    GetPersonResponse>(new GetPersonRequest(jobDto.ZookeeperId), _personsApiUrl);
+
+            if (personResponse.Person == null || personResponse.Person.IsManager == true)
+            {
+                response.ErrorMessage = $"Zookeeper with id={jobDto.ZookeeperId} doesn't exist";
+                return response;
+            }
+
+            var jobResponse = await _jobService.UpdateJobAsync(jobId, jobDto);
+            if (jobResponse.Job == null)
+            {
+                response.ErrorMessage = jobResponse.ErrorMessage;
+                return response;
+            }
+
+            response = await _jobService.GetCurrentJobsOfZookeeperAsync(jobDto.ZookeeperId);
+
+            return response;
+        }
+
+        public async Task<GetJobsResponse> FinishJobAsync(int jobId)
+        {
+            var response = new GetJobsResponse();
+
+            if (jobId <= 0)
+            {
+                response.ErrorMessage = "Task with negative or zero id doesn't exist";
+                return response;
+            }
+
+            var jobResponse = await _jobService.FinishJobAsync(jobId);
+            if (jobResponse.Job == null)
+            {
+                response.ErrorMessage = jobResponse.ErrorMessage;
+                return response;
+            }
+
+            response = await _jobService.GetCurrentJobsOfZookeeperAsync(jobResponse.Job.ZookeeperId);
 
             return response;
         }

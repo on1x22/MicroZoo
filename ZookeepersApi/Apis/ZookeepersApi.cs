@@ -88,13 +88,28 @@ namespace MicroZoo.ZookeepersApi.Apis
                 });
 
             app.MapDelete("/zookeeper/{zookeeperid}/jobs/{jobid}", DeleteJobAsync)
-                .WithTags("JobsOld");
+                .WithTags("JobsOld")
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true,
+                    Summary = "Not actual"
+                });
 
             app.MapPut("/zookeeper/{zookeeperid}/jobs", UpdateJobByZookeeperAsync)
-                .WithTags("JobsOld");
+                .WithTags("JobsOld")
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true,
+                    Summary = "Moved to [PUT] /Jobs/{jobId}"
+                });
 
             app.MapPut("/zookeeper/{zookeeperid}/jobs/finish", FinishJobAsync)
-                .WithTags("JobsOld");
+                .WithTags("JobsOld")
+                .WithOpenApi(operation => new(operation)
+                {
+                    Deprecated = true,
+                    Summary = "Moved to [PUT] /Jobs/{jobId}/finish"
+                });
         }
         #region
         private async Task<IResult> GetByName(string name, __IZookeeperRepository repository) =>
@@ -127,26 +142,9 @@ namespace MicroZoo.ZookeepersApi.Apis
             ? Results.Ok(zookeeper)
             : Results.NotFound("Zookeeper is not found");
                 
-        private async Task<IResult> DeleteJobAsync(int zookeeperid, int jobid,
-                                                   __IZookeeperApiService service)
-        {
-            await service.DeleteJobAsync(zookeeperid, jobid);
-            return await GetZookepeerInfoAsync(zookeeperid, service);
-        }
+        
 
-        private async Task<IResult> UpdateJobByZookeeperAsync(int zookeeperid, Job job,
-                                                              __IZookeeperApiService service)
-        {
-            await service.UpdateJobByZookeeperAsync(zookeeperid, job);
-            return await GetZookepeerInfoAsync(zookeeperid, service);
-        }
-
-        private async Task<IResult> FinishJobAsync(int zookeeperid, Job job,
-                                                   __IZookeeperApiService service)
-        {
-            await service.FinishJobAsync(zookeeperid, job);
-            return await GetZookepeerInfoAsync(zookeeperid, service);
-        }
+        
 
 
 
@@ -209,6 +207,30 @@ namespace MicroZoo.ZookeepersApi.Apis
                                                 __IZookeeperApiService service)
         {
             await service.AddJobAsync(zookeeperid, job);
+            return await GetZookepeerInfoAsync(zookeeperid, service);
+        }
+
+        [Obsolete("Please use UpdateJob() in JobsController instead.")]
+        private async Task<IResult> UpdateJobByZookeeperAsync(int zookeeperid, Job job,
+                                                              __IZookeeperApiService service)
+        {
+            await service.UpdateJobByZookeeperAsync(zookeeperid, job);
+            return await GetZookepeerInfoAsync(zookeeperid, service);
+        }
+
+        [Obsolete("Please use FinishJob() in JobsController instead.")]
+        private async Task<IResult> FinishJobAsync(int zookeeperid, Job job,
+                                                   __IZookeeperApiService service)
+        {
+            await service.FinishJobAsync(zookeeperid, job);
+            return await GetZookepeerInfoAsync(zookeeperid, service);
+        }
+
+        [Obsolete("Not actual")]
+        private async Task<IResult> DeleteJobAsync(int zookeeperid, int jobid,
+                                                   __IZookeeperApiService service)
+        {
+            await service.DeleteJobAsync(zookeeperid, jobid);
             return await GetZookepeerInfoAsync(zookeeperid, service);
         }
     }

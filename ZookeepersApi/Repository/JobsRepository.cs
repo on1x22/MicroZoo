@@ -34,6 +34,10 @@ namespace MicroZoo.ZookeepersApi.Repository
             (j.StartTime >= startDateTime && j.StartTime < finishDateTime) && 
             (j.FinishTime <= finishDateTime || j.FinishTime == null)).ToListAsync();
 
+        public async Task<Job> GetJobAsync(int jobId) =>
+            await _dBContext.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);
+        
+
         public async Task<Job> AddJobAsync(JobDto jobDto)
         {
             var job = jobDto.ToJob();
@@ -44,7 +48,33 @@ namespace MicroZoo.ZookeepersApi.Repository
             return job;
         }
 
+        public async Task<Job> UpdateJobAsync(int jobId, JobWithoutStartTimeDto jobDto)
+        {
+            var updatedJob = await _dBContext.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);
+            if (updatedJob != null)
+            {
+                updatedJob.ZookeeperId = jobDto.ZookeeperId;
+                updatedJob.Description = jobDto.Description;
+            }
+            await SaveChangesAsync();
+
+            return updatedJob;
+        }
+
+        public async Task<Job> FinishJobAsync(int jobId)
+        {
+            var finishedJob = await _dBContext.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);
+            if (finishedJob != null)
+                finishedJob.FinishTime = DateTime.UtcNow;
+            
+            await SaveChangesAsync();
+
+            return finishedJob;
+        }
+
         private async Task SaveChangesAsync() =>
             await _dBContext.SaveChangesAsync();
+
+        
     }
 }

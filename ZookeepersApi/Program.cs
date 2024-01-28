@@ -68,6 +68,8 @@ void RegisterServices(IServiceCollection services)
         x.AddConsumer<GetCurrentJobsOfZookeeperCustomer>();
         x.AddConsumer<GetJobsForTimeRangeConsumer>();
         x.AddConsumer<AddJobConsumer>();
+        x.AddConsumer<UpdateJobConsumer>();
+        x.AddConsumer<FinishJobConsumer>();
 
         x.AddConsumer<CheckZokeepersWithSpecialityAreExistConsumer>();
         x.AddConsumer<AddSpecialityConsumer>();
@@ -86,6 +88,8 @@ void RegisterServices(IServiceCollection services)
                 e.ConfigureConsumer<GetCurrentJobsOfZookeeperCustomer>(context);
                 e.ConfigureConsumer<GetJobsForTimeRangeConsumer>(context);
                 e.ConfigureConsumer<AddJobConsumer>(context);
+                e.ConfigureConsumer<UpdateJobConsumer>(context);
+                e.ConfigureConsumer<FinishJobConsumer>(context);
 
                 e.ConfigureConsumer<CheckZokeepersWithSpecialityAreExistConsumer>(context);
                 e.ConfigureConsumer<AddSpecialityConsumer>(context);

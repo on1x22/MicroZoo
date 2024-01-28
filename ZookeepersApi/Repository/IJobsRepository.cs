@@ -14,6 +14,12 @@ namespace MicroZoo.ZookeepersApi.Repository
         Task<List<Job>> GetZookeeperJobsForTimeRangeAsync(int zookeeperId,
             DateTime startDateTime, DateTime finishDateTime);
 
+        Task<Job> GetJobAsync(int jobId);
+
         Task<Job> AddJobAsync(JobDto jobDto);
+
+        Task<Job> UpdateJobAsync(int jobId, JobWithoutStartTimeDto jobDto);
+
+        Task<Job> FinishJobAsync(int jobId);
     }
 }

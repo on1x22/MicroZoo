@@ -56,5 +56,57 @@ namespace MicroZoo.ZookeepersApi.Services
              
             return response;
         }
+
+        public async Task<GetJobResponse> UpdateJobAsync(int jobId, JobWithoutStartTimeDto jobDto)
+        {
+            var oldJob = await _repository.GetJobAsync(jobId);
+
+            var response = new GetJobResponse();
+
+            if (oldJob == null)
+            {
+                response.ErrorMessage = $"Task with id={jobId} not exist";
+                return response;
+            }
+
+            if (oldJob.FinishTime != null)
+            {
+                response.ErrorMessage = $"Changing a completed task is not allowed";
+                return response;
+            }
+
+            response.Job = await _repository.UpdateJobAsync(jobId, jobDto);
+
+            if (response.Job == null)
+                response.ErrorMessage = "Failed to update task. Please check the entered data";
+
+            return response;
+        }
+
+        public async Task<GetJobResponse> FinishJobAsync(int jobId)
+        {
+            var finishedJob = await _repository.GetJobAsync(jobId);
+
+            var response = new GetJobResponse();
+
+            if (finishedJob == null)
+            {
+                response.ErrorMessage = $"Task with id={jobId} not exist";
+                return response;
+            }
+
+            if (finishedJob.FinishTime != null)
+            {
+                response.ErrorMessage = $"Task wint id={jobId} already completed";
+                return response;
+            }
+
+            response.Job = await _repository.FinishJobAsync(jobId);
+
+            if (response.Job == null)
+                response.ErrorMessage = "Failed to complete task. Please check the entered data";
+
+            return response;
+        }
     }
 }

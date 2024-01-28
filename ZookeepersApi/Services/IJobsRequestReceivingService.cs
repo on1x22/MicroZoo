@@ -13,5 +13,9 @@ namespace MicroZoo.ZookeepersApi.Services
             DateTime finishDateTime);
 
         Task<GetJobsResponse> AddJobAsync(JobDto jobDto);
+
+        Task<GetJobsResponse> UpdateJobAsync(int jobId, JobWithoutStartTimeDto jobDto);
+
+        Task<GetJobsResponse> FinishJobAsync(int jobId);
     }
 }
