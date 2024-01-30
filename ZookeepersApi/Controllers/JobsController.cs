@@ -79,24 +79,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
             [FromQuery, Required] DateTime startDateTime, [FromQuery] DateTime finishDateTime, 
             int zookeeperId = 0)
         {
-            /*if (zookeeperId < 0)
-                return BadRequest("Zookeeper with negative id doesn't exist");
-
-            if (finishDateTime == default)
-                finishDateTime = DateTime.MaxValue;
-
-            if (startDateTime >= finishDateTime)
-                return BadRequest("Start time more or equals finish time");
-
-            if (zookeeperId > 0)
-            {
-                var personResponse = await GetResponseFromRabbitTask<GetPersonRequest,
-                    GetPersonResponse>(new GetPersonRequest(zookeeperId), _personsApiUrl);
-
-                if (personResponse.Person == null || personResponse.Person.IsManager == true)
-                    return BadRequest($"Zookeeper with id={zookeeperId} doesn't exist");
-            }*/
-
             var response = await _receiver.GetResponseFromRabbitTask<GetJobsForTimeRangeRequest,
                     GetJobsResponse>(new GetJobsForTimeRangeRequest(zookeeperId, startDateTime,
                     finishDateTime), _zookeepersApiUrl);
@@ -119,9 +101,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
 
             if (jobDto.StartTime == default)
                     jobDto.StartTime = DateTime.UtcNow;
-
-            //var response_old = await GetResponseFromRabbitTask<AddJobRequest, GetJobsResponse>(
-            //    new AddJobRequest(jobDto), _zookeepersApiUrl);
 
             var response = await _receiver.GetResponseFromRabbitTask<AddJobRequest, GetJobsResponse>(
                 new AddJobRequest(jobDto), _zookeepersApiUrl);

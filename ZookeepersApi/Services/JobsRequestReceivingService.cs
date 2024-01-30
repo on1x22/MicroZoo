@@ -88,9 +88,6 @@ namespace MicroZoo.ZookeepersApi.Services
                 return response;
             }
 
-            //response = await _receiver.GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
-            //    GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(jobDto.ZookeeperId), 
-            //    _zookeepersApiUrl);
             response = await _jobService.GetCurrentJobsOfZookeeperAsync(jobDto.ZookeeperId);
 
             return response;

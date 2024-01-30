@@ -8,12 +8,10 @@ namespace MicroZoo.ZookeepersApi.Consumers
     public class GetJobsForTimeRangeConsumer : 
         IConsumer<GetJobsForTimeRangeRequest>
     {
-        //private readonly IJobsService _service_old;
         private readonly IJobsRequestReceivingService _service;
 
-        public GetJobsForTimeRangeConsumer(/*IJobsService service_old*/ IJobsRequestReceivingService servise)
+        public GetJobsForTimeRangeConsumer(IJobsRequestReceivingService servise)
         {
-            //_service_old = service_old;
             _service = servise;
         }
 

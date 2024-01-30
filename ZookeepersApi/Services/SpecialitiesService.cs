@@ -40,13 +40,6 @@ namespace MicroZoo.ZookeepersApi.Services
                     break;
             }
 
-            /*if(response.IsThereZookeeperWithThisSpeciality)
-            {
-                response.ErrorMessage = $"There are zookeepers with specialization {animalTypeId}. " +
-                    "Before deleting a specialty, you must remove the zookeepers " +
-                    "association with that specialty.";
-            }*/
-
             return response;
         }
 

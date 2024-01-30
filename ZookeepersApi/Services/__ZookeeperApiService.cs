@@ -10,14 +10,12 @@ namespace MicroZoo.ZookeepersApi.Services
     public class __ZookeeperApiService : __IZookeeperApiService
     {
         private readonly __IZookeeperRepository _repository;
-        //private readonly RequestHelper _requestHelper;
         private readonly string _personsApi;
         private readonly string _animalsApi;
 
-        public __ZookeeperApiService(__IZookeeperRepository repository/*, RequestHelper requestHelper*/) 
+        public __ZookeeperApiService(__IZookeeperRepository repository) 
         {
             _repository = repository;
-            //_requestHelper = requestHelper;
             _personsApi = Environment.GetEnvironmentVariable("PERSONS_API");
             _animalsApi = Environment.GetEnvironmentVariable("ANIMALS_API");
         }

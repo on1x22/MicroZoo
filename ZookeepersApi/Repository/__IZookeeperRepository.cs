@@ -16,7 +16,6 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         
 
-        //Task<ZookeeperInfo> GetZookepeerInfoAsync(int id);
         Task<List<Job>> GetJobsById(int id);
         Task<List<int>> GetSpecialitiesIdByPersonId(int id);
         Task<List<AnimalType>> GetAnimalTypesByIds(string requestString);
