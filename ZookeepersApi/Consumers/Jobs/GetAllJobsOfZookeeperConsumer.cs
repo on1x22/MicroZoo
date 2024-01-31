@@ -4,7 +4,7 @@ using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.ZookeepersApi.Services;
 
-namespace ZookeepersApi.Consumers
+namespace MicroZoo.ZookeepersApi.Consumers.Jobs
 {
     public class GetAllJobsOfZookeeperConsumer : IConsumer<GetAllJobsOfZookeeperRequest>
     {
@@ -24,7 +24,7 @@ namespace ZookeepersApi.Consumers
 
             response.OperationId = context.Message.OperationId;
 
-            await context.RespondAsync<GetJobsResponse>(response);
+            await context.RespondAsync(response);
         }
     }
 }

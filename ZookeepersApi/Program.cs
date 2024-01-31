@@ -9,10 +9,10 @@ using MicroZoo.ZookeepersApi.Services;
 using MicroZoo.ZookeepersApi.Repository;
 using MicroZoo.ZookeepersApi.Apis;
 using MicroZoo.ZookeepersApi.DBContext;
-using MicroZoo.ZookeepersApi.Consumers;
 using MicroZoo.ZookeepersApi.Models;
-using ZookeepersApi.Consumers;
 using MicroZoo.Infrastructure.MassTransit;
+using MicroZoo.ZookeepersApi.Consumers.Jobs;
+using MicroZoo.ZookeepersApi.Consumers.Specialities;
 
 var builder = WebApplication.CreateBuilder(args);
 

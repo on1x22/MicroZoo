@@ -3,7 +3,7 @@ using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.ZookeepersApi.Services;
 
-namespace MicroZoo.ZookeepersApi.Consumers
+namespace MicroZoo.ZookeepersApi.Consumers.Jobs
 {
     public class AddJobConsumer : IConsumer<AddJobRequest>
     {
@@ -19,7 +19,7 @@ namespace MicroZoo.ZookeepersApi.Consumers
             var response = await _service.AddJobAsync(context.Message.JobDto);
             response.OperationId = context.Message.OperationId;
 
-            await context.RespondAsync<GetJobsResponse>(response);
+            await context.RespondAsync(response);
         }
     }
 }

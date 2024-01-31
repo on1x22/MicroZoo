@@ -3,9 +3,9 @@ using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.ZookeepersApi.Services;
 
-namespace MicroZoo.ZookeepersApi.Consumers
+namespace MicroZoo.ZookeepersApi.Consumers.Specialities
 {
-    public class CheckZokeepersWithSpecialityAreExistConsumer : 
+    public class CheckZokeepersWithSpecialityAreExistConsumer :
         IConsumer<CheckZokeepersWithSpecialityAreExistRequest>
     {
         private readonly ISpecialitiesService _service;
@@ -21,8 +21,8 @@ namespace MicroZoo.ZookeepersApi.Consumers
                 context.Message.CheckType, context.Message.ObjectId);
 
             response.OperationId = context.Message.OperationId;
-            
-            await context.RespondAsync<CheckZokeepersWithSpecialityAreExistResponse>(response);
+
+            await context.RespondAsync(response);
         }
     }
 }

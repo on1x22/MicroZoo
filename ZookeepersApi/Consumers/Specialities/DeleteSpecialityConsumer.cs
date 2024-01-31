@@ -3,7 +3,7 @@ using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.ZookeepersApi.Services;
 
-namespace ZookeepersApi.Consumers
+namespace MicroZoo.ZookeepersApi.Consumers.Specialities
 {
     public class DeleteSpecialityConsumer : IConsumer<DeleteSpecialityRequest>
     {
@@ -20,7 +20,7 @@ namespace ZookeepersApi.Consumers
 
             response.OperationId = context.Message.OperationId;
 
-            await context.RespondAsync<GetSpecialitiesResponse>(response);
+            await context.RespondAsync(response);
         }
     }
 }

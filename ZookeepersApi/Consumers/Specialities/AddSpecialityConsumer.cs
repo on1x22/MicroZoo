@@ -3,7 +3,7 @@ using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.ZookeepersApi.Services;
 
-namespace ZookeepersApi.Consumers
+namespace MicroZoo.ZookeepersApi.Consumers.Specialities
 {
     public class AddSpecialityConsumer : IConsumer<AddSpecialityRequest>
     {
@@ -19,7 +19,7 @@ namespace ZookeepersApi.Consumers
             var response = await _service.AddSpecialityAsync(context.Message.SpecialityDto);
             response.OperationId = context.Message.OperationId;
 
-            await context.RespondAsync<GetSpecialityResponse>(response);
+            await context.RespondAsync(response);
         }
     }
 }
