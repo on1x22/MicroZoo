@@ -1,5 +1,5 @@
 ﻿using MicroZoo.Infrastructure.Models.Animals;
-using MicroZoo.Infrastructure.Models.Specialities;
+using MicroZoo.ZookeepersApi.Models;
 using Moq.Protected;
 using System.Net;
 using System.Net.Http.Json;

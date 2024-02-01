@@ -11,4 +11,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="MicroZoo.ZookeepersApi.Tests" />
+  </ItemGroup>
 </Project>
