@@ -51,7 +51,7 @@ namespace MicroZoo.ZookeepersApi.Services
                 Job = await _repository.AddJobAsync(jobDto)
             };
 
-            if (response == null)            
+            if (response.Job == null)            
                 response.ErrorMessage = "Failed to create a new task. Please check the entered data";
              
             return response;

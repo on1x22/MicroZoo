@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Jobs;
+using MicroZoo.Infrastructure.Models.Jobs.Dto;
+using MicroZoo.ZookeepersApi.Models;
 using MicroZoo.ZookeepersApi.Repository;
 using MicroZoo.ZookeepersApi.Services;
 using System;
@@ -16,28 +18,328 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         [Fact]
         public async void GetAllJobsOfZookeeperAsync_should_return_all_jobs_of_zookeeper()
         {
-            int id = new Fixture().Create<int>();
+            int zookeeperId = new Fixture().Create<int>();
             List<Job> jobs = new List<Job>()
             {
-                new Fixture().Build<Job>().With(j => j.ZookeeperId == id).Create(),
-                new Fixture().Build<Job>().With(j => j.ZookeeperId == id).Create(),
-                //new Fixture().Build<Job>().With(j => j.ZookeeperId == 2).Create()
+                new Fixture().Build<Job>().With(j => j.ZookeeperId, zookeeperId).Create(),
+                new Fixture().Build<Job>().With(j => j.ZookeeperId, zookeeperId).Create()
             };
 
-            var getJobsResponse = new GetJobsResponse()
+            /*var getJobsResponse = new GetJobsResponse()
             {
                 Jobs = jobs
-            };
+            };*/
 
             var mockRepo = new Mock<IJobsRepository>();
             mockRepo.Setup(j => j.GetAllJobsOfZookeeperAsync(It.IsAny<int>())).ReturnsAsync(jobs);
             var mockLogger = new Mock<ILogger<JobsService>>();
 
-            var sut = new JobsService(mockRepo.Object, mockLogger.Object);
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
 
-            var result = await sut.GetAllJobsOfZookeeperAsync(id);
+            var result = await jobService.GetAllJobsOfZookeeperAsync(zookeeperId);
+
+            Assert.Equal(2, result.Jobs.Count);
+        }
+
+        [Fact]
+        public async void GetAllJobsOfZookeeperAsync_should_return_zero_entities()
+        {
+            int zookeeperId = new Fixture().Create<int>();
+            List<Job> jobs = new List<Job>();
+
+            /*var getJobsResponse = new GetJobsResponse()
+            {
+                Jobs = jobs
+            };*/
+
+            var mockRepo = new Mock<IJobsRepository>();
+            mockRepo.Setup(j => j.GetAllJobsOfZookeeperAsync(It.IsAny<int>())).ReturnsAsync(jobs);
+            var mockLogger = new Mock<ILogger<JobsService>>();
+
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
+
+            var result = await jobService.GetAllJobsOfZookeeperAsync(zookeeperId);
 
             Assert.NotNull(result.Jobs);
+            Assert.Empty(result.Jobs);
         }
+
+        [Fact]
+        public async void GetCurrentJobsOfZookeeperAsync_should_return_all_current_jobs_of_zookeeper()
+        {
+            int zookeeperId = new Fixture().Create<int>();
+            List<Job> jobs = new List<Job>()
+            {
+                new Fixture().Build<Job>().With(j => j.ZookeeperId, zookeeperId).Create(),
+                new Fixture().Build<Job>().With(j => j.ZookeeperId, zookeeperId).Create()
+            };
+
+            /*var getJobsResponse = new GetJobsResponse()
+            {
+                Jobs = jobs
+            };*/
+
+            var mockRepo = new Mock<IJobsRepository>();
+            mockRepo.Setup(j => j.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>())).ReturnsAsync(jobs);
+            var mockLogger = new Mock<ILogger<JobsService>>();
+
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
+
+            var result = await jobService.GetCurrentJobsOfZookeeperAsync(zookeeperId);
+
+            Assert.Equal(2, result.Jobs.Count);
+        }
+
+        [Fact]
+        public async void GetCurrentJobsOfZookeeperAsync_should_return_zero_current_jobs_of_zookeeper()
+        {
+            int zookeeperId = new Fixture().Create<int>();
+            List<Job> jobs = new List<Job>();
+
+            /*var getJobsResponse = new GetJobsResponse()
+            {
+                Jobs = jobs
+            };*/
+
+            var mockRepo = new Mock<IJobsRepository>();
+            mockRepo.Setup(j => j.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>())).ReturnsAsync(jobs);
+            var mockLogger = new Mock<ILogger<JobsService>>();
+
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
+
+            var result = await jobService.GetCurrentJobsOfZookeeperAsync(zookeeperId);
+
+            Assert.NotNull(result.Jobs);
+            Assert.Empty(result.Jobs);
+        }
+
+        [Fact]
+        public async void GetJobsForTimeRangeAsync_should_return_all_jobs_for_time_range()
+        {
+            int zookeeperId = 0;
+
+            int randomZookeeperId = new Fixture().Create<int>();
+            List<Job> allJobs = new List<Job>()
+            {
+                new Fixture().Build<Job>().Create(),
+                new Fixture().Build<Job>().With(j => j.ZookeeperId, randomZookeeperId).Create(),
+                new Fixture().Build<Job>().With(j => j.ZookeeperId, randomZookeeperId).Create(),
+                new Fixture().Build<Job>().Create()
+            };
+
+            List<Job> jobsOfRandomZookeeper = allJobs
+                .Where(j => j.ZookeeperId == randomZookeeperId).ToList();
+            DateTime startDateTime = DateTime.Now.AddDays(-1);
+            DateTime endDateTime = DateTime.Now.AddDays(1);
+
+
+            var mockRepo = new Mock<IJobsRepository>();
+            mockRepo.Setup(j => j.GetAllJobsForTimeRangeAsync(It.IsAny<DateTime>(),
+                It.IsAny<DateTime>())).ReturnsAsync(allJobs);
+            mockRepo.Setup(j => j.GetZookeeperJobsForTimeRangeAsync(randomZookeeperId,
+                It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(jobsOfRandomZookeeper);
+            var mockLogger = new Mock<ILogger<JobsService>>();
+
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
+
+            var result = await jobService.GetJobsForTimeRangeAsync(zookeeperId, startDateTime, 
+                endDateTime);
+
+            Assert.Equal(allJobs, result.Jobs);
+        }
+
+        [Fact]
+        public async void GetJobsForTimeRangeAsync_should_return_jobs_of_selected_zookeeper_for_time_range()
+        {
+            int zookeeperId = new Fixture().Create<int>();
+
+            List<Job> allJobs = new List<Job>()
+            {
+                new Fixture().Build<Job>().Create(),
+                new Fixture().Build<Job>().With(j => j.ZookeeperId, zookeeperId).Create(),
+                new Fixture().Build<Job>().With(j => j.ZookeeperId, zookeeperId).Create(),
+                new Fixture().Build<Job>().Create()
+            };
+
+            List<Job> jobsOfSelectedZookeeper = allJobs
+                .Where(j => j.ZookeeperId == zookeeperId).ToList();
+            DateTime startDateTime = DateTime.Now.AddDays(-1);
+            DateTime endDateTime = DateTime.Now.AddDays(1);
+
+
+            var mockRepo = new Mock<IJobsRepository>();
+            mockRepo.Setup(j => j.GetAllJobsForTimeRangeAsync(It.IsAny<DateTime>(),
+                It.IsAny<DateTime>())).ReturnsAsync(allJobs);
+            mockRepo.Setup(j => j.GetZookeeperJobsForTimeRangeAsync(zookeeperId,
+                It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(jobsOfSelectedZookeeper);
+            var mockLogger = new Mock<ILogger<JobsService>>();
+
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
+
+            var result = await jobService.GetJobsForTimeRangeAsync(zookeeperId, startDateTime,
+                endDateTime);
+
+            Assert.Equal(jobsOfSelectedZookeeper, result.Jobs);
+        }
+        
+        [Fact]
+        public async void AddJobAsync_should_return_job()
+        {
+            var jobDto = new Fixture().Build<JobDto>().Create();
+            var job = new Fixture().Build<Job>().With(j => j.ZookeeperId, jobDto.ZookeeperId)
+                .With(j => j.Description, jobDto.Description)
+                .With(j => j.StartTime, jobDto.StartTime)
+                .Create();
+
+            var mockRepo = new Mock<IJobsRepository>();
+            mockRepo.Setup(j => j.AddJobAsync(It.IsAny<JobDto>())).ReturnsAsync(job);
+            var mockLogger = new Mock<ILogger<JobsService>>();
+
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
+
+            var result = await jobService.AddJobAsync(jobDto);
+
+            Assert.Null(result.ErrorMessage);
+            Assert.Equal(job, result.Job);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message()
+        {
+            var jobDto = new Fixture().Build<JobDto>().Create();
+            Job? job = null;
+
+            var mockRepo = new Mock<IJobsRepository>();
+            mockRepo.Setup(j => j.AddJobAsync(It.IsAny<JobDto>())).ReturnsAsync(job);
+            var mockLogger = new Mock<ILogger<JobsService>>();
+
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
+
+            var result = await jobService.AddJobAsync(jobDto);
+
+            Assert.Null(result.Job);
+            Assert.NotNull(result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void UpdateJobAsync_should_return_error_message_task_with_id_not_exist()
+        {
+            int jobId = new Fixture().Create<int>();
+            Job? oldJob = null;
+            var jobWithoutStartTimeDto = new Fixture().Create<JobWithoutStartTimeDto>();
+            var mockRepo = new Mock<IJobsRepository>();
+            mockRepo.Setup(j => j.GetJobAsync(It.IsAny<int>())).ReturnsAsync(oldJob);
+            mockRepo.Setup(j => j.UpdateJobAsync(It.IsAny<int>(), 
+                It.IsAny<JobWithoutStartTimeDto>())).ReturnsAsync(oldJob);
+            var mockLogger = new Mock<ILogger<JobsService>>();
+
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
+
+            var result = await jobService.UpdateJobAsync(jobId, jobWithoutStartTimeDto);
+
+            Assert.Null(result.Job); 
+            Assert.NotNull(result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void UpdateJobAsync_should_return_error_message_task_is_completed()
+        {
+            int jobId = new Fixture().Create<int>();
+            var jobWithoutStartTimeDto = new Fixture().Build<JobWithoutStartTimeDto>().Create();
+            
+            var oldJob = new Fixture().Build<Job>()
+                .With(j => j.Id, jobId)
+                .Create();
+
+            var mockRepo = new Mock<IJobsRepository>();
+            mockRepo.Setup(j => j.GetJobAsync(It.IsAny<int>())).ReturnsAsync(oldJob);
+            mockRepo.Setup(j => j.UpdateJobAsync(It.IsAny<int>(),
+                It.IsAny<JobWithoutStartTimeDto>())).ReturnsAsync(oldJob);
+            var mockLogger = new Mock<ILogger<JobsService>>();
+
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
+
+            var result = await jobService.UpdateJobAsync(jobId, jobWithoutStartTimeDto);
+
+            Assert.Null(result.Job);
+            Assert.NotNull(result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void UpdateJobAsync_should_return_error_message_error_during_update_job()
+        {
+            /*int jobId = new Fixture().Create<int>();
+            var jobDto = new Fixture().Build<JobWithoutStartTimeDto>().Create();
+
+            var oldJob = new Fixture().Build<Job>()
+                .With(j => j.Id, jobId)
+                .With(j => j.ZookeeperId, jobDto.ZookeeperId)
+                .With(j => j.Description, jobDto.Description)
+                .Create();
+
+            var updatedJob = new Fixture().Build<Job>().With(j => j.ZookeeperId, jobDto.ZookeeperId)
+                .With(j => j.Description, jobDto.Description)
+                .With(j => j.StartTime, jobDto.StartTime)
+                .Create();*/
+
+            int jobId = new Fixture().Create<int>();
+            var jobWithoutStartTimeDto = new Fixture().Build<JobWithoutStartTimeDto>().Create();
+            DateTime? finishTime = null;
+
+            var oldJob = new Fixture().Build<Job>()
+                .With(j => j.Id, jobId)
+                .With(j => j.FinishTime, finishTime)
+                .Create();
+
+            Job? updatedJob = null;
+
+            var mockRepo = new Mock<IJobsRepository>();
+            mockRepo.Setup(j => j.GetJobAsync(It.IsAny<int>())).ReturnsAsync(oldJob);
+            mockRepo.Setup(j => j.UpdateJobAsync(It.IsAny<int>(),
+                It.IsAny<JobWithoutStartTimeDto>())).ReturnsAsync(updatedJob);
+            var mockLogger = new Mock<ILogger<JobsService>>();
+
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
+
+            var result = await jobService.UpdateJobAsync(jobId, jobWithoutStartTimeDto);
+
+            Assert.Null(result.Job);
+            Assert.NotNull(result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void UpdateJobAsync_should_return_updated_job()
+        {
+            int jobId = new Fixture().Create<int>();
+            var jobWithoutStartTimeDto = new Fixture().Build<JobWithoutStartTimeDto>().Create();
+            DateTime? finishTime = null;
+
+            var oldJob = new Fixture().Build<Job>()
+                .With(j => j.Id, jobId)
+                .With(j => j.FinishTime, finishTime)
+                .Create();
+
+            var updatedJob = new Fixture().Build<Job>()
+                .With(j => j.Id, oldJob.Id)
+                .With(j => j.ZookeeperId, jobWithoutStartTimeDto.ZookeeperId)
+                .With(j => j.Description, jobWithoutStartTimeDto.Description)
+                .With(j => j.StartTime, oldJob.StartTime)
+                .With(j => j.FinishTime, oldJob.FinishTime)
+                .Create();
+
+            var mockRepo = new Mock<IJobsRepository>();
+            mockRepo.Setup(j => j.GetJobAsync(It.IsAny<int>())).ReturnsAsync(oldJob);
+            mockRepo.Setup(j => j.UpdateJobAsync(It.IsAny<int>(),
+                It.IsAny<JobWithoutStartTimeDto>())).ReturnsAsync(updatedJob);
+            var mockLogger = new Mock<ILogger<JobsService>>();
+
+            var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
+
+            var result = await jobService.UpdateJobAsync(jobId, jobWithoutStartTimeDto);
+
+            Assert.Null(result.ErrorMessage);
+            Assert.Equal(updatedJob, result.Job);
+        }
+
     }
 }
