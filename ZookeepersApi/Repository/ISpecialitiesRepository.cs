@@ -26,6 +26,6 @@ namespace MicroZoo.ZookeepersApi.Repository
         Task<Speciality> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId,
             SpecialityDto specialityDto);
 
-        Task DeleteSpecialityAsync(SpecialityDto specialityDto);
+        Task<Speciality> DeleteSpecialityAsync(SpecialityDto specialityDto);
     }
 }

@@ -2,6 +2,7 @@
 using MicroZoo.Infrastructure.Models.Specialities;
 using MicroZoo.Infrastructure.Models.Specialities.Dto;
 using MicroZoo.ZookeepersApi.DBContext;
+using System.Runtime.CompilerServices;
 
 namespace MicroZoo.ZookeepersApi.Repository
 {
@@ -57,13 +58,16 @@ namespace MicroZoo.ZookeepersApi.Repository
             return speciality;
         }
 
-        public async Task DeleteSpecialityAsync(SpecialityDto specialityDto)
+        public async Task<Speciality> DeleteSpecialityAsync(SpecialityDto specialityDto)
         {
-            await _dBContext.Specialities.Where(s => s.ZookeeperId == specialityDto.ZookeeperId &&
-                s.AnimalTypeId == specialityDto.AnimalTypeId)
-                .ExecuteDeleteAsync();
+            var speciality = await _dBContext.Specialities.FirstOrDefaultAsync(s => 
+            s.ZookeeperId == specialityDto.ZookeeperId && s.AnimalTypeId == specialityDto.AnimalTypeId);
 
-            _dBContext.SaveChanges();
+            _dBContext.Specialities.Remove(speciality);
+
+            await SaveChangesAsync();
+
+            return speciality;
         }
 
 

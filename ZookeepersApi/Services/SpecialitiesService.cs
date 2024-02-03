@@ -96,10 +96,11 @@ namespace MicroZoo.ZookeepersApi.Services
         {
             var response = new GetSpecialitiesResponse();
 
-            await _repository.DeleteSpecialityAsync(specialityDto);
+            var deletedSpeciality = await _repository.DeleteSpecialityAsync(specialityDto);
 
-            response.Specialities = await _repository
-                .GetSpecialitiesByZookeeperIdAsync(specialityDto.ZookeeperId);
+            if(deletedSpeciality != null)
+                response.Specialities = await _repository
+                    .GetSpecialitiesByZookeeperIdAsync(specialityDto.ZookeeperId);
 
             if (response.Specialities == null)
                 response.ErrorMessage = $"Speciealities for zookeeper " +
