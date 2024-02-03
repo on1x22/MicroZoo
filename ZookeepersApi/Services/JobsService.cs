@@ -71,7 +71,7 @@ namespace MicroZoo.ZookeepersApi.Services
 
             if (oldJob.FinishTime != null)
             {
-                response.ErrorMessage = $"Changing a completed task is not allowed";
+                response.ErrorMessage = "Changing a completed task is not allowed";
                 return response;
             }
 
