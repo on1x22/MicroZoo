@@ -16,7 +16,7 @@ using MicroZoo.ZookeepersApi.Consumers.Specialities;
 
 var builder = WebApplication.CreateBuilder(args);
 
-RegisterServices(builder.Services);
+RegisterServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
@@ -32,8 +32,16 @@ foreach(var api in apis)
 app.Run();
 
 
-void RegisterServices(IServiceCollection services)
+void RegisterServices(IServiceCollection services, IConfiguration configuration)
 {
+    var animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
+    var personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
+    var zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
+
+    services.AddScoped/*<IConnectionService>*/(s => new ConnectionService(animalsApiUrl,
+                                                                          personsApiUrl, 
+                                                                          zookeepersApiUrl));
+
     services.AddHttpClient();
     services.AddLogging(builder => builder.AddConsole());
     services.AddControllers();

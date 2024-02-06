@@ -1,15 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Jobs;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
-using MicroZoo.ZookeepersApi.Models;
 using MicroZoo.ZookeepersApi.Repository;
 using MicroZoo.ZookeepersApi.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 {

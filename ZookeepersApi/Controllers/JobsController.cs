@@ -10,6 +10,7 @@ using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
 using MicroZoo.ZookeepersApi.Models;
+using MicroZoo.ZookeepersApi.Services;
 using System.ComponentModel.DataAnnotations;
 
 namespace MicroZoo.ZookeepersApi.Controllers
@@ -18,20 +19,22 @@ namespace MicroZoo.ZookeepersApi.Controllers
     [ApiController]
     public class JobsController : ControllerBase
     {
-        private readonly IServiceProvider _provider;
+        //private readonly IServiceProvider _provider;
         private readonly IResponsesReceiverFromRabbitMq _receiver;
         private readonly Uri _animalsApiUrl;
         private readonly Uri _personsApiUrl;
         private readonly Uri _zookeepersApiUrl;
+        private readonly IConnectionService _connectionService;
 
-        public JobsController(IServiceProvider provider, IResponsesReceiverFromRabbitMq receiver,
-            IConfiguration configuration)
+        public JobsController(/*IServiceProvider provider,*/ IResponsesReceiverFromRabbitMq receiver,
+            /*IConfiguration configuration,*/ IConnectionService connectionService)
         {
-            _provider = provider;
+            //_provider = provider;
             _receiver = receiver;
-            _animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
+            /*_animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
             _personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
-            _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
+            _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);*/
+            _connectionService = connectionService;
         }
 
         /// <summary>
@@ -44,7 +47,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
         public async Task<IActionResult> GetAllJobsOfZookeeper(int zookeeperId)
         {
             var response = await _receiver.GetResponseFromRabbitTask<GetAllJobsOfZookeeperRequest,
-                GetJobsResponse>(new GetAllJobsOfZookeeperRequest(zookeeperId), _zookeepersApiUrl);
+                GetJobsResponse>(new GetAllJobsOfZookeeperRequest(zookeeperId), /*_zookeepersApiUrl*/
+                _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
@@ -60,7 +64,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
         public async Task<IActionResult> GetCurrentJobsOfZookeeper(int zookeeperId)
         {
             var response = await _receiver.GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
-                GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(zookeeperId), _zookeepersApiUrl);
+                GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(zookeeperId), /*_zookeepersApiUrl*/
+                _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
@@ -81,7 +86,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         {
             var response = await _receiver.GetResponseFromRabbitTask<GetJobsForTimeRangeRequest,
                     GetJobsResponse>(new GetJobsForTimeRangeRequest(zookeeperId, startDateTime,
-                    finishDateTime), _zookeepersApiUrl);
+                    finishDateTime), /*_zookeepersApiUrl*/ _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
                     ? Ok(response.Jobs)
@@ -103,7 +108,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
                     jobDto.StartTime = DateTime.UtcNow;
 
             var response = await _receiver.GetResponseFromRabbitTask<AddJobRequest, GetJobsResponse>(
-                new AddJobRequest(jobDto), _zookeepersApiUrl);
+                new AddJobRequest(jobDto), /*_zookeepersApiUrl*/ _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
@@ -120,7 +125,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         public async Task<IActionResult> UpdateJob(int jobId, [FromBody] JobWithoutStartTimeDto jobDto)
         {
             var response = await _receiver.GetResponseFromRabbitTask<UpdateJobRequest, GetJobsResponse>(
-                new UpdateJobRequest(jobId, jobDto), _zookeepersApiUrl);
+                new UpdateJobRequest(jobId, jobDto), /*_zookeepersApiUrl*/ _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
@@ -136,7 +141,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         public async Task<IActionResult> FinishJob(int jobId)
         {
             var response = await _receiver.GetResponseFromRabbitTask<FinishJobRequest, GetJobsResponse>(
-                new FinishJobRequest(jobId), _zookeepersApiUrl);
+                new FinishJobRequest(jobId), /*_zookeepersApiUrl*/ _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
