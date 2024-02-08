@@ -18,6 +18,46 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
     public class JobsControllerTests
     {
         [Fact]
+        public async void GetAllJobsOfZookeeper_should_return_error_message_unknown_error()
+        {
+            int zookeeperId = new Fixture().Create<int>();
+            var _zookeepersApiUrl = new Fixture().Create<Uri>();
+            List<Job> jobs = new List<Job>()
+            {
+                new Fixture().Build<Job>().With(j => j.ZookeeperId, zookeeperId).Create(),
+                new Fixture().Build<Job>().With(j => j.ZookeeperId, zookeeperId).Create()
+            };
+
+            var jobsResponse = new GetJobsResponse();
+
+            var mockReceiver = new Mock<IResponsesReceiverFromRabbitMq>();
+            mockReceiver.Setup(r => r.GetResponseFromRabbitTask<GetAllJobsOfZookeeperRequest,
+                GetJobsResponse>(It.IsAny<GetAllJobsOfZookeeperRequest>(), It.IsAny<Uri>()))
+                .ReturnsAsync(jobsResponse);
+            //var mockConfiguration = new Mock<IConfiguration>();
+            var mockConnnection = new Mock<IConnectionService>();
+            //mockConnnection.SetupAllProperties();
+
+            var jobsController = new JobsController(mockReceiver.Object, mockConnnection.Object);
+
+            var actionResult = await jobsController.GetAllJobsOfZookeeper(zookeeperId);
+
+            Assert.IsType<BadRequestObjectResult>(actionResult);
+
+            var result = actionResult as BadRequestResult;
+
+            //var resultObject = result.Value as List<Job>;
+
+            //Assert.NotNull(resultObject);
+            //Assert.Equal(jobs, resultObject);
+            //Assert.NotNull(result.Value as List<Job>);
+            //result.Value.
+
+            //Assert.NotNull(actionResult);
+            //Assert.Null(actionResult.Value);
+        }
+
+        [Fact]
         public async void GetAllJobsOfZookeeper_should_return_list_of_jobs_of_selected_zookeeper()
         {
             int zookeeperId = new Fixture().Create<int>();
