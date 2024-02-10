@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace MicroZoo.ZookeepersApi.Migrations
+namespace MicroZoo.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Changeprimarykey : Migration

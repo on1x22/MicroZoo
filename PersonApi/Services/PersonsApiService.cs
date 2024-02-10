@@ -22,7 +22,7 @@ namespace MicroZoo.PersonsApi.Services
             };
 
             if (response.Person == null)
-                response.ErrorMessage = $"Animal with id = {personId} not found";
+                response.ErrorMessage = $"Person with id = {personId} not found";
 
             return response;
         }

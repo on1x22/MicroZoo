@@ -3,7 +3,7 @@ using MicroZoo.AnimalsApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 
-namespace AnimalsApi.Consumers
+namespace MicroZoo.AnimalsApi.Consumers
 {
     public class GetAnimalTypeConsumer : IConsumer<GetAnimalTypeRequest>
     {

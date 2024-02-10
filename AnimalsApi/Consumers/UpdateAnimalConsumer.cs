@@ -1,5 +1,5 @@
 ﻿using MassTransit;
-using microZoo.Infrastructure.Exceptions;
+using MicroZoo.Infrastructure.Exceptions;
 using MicroZoo.AnimalsApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;

@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace MicroZoo.ZookeepersApi.Models
 {
     [Table("jobs")]
-    public class Job
+    public class __Job
     {
         [Key]
         [Column("id")]

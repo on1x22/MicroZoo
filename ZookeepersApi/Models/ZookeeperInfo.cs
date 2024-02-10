@@ -1,6 +1,6 @@
-﻿using MicroZoo.ZookeepersApi.Models;
-using MicroZoo.Infrastructure.Models.Persons;
+﻿using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Animals;
+using MicroZoo.Infrastructure.Models.Jobs;
 
 namespace MicroZoo.ZookeepersApi.Models
 {

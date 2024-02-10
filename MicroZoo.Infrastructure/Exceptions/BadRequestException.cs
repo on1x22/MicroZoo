@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace microZoo.Infrastructure.Exceptions
+namespace MicroZoo.Infrastructure.Exceptions
 {
     public class BadRequestException : Exception
     {

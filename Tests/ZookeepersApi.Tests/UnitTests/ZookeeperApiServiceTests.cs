@@ -1,13 +1,12 @@
-﻿
-
-using MicroZoo.Infrastructure.Models.Animals;
+﻿using MicroZoo.Infrastructure.Models.Animals;
+using MicroZoo.Infrastructure.Models.Jobs;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.ZookeepersApi.Models;
 using MicroZoo.ZookeepersApi.Repository;
 using MicroZoo.ZookeepersApi.Services;
 using Moq;
 
-namespace microZoo.ZookeepersApi.Tests.UnitTests
+namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 {
     public class ZookeeperApiServiceTests
     {
@@ -53,7 +52,7 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
         {
             // Arrange            
             int id = 1;
-            var mock = new Mock<IZookeeperRepository>();
+            var mock = new Mock<__IZookeeperRepository>();
             mock.Setup(l => l.GetPersonByIdFromPersonsApiAsync(It.IsAny<string>())).ReturnsAsync(persons[id]);
             mock.Setup(l => l.GetJobsById(It.IsAny<int>())).ReturnsAsync(jobs);
             mock.Setup(l => l.GetSpecialitiesIdByPersonId(It.IsAny<int>())).ReturnsAsync(new List<int>() { 0, 2 });
@@ -63,7 +62,7 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
                                                                                 .Returns(ObservedAnimals);
             
             var mockRepository = mock.Object;
-            var sut = new ZookeeperApiService(mockRepository);
+            var sut = new __ZookeeperApiService(mockRepository);
 
             // Act
             var result = await sut.GetZookepeerInfoAsync(id);
@@ -81,8 +80,8 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
         {
             // Arrange            
             int id = 1;
-            var mock = new Mock<IZookeeperRepository>();
-            var sut = new ZookeeperApiService(mock.Object);
+            var mock = new Mock<__IZookeeperRepository>();
+            var sut = new __ZookeeperApiService(mock.Object);
 
             // Act
             var result = await sut.GetZookepeerInfoAsync(id);
@@ -96,9 +95,9 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
         {
             // Arrange            
             int id = 1;
-            var mock = new Mock<IZookeeperRepository>();
+            var mock = new Mock<__IZookeeperRepository>();
             mock.Setup(l => l.GetPersonByIdFromPersonsApiAsync(It.IsAny<string>())).ReturnsAsync(persons[id]);
-            var sut = new ZookeeperApiService(mock.Object);
+            var sut = new __ZookeeperApiService(mock.Object);
 
             // Act
             var result = await sut.GetZookepeerInfoAsync(id);
@@ -116,10 +115,10 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
         {
             // Arrange            
             int id = 1;
-            var mock = new Mock<IZookeeperRepository>();
+            var mock = new Mock<__IZookeeperRepository>();
             mock.Setup(l => l.GetPersonByIdFromPersonsApiAsync(It.IsAny<string>())).ReturnsAsync(persons[id]);
             mock.Setup(l => l.GetJobsById(It.IsAny<int>())).ReturnsAsync(jobs);
-            var sut = new ZookeeperApiService(mock.Object);
+            var sut = new __ZookeeperApiService(mock.Object);
 
             // Act
             var result = await sut.GetZookepeerInfoAsync(id);
@@ -137,11 +136,11 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
         {
             // Arrange            
             int id = 1;
-            var mock = new Mock<IZookeeperRepository>();
+            var mock = new Mock<__IZookeeperRepository>();
             mock.Setup(l => l.GetPersonByIdFromPersonsApiAsync(It.IsAny<string>())).ReturnsAsync(persons[id]);
             mock.Setup(l => l.GetJobsById(It.IsAny<int>())).ReturnsAsync(jobs);
             mock.Setup(l => l.GetSpecialitiesIdByPersonId(It.IsAny<int>())).ReturnsAsync(new List<int>());
-            var sut = new ZookeeperApiService(mock.Object);
+            var sut = new __ZookeeperApiService(mock.Object);
 
             // Act
             var result = await sut.GetZookepeerInfoAsync(id);
@@ -159,11 +158,11 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
         {
             // Arrange            
             int id = 1;
-            var mock = new Mock<IZookeeperRepository>();
+            var mock = new Mock<__IZookeeperRepository>();
             mock.Setup(l => l.GetPersonByIdFromPersonsApiAsync(It.IsAny<string>())).ReturnsAsync(persons[id]);
             mock.Setup(l => l.GetJobsById(It.IsAny<int>())).ReturnsAsync(jobs);
             mock.Setup(l => l.GetSpecialitiesIdByPersonId(It.IsAny<int>())).ReturnsAsync(new List<int>() { 0, 2 });
-            var sut = new ZookeeperApiService(mock.Object);
+            var sut = new __ZookeeperApiService(mock.Object);
 
             // Act
             var result = await sut.GetZookepeerInfoAsync(id);
@@ -181,12 +180,12 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
         {
             // Arrange            
             int id = 1;
-            var mock = new Mock<IZookeeperRepository>();
+            var mock = new Mock<__IZookeeperRepository>();
             mock.Setup(l => l.GetPersonByIdFromPersonsApiAsync(It.IsAny<string>())).ReturnsAsync(persons[id]);
             mock.Setup(l => l.GetJobsById(It.IsAny<int>())).ReturnsAsync(jobs);
             mock.Setup(l => l.GetSpecialitiesIdByPersonId(It.IsAny<int>())).ReturnsAsync(new List<int>() { 0, 2 });
             mock.Setup(l => l.GetAnimalTypesByIds(It.IsAny<string>())).ReturnsAsync(animalTypes);
-            var sut = new ZookeeperApiService(mock.Object);
+            var sut = new __ZookeeperApiService(mock.Object);
 
             // Act
             var result = await sut.GetZookepeerInfoAsync(id);
@@ -204,9 +203,9 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
         {
             // Arrange            
             int id = 1;
-            var mock = new Mock<IZookeeperRepository>();
+            var mock = new Mock<__IZookeeperRepository>();
             mock.Setup(l => l.GetPersonByIdFromPersonsApiAsync(It.IsAny<string>())).ReturnsAsync(persons[id]);
-            var sut = new ZookeeperApiService(mock.Object);
+            var sut = new __ZookeeperApiService(mock.Object);
 
             // Act
             var result = await sut.GetPersonByIdFromPersonsApiAsync(id);
@@ -220,8 +219,8 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
         {
             // Arrange            
             int id = 999999999;
-            var mock = new Mock<IZookeeperRepository>();
-            var sut = new ZookeeperApiService(mock.Object);
+            var mock = new Mock<__IZookeeperRepository>();
+            var sut = new __ZookeeperApiService(mock.Object);
 
             // Act
             var result = await sut.GetPersonByIdFromPersonsApiAsync(id);
@@ -234,9 +233,9 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
         public async void GetAllAnimalTypesFromAnimalsApiAsync_should_return_animalTypes()
         {
             // Arrange   
-            var mock = new Mock<IZookeeperRepository>();
+            var mock = new Mock<__IZookeeperRepository>();
             mock.Setup(l => l.GetAllAnimalTypesFromAnimalsApiAsync(It.IsAny<string>())).ReturnsAsync(animalTypes);
-            var sut = new ZookeeperApiService(mock.Object);
+            var sut = new __ZookeeperApiService(mock.Object);
 
             // Act
             var result = await sut.GetAllAnimalTypesFromAnimalsApiAsync();
@@ -249,9 +248,9 @@ namespace microZoo.ZookeepersApi.Tests.UnitTests
         public async void GetAllAnimalTypesFromAnimalsApiAsync_should_return_null()
         {
             // Arrange            
-            var mock = new Mock<IZookeeperRepository>();
+            var mock = new Mock<__IZookeeperRepository>();
             //mock.Setup(l => l.GetPersonByIdFromPersonsApiAsync(It.IsAny<string>())).ReturnsAsync(persons[id]);
-            var sut = new ZookeeperApiService(mock.Object);
+            var sut = new __ZookeeperApiService(mock.Object);
 
             // Act
             var result = await sut.GetAllAnimalTypesFromAnimalsApiAsync();

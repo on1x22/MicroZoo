@@ -24,11 +24,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B9217663-80EA-4EBB-A202-10944A3C3B56}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonsApi.Tests", "Tests\PersonsApi.Tests\PersonsApi.Tests.csproj", "{5AAB1456-2A83-4F4B-98E7-28DB473BF335}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.PersonsApi.Tests", "Tests\PersonsApi.Tests\MicroZoo.PersonsApi.Tests.csproj", "{5AAB1456-2A83-4F4B-98E7-28DB473BF335}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimalsApi.Tests", "Tests\AnimalsApi.Tests\AnimalsApi.Tests.csproj", "{3D5D9803-3BE2-4EF1-9FCB-162234631DB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.AnimalsApi.Tests", "Tests\AnimalsApi.Tests\MicroZoo.AnimalsApi.Tests.csproj", "{3D5D9803-3BE2-4EF1-9FCB-162234631DB6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZookeepersApi.Tests", "Tests\ZookeepersApi.Tests\ZookeepersApi.Tests.csproj", "{50F81E8A-2DCB-47C8-BA33-2046EA0658A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.ZookeepersApi.Tests", "Tests\ZookeepersApi.Tests\MicroZoo.ZookeepersApi.Tests.csproj", "{50F81E8A-2DCB-47C8-BA33-2046EA0658A1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagersApi", "ManagersApi\ManagersApi.csproj", "{FA9F0DA8-5A5C-41D8-B086-B5AB263B85AF}"
 EndProject
