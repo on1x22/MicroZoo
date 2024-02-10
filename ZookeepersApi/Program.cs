@@ -34,13 +34,14 @@ app.Run();
 
 void RegisterServices(IServiceCollection services, IConfiguration configuration)
 {
-    var animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
+    /*var animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
     var personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
     var zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
 
-    services.AddScoped/*<IConnectionService>*/(s => new ConnectionService(animalsApiUrl,
+    services.AddScoped<IConnectionService>(s => new ConnectionService(animalsApiUrl,
                                                                           personsApiUrl, 
-                                                                          zookeepersApiUrl));
+                                                                          zookeepersApiUrl));*/
+    services.AddScoped<IConnectionService, ConnectionService>();
 
     services.AddHttpClient();
     services.AddLogging(builder => builder.AddConsole());

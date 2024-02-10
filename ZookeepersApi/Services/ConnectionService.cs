@@ -7,11 +7,12 @@ namespace MicroZoo.ZookeepersApi.Services
         private readonly Uri _personsApiUrl;
         private readonly Uri _zookeepersApiUrl;
 
-        public ConnectionService(Uri animalsApiUrl, Uri personsApiUrl, Uri zookeepersApiUrl)
+        public ConnectionService(/*Uri animalsApiUrl, Uri personsApiUrl, Uri zookeepersApiUrl*/
+            IConfiguration configuration)
         {
-            _animalsApiUrl = animalsApiUrl;
-            _personsApiUrl = personsApiUrl;
-            _zookeepersApiUrl = zookeepersApiUrl;
+            _animalsApiUrl = /*animalsApiUrl;*/new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
+            _personsApiUrl = /*personsApiUrl;*/new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
+            _zookeepersApiUrl = /*zookeepersApiUrl;*/new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
 
         public Uri AnimalsApiUrl { get => _animalsApiUrl; /*set => _animalsApiUrl = value;*/ }
