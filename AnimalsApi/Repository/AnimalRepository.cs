@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using microZoo.Infrastructure.Exceptions;
+using MicroZoo.Infrastructure.Exceptions;
 using MicroZoo.AnimalsApi.DbContexts;
 using MicroZoo.AnimalsApi.Models;
 using MicroZoo.Infrastructure.Models.Animals;

@@ -1,8 +1,8 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using MicroZoo.AnimalsApi.Services;
-using MicroZoo.Infrastructure.MassTransit.Requests;
-using MicroZoo.Infrastructure.MassTransit.Responses;
+using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 

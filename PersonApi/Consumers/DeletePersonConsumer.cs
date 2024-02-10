@@ -1,6 +1,6 @@
 ﻿using MassTransit;
-using MicroZoo.Infrastructure.MassTransit.Requests;
-using MicroZoo.Infrastructure.MassTransit.Responses;
+using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.PersonsApi.Services;
 
 namespace MicroZoo.PersonsApi.Consumers

@@ -1,8 +1,10 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MicroZoo.Infrastructure.MassTransit.Requests;
-using MicroZoo.Infrastructure.MassTransit.Responses;
+using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 using System.Runtime.CompilerServices;
@@ -14,11 +16,15 @@ namespace MicroZoo.AnimalsApi.Controllers
     public class AnimalTypesController : ControllerBase
     {
         private readonly IServiceProvider _provider;
-        private readonly Uri _rabbitMqUrl = new Uri("rabbitmq://localhost/animals-queue");
+        //private readonly Uri _rabbitMqUrl = new Uri("rabbitmq://localhost/animals-queue");
+        private readonly Uri _animalsApiUrl;
+        private readonly Uri _zookeepersApiUrl;
 
-        public AnimalTypesController(IServiceProvider provider)
+        public AnimalTypesController(IServiceProvider provider, IConfiguration configuration)
         {
             _provider = provider;
+            _animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
+            _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
 
         /// <summary>
@@ -29,7 +35,7 @@ namespace MicroZoo.AnimalsApi.Controllers
         public async Task<IActionResult> GetAllAnimalTypes()
         {
             var response = await GetResponseFromRabbitTask<GetAllAnimalTypesRequest,
-                GetAnimalTypesResponse>(new GetAllAnimalTypesRequest());
+                GetAnimalTypesResponse>(new GetAllAnimalTypesRequest(), _animalsApiUrl);
 
             return response.AnimalTypes != null
                 ? Ok(response.AnimalTypes)
@@ -45,7 +51,7 @@ namespace MicroZoo.AnimalsApi.Controllers
         public async Task<IActionResult> GetAnimalType(int animalTypeId)
         {
             var response = await GetResponseFromRabbitTask<GetAnimalTypeRequest, 
-                GetAnimalTypeResponse>(new GetAnimalTypeRequest(animalTypeId));
+                GetAnimalTypeResponse>(new GetAnimalTypeRequest(animalTypeId), _animalsApiUrl);
 
             return response.AnimalType != null
                 ? Ok(response.AnimalType)
@@ -61,7 +67,7 @@ namespace MicroZoo.AnimalsApi.Controllers
         public async Task<IActionResult> AddAnimalType([FromBody] AnimalTypeDto animalTypeDto)
         {
             var response = await GetResponseFromRabbitTask<AddAnimalTypeRequest, 
-                GetAnimalTypeResponse>(new AddAnimalTypeRequest(animalTypeDto));
+                GetAnimalTypeResponse>(new AddAnimalTypeRequest(animalTypeDto), _animalsApiUrl);
             return response.AnimalType != null
                 ? Ok(response.AnimalType)
                 : BadRequest(response.ErrorMessage);
@@ -78,7 +84,8 @@ namespace MicroZoo.AnimalsApi.Controllers
             [FromBody] AnimalTypeDto animalTypeDto)
         {
             var response = await GetResponseFromRabbitTask<UpdateAnimalTypeRequest,
-                GetAnimalTypeResponse>(new UpdateAnimalTypeRequest(animalTypeId, animalTypeDto));
+                GetAnimalTypeResponse>(new UpdateAnimalTypeRequest(animalTypeId, animalTypeDto), 
+                                                                   _animalsApiUrl);
             return response.AnimalType != null
                 ? Ok(response.AnimalType)
                 : BadRequest(response.ErrorMessage);
@@ -92,8 +99,19 @@ namespace MicroZoo.AnimalsApi.Controllers
         [HttpDelete("{animalTypeId}")]
         public async Task<IActionResult> DeleteAnimalType(int animalTypeId)
         {
+            var isThereZokeeperWithSpecialty = await
+                GetResponseFromRabbitTask<CheckZokeepersWithSpecialityAreExistRequest, 
+                CheckZokeepersWithSpecialityAreExistResponse>
+                (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.AnimalType, animalTypeId), 
+                _zookeepersApiUrl);
+
+            if (isThereZokeeperWithSpecialty.IsThereZookeeperWithThisSpeciality)
+                return BadRequest($"There are zookeepers with specialization {animalTypeId}. " +
+                    "Before deleting a specialty, you must remove the zookeepers " +
+                    "association with that specialty.");
+
             var response = await GetResponseFromRabbitTask<DeleteAnimalTypeRequest,
-                GetAnimalTypeResponse>(new DeleteAnimalTypeRequest(animalTypeId));
+                GetAnimalTypeResponse>(new DeleteAnimalTypeRequest(animalTypeId), _animalsApiUrl);
             return response.AnimalType != null
                 ? Ok(response.AnimalType)
                 : NotFound(response.ErrorMessage);
@@ -108,19 +126,19 @@ namespace MicroZoo.AnimalsApi.Controllers
         public async Task<IActionResult> GetAnimalTypesByIds([FromQuery] int[] animalTypesIds)
         {
             var response = await GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest,
-                GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds));
+                GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds), _animalsApiUrl);
             return response.AnimalTypes != null
             ? Ok(response.AnimalTypes)
             : BadRequest(response.ErrorMessage); 
         }
 
-        private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request)
+        private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
             where TIn : class
             where TOut : class
         {
             var clientFactory = _provider.GetRequiredService<IClientFactory>();
 
-            var client = clientFactory.CreateRequestClient<TIn>(_rabbitMqUrl);
+            var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
             var response = await client.GetResponse<TOut>(request);
             return response.Message;
         }

@@ -1,4 +1,3 @@
-using AnimalsApi.Consumers;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.AnimalsApi.Apis;
@@ -48,7 +47,7 @@ void RegisterServices(IServiceCollection services)
 
     services.AddScoped<IAnimalRepository, AnimalRepository>();
     services.AddScoped<IAnimalsApiService, AnimalsApiService>();
-    services.AddTransient<IApi, AnimalApi>();
+    services.AddTransient<IApi, MicroZoo.AnimalsApi.Apis.AnimalsApi>();
 
     services.AddMassTransit(x =>
     {
