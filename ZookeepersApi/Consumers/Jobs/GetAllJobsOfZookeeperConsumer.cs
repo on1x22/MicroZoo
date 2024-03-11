@@ -17,7 +17,8 @@ namespace MicroZoo.ZookeepersApi.Consumers.Jobs
 
         public async Task Consume(ConsumeContext<GetAllJobsOfZookeeperRequest> context)
         {
-            var response = await _service.GetAllJobsOfZookeeperAsync(context.Message.ZookeeperId);
+            var response = await _service.GetAllJobsOfZookeeperAsync(context.Message.ZookeeperId,
+                context.Message.PageOptions, context.Message.OrderDesc);
 
             if (response.Jobs == null)
                 response.ErrorMessage = "Unknown error";

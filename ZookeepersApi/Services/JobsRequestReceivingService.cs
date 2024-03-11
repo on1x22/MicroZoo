@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using MicroZoo.Infrastructure.Generals;
 using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
@@ -28,7 +29,8 @@ namespace MicroZoo.ZookeepersApi.Services
             _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
 
-        public async Task<GetJobsResponse> GetAllJobsOfZookeeperAsync(int zookeeperId)
+        public async Task<GetJobsResponse> GetAllJobsOfZookeeperAsync(int zookeeperId, 
+            PageOptions pageOptions, bool orderDesc)
         {
             return await _jobService.GetAllJobsOfZookeeperAsync(zookeeperId);
         }

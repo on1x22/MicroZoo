@@ -1,4 +1,5 @@
-﻿using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
+﻿using MicroZoo.Infrastructure.Generals;
+using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Jobs;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
@@ -17,7 +18,8 @@ namespace MicroZoo.ZookeepersApi.Services
             _logger = logger;
         }
 
-        public async Task<GetJobsResponse> GetAllJobsOfZookeeperAsync(int zookeeperId) =>    
+        public async Task<GetJobsResponse> GetAllJobsOfZookeeperAsync(int zookeeperId,
+            PageOptions pageOptions, bool orderDesc) =>    
             new GetJobsResponse()
             {
                 Jobs = await _repository.GetAllJobsOfZookeeperAsync(zookeeperId)
