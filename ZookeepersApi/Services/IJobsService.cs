@@ -14,7 +14,7 @@ namespace MicroZoo.ZookeepersApi.Services
 
         Task<GetJobsResponse> GetCurrentJobsOfZookeeperAsync(int zookeeperId);
 
-        Task<GetJobsResponse> GetJobsForTimeRangeAsync(int zookeeperId, DateTime startDateTime,
+        Task<GetJobsResponse> GetJobsForDateTimeRangeAsync(int zookeeperId, DateTime startDateTime,
             DateTime finishDateTime);
 
         Task<GetJobResponse> AddJobAsync(JobDto jobDto);

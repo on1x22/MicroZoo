@@ -31,16 +31,16 @@ namespace MicroZoo.ZookeepersApi.Services
                 Jobs = await _repository.GetCurrentJobsOfZookeeperAsync(zookeeperId)
             };
 
-        public async Task<GetJobsResponse> GetJobsForTimeRangeAsync(int zookeeperId, DateTime startDateTime, DateTime finishDateTime)
+        public async Task<GetJobsResponse> GetJobsForDateTimeRangeAsync(int zookeeperId, DateTime startDateTime, DateTime finishDateTime)
         {
             var response = new GetJobsResponse();
 
             if(zookeeperId == 0)
-                response.Jobs = await _repository.GetAllJobsForTimeRangeAsync(startDateTime, 
+                response.Jobs = await _repository.GetAllJobsForDateTimeRangeAsync(startDateTime, 
                     finishDateTime);
             
             if(zookeeperId > 0)
-                response.Jobs = await _repository.GetZookeeperJobsForTimeRangeAsync(zookeeperId, 
+                response.Jobs = await _repository.GetZookeeperJobsForDateTimeRangeAsync(zookeeperId, 
                     startDateTime, finishDateTime);
             
             return response;

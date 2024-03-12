@@ -1,6 +1,7 @@
-﻿namespace MicroZoo.Infrastructure.Generals
+﻿
+namespace MicroZoo.Infrastructure.Generals
 {
-    public class PageOptions
+    /*public class PageOptions
     {
         public int PageNumber {  get; set; }
         public int ItemsOnPage { get; set; }
@@ -10,5 +11,7 @@
             PageNumber = pageNumber;
             ItemsOnPage = itemsOnPage;
         }
-    }
+    }*/
+
+    public record PageOptions(int PageNumber, int ItemsOnPage);
 }

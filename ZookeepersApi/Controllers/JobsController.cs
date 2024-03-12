@@ -80,12 +80,12 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <param name="zookeeperId"></param>
         /// <returns>List of jobs</returns>
         [HttpGet]
-        public async Task<IActionResult> GetJobsForTimeRange(
-            [FromQuery, Required] DateTime startDateTime, [FromQuery] DateTime finishDateTime, 
-            int zookeeperId = 0)
+        public async Task<IActionResult> GetJobsForTimeRange(int zookeeperId,
+            [FromQuery, Required] DateTime startDateTime, [FromQuery] DateTime finishDateTime,
+            [FromQuery] int pageNumber, [FromQuery] int itemsOnPage, [FromQuery] bool orderDesc)
         {
-            var response = await _receiver.GetResponseFromRabbitTask<GetJobsForTimeRangeRequest,
-                    GetJobsResponse>(new GetJobsForTimeRangeRequest(zookeeperId, startDateTime,
+            var response = await _receiver.GetResponseFromRabbitTask<GetJobsForDateTimeRangeRequest,
+                    GetJobsResponse>(new GetJobsForDateTimeRangeRequest(zookeeperId, startDateTime,
                     finishDateTime), /*_zookeepersApiUrl*/ _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null

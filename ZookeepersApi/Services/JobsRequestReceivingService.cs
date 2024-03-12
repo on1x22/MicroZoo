@@ -40,7 +40,7 @@ namespace MicroZoo.ZookeepersApi.Services
             return await _jobService.GetCurrentJobsOfZookeeperAsync(zookeeperId);
         }
 
-        public async Task<GetJobsResponse> GetJobsForTimeRangeAsync(int zookeeperId, 
+        public async Task<GetJobsResponse> GetJobsForDateTimeRangeAsync(int zookeeperId, 
             DateTime startDateTime, DateTime finishDateTime)
         {
             var response = new GetJobsResponse();
@@ -72,7 +72,7 @@ namespace MicroZoo.ZookeepersApi.Services
                 }
             }
 
-            response = await _jobService.GetJobsForTimeRangeAsync(zookeeperId, startDateTime, 
+            response = await _jobService.GetJobsForDateTimeRangeAsync(zookeeperId, startDateTime, 
                 finishDateTime);
 
             return response;

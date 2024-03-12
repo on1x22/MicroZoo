@@ -107,15 +107,15 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
 
             var mockRepo = new Mock<IJobsRepository>();
-            mockRepo.Setup(j => j.GetAllJobsForTimeRangeAsync(It.IsAny<DateTime>(),
+            mockRepo.Setup(j => j.GetAllJobsForDateTimeRangeAsync(It.IsAny<DateTime>(),
                 It.IsAny<DateTime>())).ReturnsAsync(allJobs);
-            mockRepo.Setup(j => j.GetZookeeperJobsForTimeRangeAsync(randomZookeeperId,
+            mockRepo.Setup(j => j.GetZookeeperJobsForDateTimeRangeAsync(randomZookeeperId,
                 It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(jobsOfRandomZookeeper);
             var mockLogger = new Mock<ILogger<JobsService>>();
 
             var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
 
-            var result = await jobService.GetJobsForTimeRangeAsync(zookeeperId, startDateTime, 
+            var result = await jobService.GetJobsForDateTimeRangeAsync(zookeeperId, startDateTime, 
                 endDateTime);
 
             Assert.Equal(allJobs, result.Jobs);
@@ -141,15 +141,15 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
 
             var mockRepo = new Mock<IJobsRepository>();
-            mockRepo.Setup(j => j.GetAllJobsForTimeRangeAsync(It.IsAny<DateTime>(),
+            mockRepo.Setup(j => j.GetAllJobsForDateTimeRangeAsync(It.IsAny<DateTime>(),
                 It.IsAny<DateTime>())).ReturnsAsync(allJobs);
-            mockRepo.Setup(j => j.GetZookeeperJobsForTimeRangeAsync(zookeeperId,
+            mockRepo.Setup(j => j.GetZookeeperJobsForDateTimeRangeAsync(zookeeperId,
                 It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(jobsOfSelectedZookeeper);
             var mockLogger = new Mock<ILogger<JobsService>>();
 
             var jobService = new JobsService(mockRepo.Object, mockLogger.Object);
 
-            var result = await jobService.GetJobsForTimeRangeAsync(zookeeperId, startDateTime,
+            var result = await jobService.GetJobsForDateTimeRangeAsync(zookeeperId, startDateTime,
                 endDateTime);
 
             Assert.Equal(jobsOfSelectedZookeeper, result.Jobs);
