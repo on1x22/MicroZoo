@@ -18,8 +18,7 @@ namespace MicroZoo.ZookeepersApi.Services
             _logger = logger;
         }
 
-        public async Task<GetJobsResponse> GetAllJobsOfZookeeperAsync(int zookeeperId,
-            PageOptions pageOptions, bool orderDesc) =>    
+        public async Task<GetJobsResponse> GetAllJobsOfZookeeperAsync(int zookeeperId) =>    
             new GetJobsResponse()
             {
                 Jobs = await _repository.GetAllJobsOfZookeeperAsync(zookeeperId)
@@ -31,17 +30,18 @@ namespace MicroZoo.ZookeepersApi.Services
                 Jobs = await _repository.GetCurrentJobsOfZookeeperAsync(zookeeperId)
             };
 
-        public async Task<GetJobsResponse> GetJobsForDateTimeRangeAsync(int zookeeperId, DateTime startDateTime, DateTime finishDateTime)
+        public async Task<GetJobsResponse> GetJobsForDateTimeRangeAsync(int zookeeperId,
+            DateTimeRange dateTimeRange, OrderingOptions orderingOptions, PageOptions pageOptions)
         {
             var response = new GetJobsResponse();
 
             if(zookeeperId == 0)
-                response.Jobs = await _repository.GetAllJobsForDateTimeRangeAsync(startDateTime, 
-                    finishDateTime);
+                response.Jobs = await _repository.GetAllJobsForDateTimeRangeAsync(dateTimeRange, 
+                    orderingOptions, pageOptions);
             
             if(zookeeperId > 0)
                 response.Jobs = await _repository.GetZookeeperJobsForDateTimeRangeAsync(zookeeperId, 
-                    startDateTime, finishDateTime);
+                    dateTimeRange, orderingOptions, pageOptions);
             
             return response;
         }

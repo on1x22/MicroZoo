@@ -7,16 +7,11 @@ namespace MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi
     {
         public Guid OperationId { get; set; }
         public int ZookeeperId { get; set; }
-        public PageOptions PageOptions { get; set; }
-        public bool OrderDesc { get; set; }
 
-        public GetAllJobsOfZookeeperRequest(int zookeeperId, PageOptions pageOptions, 
-            bool orderDesc)
+        public GetAllJobsOfZookeeperRequest(int zookeeperId)
         {
             OperationId = Guid.NewGuid();
             ZookeeperId = zookeeperId;
-            PageOptions = pageOptions;
-            OrderDesc = orderDesc;
         }
     }
 }

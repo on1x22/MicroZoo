@@ -6,13 +6,12 @@ namespace MicroZoo.ZookeepersApi.Services
 {
     public interface IJobsRequestReceivingService
     {
-        Task<GetJobsResponse> GetAllJobsOfZookeeperAsync(int zookeeperId, 
-            PageOptions pageOptions, bool orderDesc);
+        Task<GetJobsResponse> GetAllJobsOfZookeeperAsync(int zookeeperId);
 
         Task<GetJobsResponse> GetCurrentJobsOfZookeeperAsync(int zookeeperId);
 
-        Task<GetJobsResponse> GetJobsForDateTimeRangeAsync(int zookeeperId, DateTime startDateTime,
-            DateTime finishDateTime);
+        Task<GetJobsResponse> GetJobsForDateTimeRangeAsync(int zookeeperId, 
+            DateTimeRange dateTimeRange, OrderingOptions orderingOptions, PageOptions pageOptions);
 
         Task<GetJobsResponse> AddJobAsync(JobDto jobDto);
 

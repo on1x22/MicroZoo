@@ -29,8 +29,7 @@ namespace MicroZoo.ZookeepersApi.Services
             _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
 
-        public async Task<GetJobsResponse> GetAllJobsOfZookeeperAsync(int zookeeperId, 
-            PageOptions pageOptions, bool orderDesc)
+        public async Task<GetJobsResponse> GetAllJobsOfZookeeperAsync(int zookeeperId)
         {
             return await _jobService.GetAllJobsOfZookeeperAsync(zookeeperId);
         }
@@ -40,8 +39,8 @@ namespace MicroZoo.ZookeepersApi.Services
             return await _jobService.GetCurrentJobsOfZookeeperAsync(zookeeperId);
         }
 
-        public async Task<GetJobsResponse> GetJobsForDateTimeRangeAsync(int zookeeperId, 
-            DateTime startDateTime, DateTime finishDateTime)
+        public async Task<GetJobsResponse> GetJobsForDateTimeRangeAsync(int zookeeperId,
+            DateTimeRange dateTimeRange, OrderingOptions orderingOptions, PageOptions pageOptions)
         {
             var response = new GetJobsResponse();
 
@@ -51,10 +50,10 @@ namespace MicroZoo.ZookeepersApi.Services
                 return response;
             }
 
-            if (finishDateTime == default)
-                finishDateTime = DateTime.MaxValue;
+            if (dateTimeRange.FinishDateTime == default)
+                dateTimeRange.FinishDateTime = DateTime.MaxValue;
 
-            if (startDateTime >= finishDateTime)
+            if (dateTimeRange.StartDateTime >= dateTimeRange.FinishDateTime)
             {
                 response.ErrorMessage = "Start time more or equals finish time";
                 return response;
@@ -72,8 +71,8 @@ namespace MicroZoo.ZookeepersApi.Services
                 }
             }
 
-            response = await _jobService.GetJobsForDateTimeRangeAsync(zookeeperId, startDateTime, 
-                finishDateTime);
+            response = await _jobService.GetJobsForDateTimeRangeAsync(zookeeperId, 
+                dateTimeRange, orderingOptions, pageOptions);
 
             return response;
         }

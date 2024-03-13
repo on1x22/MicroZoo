@@ -18,7 +18,8 @@ namespace MicroZoo.ZookeepersApi.Consumers.Jobs
         public async Task Consume(ConsumeContext<GetJobsForDateTimeRangeRequest> context)
         {
             var response = await _service.GetJobsForDateTimeRangeAsync(context.Message.ZookeeperId,
-                context.Message.StartDateTime, context.Message.FinishDateTime);
+                context.Message.DateTimeRange, context.Message.OrderingOptions,
+                context.Message.PageOptions);
 
             if (response.Jobs == null)
                 response.ErrorMessage = "Unknown error";

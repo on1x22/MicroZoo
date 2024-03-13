@@ -20,14 +20,10 @@ namespace MicroZoo.ZookeepersApi.Controllers
         private readonly Uri _zookeepersApiUrl;
         private readonly IConnectionService _connectionService;
 
-        public JobsController(/*IServiceProvider provider,*/ IResponsesReceiverFromRabbitMq receiver,
-            /*IConfiguration configuration,*/ IConnectionService connectionService)
+        public JobsController(IResponsesReceiverFromRabbitMq receiver, 
+            IConnectionService connectionService)
         {
-            //_provider = provider;
             _receiver = receiver;
-            /*_animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
-            _personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
-            _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);*/
             _connectionService = connectionService;
         }
 
@@ -41,14 +37,11 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <returns>List of jobs</returns>
         [HttpGet("{zookeeperId}")]
 
-        public async Task<IActionResult> GetAllJobsOfZookeeper(int zookeeperId, 
-            [FromQuery] int pageNumber, [FromQuery] int itemsOnPage, [FromQuery] bool orderDesc)
-        {
-            var pageOptions = new PageOptions(pageNumber, itemsOnPage);
-            
+        public async Task<IActionResult> GetAllJobsOfZookeeper(int zookeeperId)
+        {            
             var response = await _receiver.GetResponseFromRabbitTask<GetAllJobsOfZookeeperRequest,
-                GetJobsResponse>(new GetAllJobsOfZookeeperRequest(zookeeperId, pageOptions, 
-                orderDesc), _connectionService.ZookeepersApiUrl);
+                GetJobsResponse>(new GetAllJobsOfZookeeperRequest(zookeeperId), 
+                _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
@@ -64,7 +57,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         public async Task<IActionResult> GetCurrentJobsOfZookeeper(int zookeeperId)
         {
             var response = await _receiver.GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
-                GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(zookeeperId), /*_zookeepersApiUrl*/
+                GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(zookeeperId),
                 _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
@@ -75,18 +68,28 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <summary>
         /// Get jobs for selected time range
         /// </summary>
-        /// <param name="startDateTime"></param>
-        /// <param name="finishDateTime"></param>
-        /// <param name="zookeeperId"></param>
+        /// <param name="zookeeperId">Id of selected zookeeper</param>
+        /// <param name="startDateTime">Date and time from</param>
+        /// <param name="finishDateTime">Date and time to</param>
+        /// <param name="propertyName">Sorting by column name</param>
+        /// <param name="orderDescending">Ordering by descending</param>
+        /// <param name="pageNumber">Page number starting from first</param>
+        /// <param name="itemsOnPage">Number of records on one page</param>
         /// <returns>List of jobs</returns>
         [HttpGet]
         public async Task<IActionResult> GetJobsForTimeRange(int zookeeperId,
             [FromQuery, Required] DateTime startDateTime, [FromQuery] DateTime finishDateTime,
-            [FromQuery] int pageNumber, [FromQuery] int itemsOnPage, [FromQuery] bool orderDesc)
+            [FromQuery] string propertyName, [FromQuery] bool orderDescending,
+            [FromQuery] int pageNumber, [FromQuery] int itemsOnPage)
         {
+            var dateTimeRange = new DateTimeRange(startDateTime, finishDateTime);
+            var orderingOptions = new OrderingOptions(propertyName, orderDescending);
+            var pageOptions = new PageOptions(pageNumber, itemsOnPage);
+
             var response = await _receiver.GetResponseFromRabbitTask<GetJobsForDateTimeRangeRequest,
-                    GetJobsResponse>(new GetJobsForDateTimeRangeRequest(zookeeperId, startDateTime,
-                    finishDateTime), /*_zookeepersApiUrl*/ _connectionService.ZookeepersApiUrl);
+                    GetJobsResponse>(new GetJobsForDateTimeRangeRequest(zookeeperId, 
+                    dateTimeRange, orderingOptions, pageOptions), 
+                    _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
                     ? Ok(response.Jobs)
@@ -108,7 +111,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
                     jobDto.StartTime = DateTime.UtcNow;
 
             var response = await _receiver.GetResponseFromRabbitTask<AddJobRequest, GetJobsResponse>(
-                new AddJobRequest(jobDto), /*_zookeepersApiUrl*/ _connectionService.ZookeepersApiUrl);
+                new AddJobRequest(jobDto), _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
@@ -125,7 +128,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         public async Task<IActionResult> UpdateJob(int jobId, [FromBody] JobWithoutStartTimeDto jobDto)
         {
             var response = await _receiver.GetResponseFromRabbitTask<UpdateJobRequest, GetJobsResponse>(
-                new UpdateJobRequest(jobId, jobDto), /*_zookeepersApiUrl*/ _connectionService.ZookeepersApiUrl);
+                new UpdateJobRequest(jobId, jobDto), _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
@@ -141,23 +144,11 @@ namespace MicroZoo.ZookeepersApi.Controllers
         public async Task<IActionResult> FinishJob(int jobId)
         {
             var response = await _receiver.GetResponseFromRabbitTask<FinishJobRequest, GetJobsResponse>(
-                new FinishJobRequest(jobId), /*_zookeepersApiUrl*/ _connectionService.ZookeepersApiUrl);
+                new FinishJobRequest(jobId), _connectionService.ZookeepersApiUrl);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
                 : BadRequest(response.ErrorMessage);
         }
-
-        /*[Obsolete("Use _receiver.GetResponseFromRabbitTask()")]
-        private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
-            where TIn : class
-            where TOut : class
-        {
-            var clientFactory = _provider.GetRequiredService<IClientFactory>();
-
-            var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
-            var response = await client.GetResponse<TOut>(request);
-            return response.Message;
-        }*/
     }
 }
