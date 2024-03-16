@@ -36,7 +36,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <param name="orderDesc"></param>
         /// <returns>List of jobs</returns>
         [HttpGet("{zookeeperId}")]
-
         public async Task<IActionResult> GetAllJobsOfZookeeper(int zookeeperId)
         {            
             var response = await _receiver.GetResponseFromRabbitTask<GetAllJobsOfZookeeperRequest,
