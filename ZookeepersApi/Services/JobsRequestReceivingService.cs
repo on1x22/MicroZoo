@@ -1,13 +1,9 @@
-﻿using MassTransit;
-using MicroZoo.Infrastructure.Generals;
+﻿using MicroZoo.Infrastructure.Generals;
 using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
-using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
-using MicroZoo.ZookeepersApi.Models;
-using System.Net;
 
 namespace MicroZoo.ZookeepersApi.Services
 {
@@ -15,18 +11,20 @@ namespace MicroZoo.ZookeepersApi.Services
     {
         private readonly IJobsService _jobService;
         private readonly IResponsesReceiverFromRabbitMq _receiver;
-        private readonly Uri _animalsApiUrl;
+        /*private readonly Uri _animalsApiUrl;
         private readonly Uri _personsApiUrl;
-        private readonly Uri _zookeepersApiUrl;
+        private readonly Uri _zookeepersApiUrl;*/
+        private readonly IConnectionService _connectionService;
 
         public JobsRequestReceivingService(IJobsService jobService, IResponsesReceiverFromRabbitMq receiver,
-            IConfiguration configuration)
+            /*IConfiguration configuration,*/ IConnectionService connectionService)
         {
             _jobService = jobService;
             _receiver = receiver;
-            _animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
+            /*_animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
             _personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
-            _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
+            _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);*/
+            _connectionService = connectionService;
         }
 
         public async Task<GetJobsResponse> GetAllJobsOfZookeeperAsync(int zookeeperId)
@@ -62,7 +60,7 @@ namespace MicroZoo.ZookeepersApi.Services
             if (zookeeperId > 0)
             {
                 var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest,
-                    GetPersonResponse>(new GetPersonRequest(zookeeperId), _personsApiUrl);
+                    GetPersonResponse>(new GetPersonRequest(zookeeperId), _connectionService.PersonsApiUrl /*_personsApiUrl*/);
 
                 if (personResponse.Person == null || personResponse.Person.IsManager == true)
                 {
@@ -117,7 +115,7 @@ namespace MicroZoo.ZookeepersApi.Services
             }
 
             var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest,
-                    GetPersonResponse>(new GetPersonRequest(jobDto.ZookeeperId), _personsApiUrl);
+                    GetPersonResponse>(new GetPersonRequest(jobDto.ZookeeperId), _connectionService.PersonsApiUrl /*_personsApiUrl*/);
 
             if (personResponse.Person == null || personResponse.Person.IsManager == true)
             {
