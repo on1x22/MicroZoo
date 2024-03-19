@@ -22,7 +22,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void GetAllJobsOfZookeeperAsync_should_return_all_jobs_of_zookeeper()
         {
             int zookeeperId = new Fixture().Create<int>();
-            List<Job> jobs = GetListOfAllJobs(zookeeperId);           
+            List<Job> jobs = JobsFactory.GetListOfAllJobs(zookeeperId);           
             var expectedJobs = new List<Job>(jobs);
 
             _mockRepo.Setup(j => j.GetAllJobsOfZookeeperAsync(It.IsAny<int>())).ReturnsAsync(jobs);
@@ -55,8 +55,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         {
             int zookeeperId = new Fixture().Create<int>();
 
-            List<Job> allJobs = GetListOfAllJobs(zookeeperId); 
-            List<Job> jobsOfSelectedZookeeper = GetJobsOfSelectedZookeeper(allJobs, zookeeperId);
+            List<Job> allJobs = JobsFactory.GetListOfAllJobs(zookeeperId); 
+            List<Job> jobsOfSelectedZookeeper = JobsFactory.GetJobsOfSelectedZookeeper(allJobs, zookeeperId);
 
             _mockRepo.Setup(j => j.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>()))
                 .ReturnsAsync(jobsOfSelectedZookeeper);
@@ -93,8 +93,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             int zookeeperId = 0;
 
             int randomZookeeperId = new Fixture().Create<int>();
-            List<Job> allJobs = GetListOfAllJobs(randomZookeeperId);
-            List<Job> jobsOfRandomZookeeper = GetJobsOfSelectedZookeeper(allJobs, randomZookeeperId);
+            List<Job> allJobs = JobsFactory.GetListOfAllJobs(randomZookeeperId);
+            List<Job> jobsOfRandomZookeeper = JobsFactory.GetJobsOfSelectedZookeeper(allJobs, randomZookeeperId);
 
             _mockRepo.Setup(j => j.GetAllJobsForDateTimeRangeAsync(It.IsAny<DateTimeRange>(),
                 It.IsAny<OrderingOptions>(), It.IsAny<PageOptions>())).ReturnsAsync(allJobs);
@@ -118,13 +118,13 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         {
             int zookeeperId = new Fixture().Create<int>();
 
-            List<Job> allJobs = GetListOfAllJobs(zookeeperId);
+            List<Job> allJobs = JobsFactory.GetListOfAllJobs(zookeeperId);
 
-            List<Job> jobsOfSelectedZookeeper = GetJobsOfSelectedZookeeper(allJobs, zookeeperId);
+            List<Job> jobsOfSelectedZookeeper = JobsFactory.GetJobsOfSelectedZookeeper(allJobs, zookeeperId);
             List<Job> jobsOfOtherZookeepers = allJobs
                 .Where(j => j.ZookeeperId != zookeeperId).ToList();
 
-            var expectedJobs = GetJobsOfSelectedZookeeper(allJobs, zookeeperId);
+            var expectedJobs = JobsFactory.GetJobsOfSelectedZookeeper(allJobs, zookeeperId);
          
             _mockRepo.Setup(j => j.GetAllJobsForDateTimeRangeAsync(It.IsAny<DateTimeRange>(),
                 It.IsAny<OrderingOptions>(), It.IsAny<PageOptions>())).ReturnsAsync(allJobs);
@@ -382,22 +382,6 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                     new Fixture().Build<PageOptions>().Create()
                 };
             }
-        }
-
-        private static List<Job> GetListOfAllJobs(int zookeeperId)
-        {
-            return new List<Job>()
-            {
-                new Fixture().Build<Job>().Create(),
-                new Fixture().Build<Job>().With(j => j.ZookeeperId, zookeeperId).Create(),
-                new Fixture().Build<Job>().With(j => j.ZookeeperId, zookeeperId).Create(),
-                new Fixture().Build<Job>().Create()
-            };
-        }
-
-        private static List<Job> GetJobsOfSelectedZookeeper(List<Job> jobsList, int zookeeperId)
-        {
-            return jobsList.Where(j => j.ZookeeperId == zookeeperId).ToList();
         }
     }
 }
