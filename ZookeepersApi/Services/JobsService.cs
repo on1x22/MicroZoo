@@ -1,4 +1,5 @@
-﻿using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
+﻿using MicroZoo.Infrastructure.Generals;
+using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Jobs;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
@@ -29,17 +30,18 @@ namespace MicroZoo.ZookeepersApi.Services
                 Jobs = await _repository.GetCurrentJobsOfZookeeperAsync(zookeeperId)
             };
 
-        public async Task<GetJobsResponse> GetJobsForTimeRangeAsync(int zookeeperId, DateTime startDateTime, DateTime finishDateTime)
+        public async Task<GetJobsResponse> GetJobsForDateTimeRangeAsync(int zookeeperId,
+            DateTimeRange dateTimeRange, OrderingOptions orderingOptions, PageOptions pageOptions)
         {
             var response = new GetJobsResponse();
 
             if(zookeeperId == 0)
-                response.Jobs = await _repository.GetAllJobsForTimeRangeAsync(startDateTime, 
-                    finishDateTime);
+                response.Jobs = await _repository.GetAllJobsForDateTimeRangeAsync(dateTimeRange, 
+                    orderingOptions, pageOptions);
             
             if(zookeeperId > 0)
-                response.Jobs = await _repository.GetZookeeperJobsForTimeRangeAsync(zookeeperId, 
-                    startDateTime, finishDateTime);
+                response.Jobs = await _repository.GetZookeeperJobsForDateTimeRangeAsync(zookeeperId, 
+                    dateTimeRange, orderingOptions, pageOptions);
             
             return response;
         }

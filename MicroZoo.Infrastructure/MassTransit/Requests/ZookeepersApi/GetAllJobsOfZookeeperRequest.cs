@@ -1,4 +1,6 @@
 ﻿
+using MicroZoo.Infrastructure.Generals;
+
 namespace MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi
 {
     public class GetAllJobsOfZookeeperRequest
