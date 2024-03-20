@@ -11,19 +11,13 @@ namespace MicroZoo.ZookeepersApi.Services
     {
         private readonly IJobsService _jobService;
         private readonly IResponsesReceiverFromRabbitMq _receiver;
-        /*private readonly Uri _animalsApiUrl;
-        private readonly Uri _personsApiUrl;
-        private readonly Uri _zookeepersApiUrl;*/
         private readonly IConnectionService _connectionService;
 
         public JobsRequestReceivingService(IJobsService jobService, IResponsesReceiverFromRabbitMq receiver,
-            /*IConfiguration configuration,*/ IConnectionService connectionService)
+            IConnectionService connectionService)
         {
             _jobService = jobService;
             _receiver = receiver;
-            /*_animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
-            _personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
-            _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);*/
             _connectionService = connectionService;
         }
 
@@ -60,7 +54,7 @@ namespace MicroZoo.ZookeepersApi.Services
             if (zookeeperId > 0)
             {
                 var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest,
-                    GetPersonResponse>(new GetPersonRequest(zookeeperId), _connectionService.PersonsApiUrl /*_personsApiUrl*/);
+                    GetPersonResponse>(new GetPersonRequest(zookeeperId), _connectionService.PersonsApiUrl);
 
                 if (personResponse.Person == null || personResponse.Person.IsManager == true)
                 {
@@ -115,7 +109,7 @@ namespace MicroZoo.ZookeepersApi.Services
             }
 
             var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest,
-                    GetPersonResponse>(new GetPersonRequest(jobDto.ZookeeperId), _connectionService.PersonsApiUrl /*_personsApiUrl*/);
+                    GetPersonResponse>(new GetPersonRequest(jobDto.ZookeeperId), _connectionService.PersonsApiUrl);
 
             if (personResponse.Person == null || personResponse.Person.IsManager == true)
             {
