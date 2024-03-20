@@ -2,6 +2,10 @@
 using MicroZoo.Infrastructure.Models.Jobs;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
 using MicroZoo.ZookeepersApi.DBContext;
+using MicroZoo.Infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
+using MicroZoo.Infrastructure.Generals;
 
 namespace MicroZoo.ZookeepersApi.Repository
 {
@@ -22,17 +26,27 @@ namespace MicroZoo.ZookeepersApi.Repository
             await _dBContext.Jobs.Where(j => j.ZookeeperId == zookeeperId && j.FinishTime == null)
                                  .OrderBy(j => j.StartTime).ToListAsync();
 
-        public async Task<List<Job>> GetAllJobsForTimeRangeAsync(DateTime startDateTime, 
-            DateTime finishDateTime) =>
-            await _dBContext.Jobs.Where(j => (j.StartTime >= startDateTime && 
-            j.StartTime < finishDateTime) &&
-            (j.FinishTime <= finishDateTime || j.FinishTime == null)).ToListAsync();
+        public async Task<List<Job>> GetAllJobsForDateTimeRangeAsync(DateTimeRange dateTimeRange, 
+            OrderingOptions orderingOptions, PageOptions pageOptions) =>            
+            await _dBContext.Jobs.Where(j => (j.StartTime >= dateTimeRange.StartDateTime &&
+            j.StartTime < dateTimeRange.FinishDateTime) &&
+            (j.FinishTime <= dateTimeRange.FinishDateTime || j.FinishTime == null))
+            .OrderBy(propertyName: orderingOptions.PropertyName, 
+                descending: orderingOptions.OrderDescending)
+            .Skip((pageOptions.PageNumber - 1) * pageOptions.ItemsOnPage)
+            .Take(pageOptions.ItemsOnPage)
+            .ToListAsync();
 
-        public async Task<List<Job>> GetZookeeperJobsForTimeRangeAsync(int zookeeperId,
-            DateTime startDateTime, DateTime finishDateTime) =>
+        public async Task<List<Job>> GetZookeeperJobsForDateTimeRangeAsync(int zookeeperId,
+            DateTimeRange dateTimeRange, OrderingOptions orderingOptions, PageOptions pageOptions) =>            
             await _dBContext.Jobs.Where(j => j.ZookeeperId == zookeeperId &&
-            (j.StartTime >= startDateTime && j.StartTime < finishDateTime) && 
-            (j.FinishTime <= finishDateTime || j.FinishTime == null)).ToListAsync();
+            (j.StartTime >= dateTimeRange.StartDateTime && j.StartTime < dateTimeRange.FinishDateTime) &&
+            (j.FinishTime <= dateTimeRange.FinishDateTime || j.FinishTime == null))
+            .OrderBy(propertyName: orderingOptions.PropertyName,
+                descending: orderingOptions.OrderDescending)
+            .Skip((pageOptions.PageNumber - 1) * pageOptions.ItemsOnPage)
+            .Take(pageOptions.ItemsOnPage)
+            .ToListAsync();
 
         public async Task<Job> GetJobAsync(int jobId) =>
             await _dBContext.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);

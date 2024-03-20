@@ -6,7 +6,7 @@ using MicroZoo.ZookeepersApi.Services;
 namespace MicroZoo.ZookeepersApi.Consumers.Jobs
 {
     public class GetJobsForTimeRangeConsumer :
-        IConsumer<GetJobsForTimeRangeRequest>
+        IConsumer<GetJobsForDateTimeRangeRequest>
     {
         private readonly IJobsRequestReceivingService _service;
 
@@ -15,10 +15,11 @@ namespace MicroZoo.ZookeepersApi.Consumers.Jobs
             _service = servise;
         }
 
-        public async Task Consume(ConsumeContext<GetJobsForTimeRangeRequest> context)
+        public async Task Consume(ConsumeContext<GetJobsForDateTimeRangeRequest> context)
         {
-            var response = await _service.GetJobsForTimeRangeAsync(context.Message.ZookeeperId,
-                context.Message.StartDateTime, context.Message.FinishDateTime);
+            var response = await _service.GetJobsForDateTimeRangeAsync(context.Message.ZookeeperId,
+                context.Message.DateTimeRange, context.Message.OrderingOptions,
+                context.Message.PageOptions);
 
             if (response.Jobs == null)
                 response.ErrorMessage = "Unknown error";

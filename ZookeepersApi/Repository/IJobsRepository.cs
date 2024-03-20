@@ -1,4 +1,5 @@
-﻿using MicroZoo.Infrastructure.Models.Jobs;
+﻿using MicroZoo.Infrastructure.Generals;
+using MicroZoo.Infrastructure.Models.Jobs;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
 
 namespace MicroZoo.ZookeepersApi.Repository
@@ -9,10 +10,11 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         Task<List<Job>> GetCurrentJobsOfZookeeperAsync(int zookeeperId);
 
-        Task<List<Job>> GetAllJobsForTimeRangeAsync(DateTime startDateTime, DateTime finishDateTime);
+        Task<List<Job>> GetAllJobsForDateTimeRangeAsync(DateTimeRange dateTimeRange, 
+            OrderingOptions orderingOptions, PageOptions pageOptions);
 
-        Task<List<Job>> GetZookeeperJobsForTimeRangeAsync(int zookeeperId,
-            DateTime startDateTime, DateTime finishDateTime);
+        Task<List<Job>> GetZookeeperJobsForDateTimeRangeAsync(int zookeeperId,
+            DateTimeRange dateTimeRange, OrderingOptions orderingOptions, PageOptions pageOptions);
 
         Task<Job> GetJobAsync(int jobId);
 
