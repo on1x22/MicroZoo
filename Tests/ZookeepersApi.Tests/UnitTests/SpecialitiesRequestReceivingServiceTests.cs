@@ -200,5 +200,143 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             Assert.Equal(specialityResponse.Speciality, result.Speciality);
         }
+
+        [Fact]
+        public async void ChangeRelationBetweenZookeeperAndSpeciality_and_person_is_null_should_return_error_message_person_is_null()
+        {
+            var personErrorMessage = "Error. Person is null";
+            var expectedMessage = personErrorMessage + ".\n";
+
+            var relationId = new Fixture().Create<int>();
+            var specialityDto = new Fixture().Create<SpecialityDto>();
+
+            var personResponse = new Fixture().Build<GetPersonResponse>()
+                .With(r => r.Person, (Person)null)
+                .With(r => r.ErrorMessage, personErrorMessage)
+                .Create();
+
+            var animalType = new Fixture().Build<AnimalType>()
+                .With(at => at.Animals, (List<Animal>)null)
+                .With(at => at.Id, specialityDto.AnimalTypeId)
+                .Create();
+
+            var animalTypeResponse = new Fixture().Build<GetAnimalTypeResponse>()
+                .With(atr => atr.AnimalType, animalType)
+                .Create();
+
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                It.IsAny<GetPersonRequest>(), It.IsAny<Uri>())).ReturnsAsync(personResponse);
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetAnimalTypeRequest, GetAnimalTypeResponse>(
+                It.IsAny<GetAnimalTypeRequest>(), It.IsAny<Uri>())).ReturnsAsync(animalTypeResponse);
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<ChangeRelationBetweenZookeeperAndSpecialityRequest,
+                GetSpecialityResponse>(It.IsAny<ChangeRelationBetweenZookeeperAndSpecialityRequest>(), It.IsAny<Uri>()));
+
+            var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
+                _mockConnection.Object);
+
+            var result = await service.ChangeRelationBetweenZookeeperAndSpeciality(relationId, specialityDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void ChangeRelationBetweenZookeeperAndSpeciality_and_animalType_is_null_should_return_error_message_animalType_is_null()
+        {            
+            var expectedMessage = "Error. AnimalType is null";
+
+            var relationId = new Fixture().Create<int>();
+            var specialityDto = new Fixture().Create<SpecialityDto>();
+
+            var personResponse = new Fixture().Create<GetPersonResponse>();
+
+            var animalTypeResponse = new Fixture().Build<GetAnimalTypeResponse>()
+                .With(atr => atr.AnimalType, (AnimalType)null)
+                .With(r => r.ErrorMessage, expectedMessage)
+                .Create();
+
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                It.IsAny<GetPersonRequest>(), It.IsAny<Uri>())).ReturnsAsync(personResponse);
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetAnimalTypeRequest, GetAnimalTypeResponse>(
+                It.IsAny<GetAnimalTypeRequest>(), It.IsAny<Uri>())).ReturnsAsync(animalTypeResponse);
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<ChangeRelationBetweenZookeeperAndSpecialityRequest,
+                GetSpecialityResponse>(It.IsAny<ChangeRelationBetweenZookeeperAndSpecialityRequest>(), It.IsAny<Uri>()));
+
+            var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
+                _mockConnection.Object);
+
+            var result = await service.ChangeRelationBetweenZookeeperAndSpeciality(relationId, specialityDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void ChangeRelationBetweenZookeeperAndSpeciality_and_person_and_animalType_is_null_should_return_error_message_person_is_null_animalType_is_null()
+        {
+            var personErrorMessage = "Error. Person is null";
+            var animalTypeErrorMessage = "Error. AnimalType is null";
+            var expectedMessage = personErrorMessage + ".\n" + animalTypeErrorMessage;
+
+            var relationId = new Fixture().Create<int>();
+            var specialityDto = new Fixture().Create<SpecialityDto>();
+
+            var personResponse = new Fixture().Build<GetPersonResponse>()
+                .With(r => r.Person, (Person)null)
+                .With(r => r.ErrorMessage, personErrorMessage)
+                .Create();
+
+            var animalTypeResponse = new Fixture().Build<GetAnimalTypeResponse>()
+                .With(atr => atr.AnimalType, (AnimalType)null)
+                .With(r => r.ErrorMessage, animalTypeErrorMessage)
+                .Create();
+
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                It.IsAny<GetPersonRequest>(), It.IsAny<Uri>())).ReturnsAsync(personResponse);
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetAnimalTypeRequest, GetAnimalTypeResponse>(
+                It.IsAny<GetAnimalTypeRequest>(), It.IsAny<Uri>())).ReturnsAsync(animalTypeResponse);
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<ChangeRelationBetweenZookeeperAndSpecialityRequest,
+                GetSpecialityResponse>(It.IsAny<ChangeRelationBetweenZookeeperAndSpecialityRequest>(), It.IsAny<Uri>()));
+
+            var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
+                _mockConnection.Object);
+
+            var result = await service.ChangeRelationBetweenZookeeperAndSpeciality(relationId, specialityDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void ChangeRelationBetweenZookeeperAndSpeciality_speciality()
+        {
+            var relationId = new Fixture().Create<int>();
+            var specialityDto = new Fixture().Create<SpecialityDto>();
+
+            var personResponse = new Fixture().Create<GetPersonResponse>();
+
+            var animalType = new Fixture().Build<AnimalType>()
+                .With(at => at.Animals, (List<Animal>)null)
+                .With(at => at.Id, specialityDto.AnimalTypeId)
+                .Create();
+
+            var animalTypeResponse = new Fixture().Build<GetAnimalTypeResponse>()
+                .With(atr => atr.AnimalType, animalType)
+                .Create();
+
+            var specialityResponse = new Fixture().Create<GetSpecialityResponse>();
+
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                It.IsAny<GetPersonRequest>(), It.IsAny<Uri>())).ReturnsAsync(personResponse);
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetAnimalTypeRequest, GetAnimalTypeResponse>(
+                It.IsAny<GetAnimalTypeRequest>(), It.IsAny<Uri>())).ReturnsAsync(animalTypeResponse);
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<ChangeRelationBetweenZookeeperAndSpecialityRequest,
+                GetSpecialityResponse>(It.IsAny<ChangeRelationBetweenZookeeperAndSpecialityRequest>(), It.IsAny<Uri>())).
+                ReturnsAsync(specialityResponse);
+
+            var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
+                _mockConnection.Object);
+
+            var result = await service.ChangeRelationBetweenZookeeperAndSpeciality(relationId, specialityDto);
+
+            Assert.Equal(specialityResponse.Speciality, result.Speciality);
+        }
     }
 }

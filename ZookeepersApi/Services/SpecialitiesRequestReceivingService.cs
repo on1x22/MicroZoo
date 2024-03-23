@@ -64,5 +64,36 @@ namespace MicroZoo.ZookeepersApi.Services
             return await _receiver.GetResponseFromRabbitTask<AddSpecialityRequest, GetSpecialityResponse>
                 (new AddSpecialityRequest(specialityDto), _connectionService.ZookeepersApiUrl);
         }
+
+        public async Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpeciality(int relationId, 
+            SpecialityDto specialityDto)
+        {
+            var person = await _receiver.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                new GetPersonRequest(specialityDto.ZookeeperId), _connectionService.PersonsApiUrl);
+
+            var animalType = await _receiver.GetResponseFromRabbitTask<GetAnimalTypeRequest,
+                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId), 
+                _connectionService.AnimalsApiUrl);
+
+            string errorMessage = string.Empty;
+
+            if (person.Person == null)
+                errorMessage += person.ErrorMessage + ".\n";
+
+            if (animalType.AnimalType == null)
+                errorMessage += animalType.ErrorMessage;
+
+            if (errorMessage != string.Empty)
+                return new GetSpecialityResponse() { ErrorMessage = errorMessage };
+
+            return await _receiver.GetResponseFromRabbitTask<ChangeRelationBetweenZookeeperAndSpecialityRequest, 
+                GetSpecialityResponse>(new ChangeRelationBetweenZookeeperAndSpecialityRequest(relationId, 
+                specialityDto), _connectionService.ZookeepersApiUrl);
+        }
+
+        public Task<GetAnimalTypesResponse> DeleteSpeciality(SpecialityDto specialityDto)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
