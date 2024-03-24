@@ -91,9 +91,18 @@ namespace MicroZoo.ZookeepersApi.Services
                 specialityDto), _connectionService.ZookeepersApiUrl);
         }
 
-        public Task<GetAnimalTypesResponse> DeleteSpeciality(SpecialityDto specialityDto)
+        public async Task<GetAnimalTypesResponse> DeleteSpeciality(SpecialityDto specialityDto)
         {
-            throw new NotImplementedException();
+            var specialitiesResponse = await _receiver.GetResponseFromRabbitTask<DeleteSpecialityRequest,
+                GetSpecialitiesResponse>(new DeleteSpecialityRequest(specialityDto), _connectionService.ZookeepersApiUrl);
+
+            if (specialitiesResponse.Specialities == null)
+                return new GetAnimalTypesResponse() { ErrorMessage = specialitiesResponse.ErrorMessage };
+
+            var animalTypesIds = specialitiesResponse.Specialities.Select(x => x.AnimalTypeId).ToArray();
+
+            return await _receiver.GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest,
+                GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds), _connectionService.AnimalsApiUrl);
         }
     }
 }

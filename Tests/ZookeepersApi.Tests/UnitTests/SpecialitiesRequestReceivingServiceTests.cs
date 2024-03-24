@@ -7,6 +7,7 @@ using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Persons;
+using MicroZoo.Infrastructure.Models.Specialities;
 using MicroZoo.Infrastructure.Models.Specialities.Dto;
 using MicroZoo.ZookeepersApi.Services;
 
@@ -337,6 +338,61 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var result = await service.ChangeRelationBetweenZookeeperAndSpeciality(relationId, specialityDto);
 
             Assert.Equal(specialityResponse.Speciality, result.Speciality);
+        }
+
+        [Fact]
+        public async void DeleteSpeciality_should_return_error_message()
+        {
+            var expectedMessage = "Error in specialitiesError";
+            var specialityDto = new Fixture().Create<SpecialityDto>();
+
+            var specialitiesResponse = new Fixture().Build<GetSpecialitiesResponse>()
+                .With(r => r.Specialities, (List<Speciality>)null)
+                .With(r => r.ErrorMessage, expectedMessage)
+                .Create();
+
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<DeleteSpecialityRequest, GetSpecialitiesResponse>(
+                It.IsAny<DeleteSpecialityRequest>(), It.IsAny<Uri>())).ReturnsAsync(specialitiesResponse);
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest, GetAnimalTypesResponse>(
+                It.IsAny<GetAnimalTypesByIdsRequest>(), It.IsAny<Uri>()));
+
+            var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
+                _mockConnection.Object);
+
+            var result = await service.DeleteSpeciality(specialityDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void DeleteSpeciality_should_return_animalTypes_list()
+        {
+            var specialityDto = new Fixture().Create<SpecialityDto>();
+
+            var specialities = new Fixture().CreateMany<Speciality>(5).ToList();
+            var specialitiesResponse = new Fixture().Build<GetSpecialitiesResponse>()
+                .With(r => r.Specialities, specialities)
+                .Create();
+
+            var animalTypes = new Fixture().Build<AnimalType>()
+                .With(at => at.Animals, (List<Animal>)null)
+                .CreateMany(5).ToList();
+
+            var animalTypesResponse = new Fixture().Build<GetAnimalTypesResponse>()
+                .With(at => at.AnimalTypes, animalTypes)
+                .Create();
+
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<DeleteSpecialityRequest, GetSpecialitiesResponse>(
+                It.IsAny<DeleteSpecialityRequest>(), It.IsAny<Uri>())).ReturnsAsync(specialitiesResponse);
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest, GetAnimalTypesResponse>(
+                It.IsAny<GetAnimalTypesByIdsRequest>(), It.IsAny<Uri>())).ReturnsAsync(animalTypesResponse);
+
+            var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
+                _mockConnection.Object);
+
+            var result = await service.DeleteSpeciality(specialityDto);
+
+            Assert.Equal(animalTypes, result.AnimalTypes);
         }
     }
 }
