@@ -24,24 +24,24 @@ namespace MicroZoo.ZookeepersApi.Services
             _connectionService = connectionService;
         }
 
-        public async Task<GetAnimalTypesResponse> GetAllSpecialities()
+        public async Task<GetAnimalTypesResponse> GetAllSpecialitiesAsync()
         {
             return await _receiver.GetResponseFromRabbitTask<GetAllAnimalTypesRequest,
                 GetAnimalTypesResponse>(new GetAllAnimalTypesRequest(), _connectionService.AnimalsApiUrl);
         }
 
-        public async Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZokeepersWithSpecialityAreExist( 
+        public async Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZokeepersWithSpecialityAreExistAsync( 
             CheckType checkType, int animalTypeId)
         {
             return await _specialitiesService.CheckZokeepersWithSpecialityAreExistAsync(checkType, animalTypeId);
         }
 
-        public async Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZookeeperIsExist(CheckType checkType, int personId)
+        public async Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZookeeperIsExistAsync(CheckType checkType, int personId)
         {
             return await _specialitiesService.CheckZokeepersWithSpecialityAreExistAsync(checkType, personId);
         }
 
-        public async Task<GetSpecialityResponse> AddSpeciality(SpecialityDto specialityDto)
+        public async Task<GetSpecialityResponse> AddSpecialityAsync(SpecialityDto specialityDto)
         {
             var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
                 new GetPersonRequest(specialityDto.ZookeeperId), _connectionService.PersonsApiUrl);
@@ -60,12 +60,10 @@ namespace MicroZoo.ZookeepersApi.Services
             if (errorMessage != string.Empty)            
                 return new GetSpecialityResponse() { ErrorMessage = errorMessage };
             
-
-            return await _receiver.GetResponseFromRabbitTask<AddSpecialityRequest, GetSpecialityResponse>
-                (new AddSpecialityRequest(specialityDto), _connectionService.ZookeepersApiUrl);
+            return await _specialitiesService.AddSpecialityAsync(specialityDto);
         }
 
-        public async Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpeciality(int relationId, 
+        public async Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId, 
             SpecialityDto specialityDto)
         {
             var person = await _receiver.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
@@ -86,15 +84,13 @@ namespace MicroZoo.ZookeepersApi.Services
             if (errorMessage != string.Empty)
                 return new GetSpecialityResponse() { ErrorMessage = errorMessage };
 
-            return await _receiver.GetResponseFromRabbitTask<ChangeRelationBetweenZookeeperAndSpecialityRequest, 
-                GetSpecialityResponse>(new ChangeRelationBetweenZookeeperAndSpecialityRequest(relationId, 
-                specialityDto), _connectionService.ZookeepersApiUrl);
+            return await _specialitiesService.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, 
+                specialityDto);
         }
 
-        public async Task<GetAnimalTypesResponse> DeleteSpeciality(SpecialityDto specialityDto)
+        public async Task<GetAnimalTypesResponse> DeleteSpecialityAsync(SpecialityDto specialityDto)
         {
-            var specialitiesResponse = await _receiver.GetResponseFromRabbitTask<DeleteSpecialityRequest,
-                GetSpecialitiesResponse>(new DeleteSpecialityRequest(specialityDto), _connectionService.ZookeepersApiUrl);
+            var specialitiesResponse = await _specialitiesService.DeleteSpecialityAsync(specialityDto);
 
             if (specialitiesResponse.Specialities == null)
                 return new GetAnimalTypesResponse() { ErrorMessage = specialitiesResponse.ErrorMessage };
