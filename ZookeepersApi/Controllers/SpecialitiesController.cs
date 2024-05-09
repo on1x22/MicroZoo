@@ -15,20 +15,20 @@ namespace MicroZoo.ZookeepersApi.Controllers
     [ApiController]
     public class SpecialitiesController : ControllerBase
     {
-        private readonly IServiceProvider _provider;
+        //private readonly IServiceProvider _provider;
         private readonly ISpecialitiesRequestReceivingService _receivingService;
-        private readonly Uri _animalsApiUrl;
-        private readonly Uri _personsApiUrl;
-        private readonly Uri _zookeepersApiUrl;
+        //private readonly Uri _animalsApiUrl;
+        //private readonly Uri _personsApiUrl;
+        //private readonly Uri _zookeepersApiUrl;
 
-        public SpecialitiesController(IServiceProvider provider, IConfiguration configuration,
+        public SpecialitiesController(/*IServiceProvider provider, IConfiguration configuration,*/
             ISpecialitiesRequestReceivingService receivingService)
         {
-            _provider = provider;
+            //_provider = provider;
             _receivingService = receivingService;
-            _animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
-            _personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
-            _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
+            //_animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
+            //_personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
+            //_zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         }
 
         /// <summary>
-        /// Check that there is an association between specialty and any  zookeepers
+        /// Check that there is an association between specialty and any zookeepers
         /// </summary>
         /// <param name="animalTypeId"></param>
         /// <returns>True or false</returns>
