@@ -27,7 +27,7 @@ namespace MicroZoo.Infrastructure.Models.Jobs
         public DateTime? FinishTime { get; set; }
 
         [Column("report"), MaxLength(250)]
-        public string Report {  get; set; }
+        public string? Report {  get; set; }
 
         [Column("priority")]
         public int Priority {  get; set; }

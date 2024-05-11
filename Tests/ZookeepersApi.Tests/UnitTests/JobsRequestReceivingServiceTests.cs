@@ -25,10 +25,10 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
         [Theory]
         [MemberData(nameof(DateTimeRangeOrderingOptionsPageOptions))]
-        public async void GetJobsForDateTimeRangeAsync_should_return_error_message_zookeeper_with_negative_id_doesnt_exist(
+        public async void GetJobsForDateTimeRangeAsync_should_return_error_message_zookeeper_id_must_be_more_than_0(
             DateTimeRange dateTimeRange, OrderingOptions orderingOptions, PageOptions pageOptions)
         {
-            var expectedMessage = "Zookeeper with negative id doesn't exist";
+            var expectedMessage = "Zookeeper Id must be more than 0";
             var negativeZookeeperId = new Fixture().Create<int>() * (-1);
 
             var personResponse = new GetPersonResponse() { ErrorMessage = expectedMessage };
@@ -138,6 +138,116 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var result = await servise.GetJobsForDateTimeRangeAsync(zookeeperId, dateTimeRange, orderingOptions, pageOptions);
 
             Assert.Equal(expectedJobs, result.Jobs);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message_zookeeper_id_must_be_more_than_0()
+        {
+            var expectedMessage = "Zookeeper Id must be more than 0";
+
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.ZookeeperId, 0)
+                .Create();
+
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message_start_time_less_than_current_time()
+        {
+            var expectedMessage = "Start time less than current time";
+
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.StartTime, DateTime.UtcNow.AddDays(-1))
+                .Create();
+
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message_deadline_didnt_set()
+        {
+            var expectedMessage = "Deadline didn't set";
+
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.StartTime, DateTime.UtcNow.AddDays(1))
+                .With(j => j.DeadlineTime, default(DateTime))
+                .Create();
+
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message_deadline_is_less_or_equal_start_time()
+        {
+            var expectedMessage = "Deadline is less or equal start time";
+            var testDateTime = DateTime.UtcNow.AddDays(1);
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.StartTime, testDateTime)
+                .With(j => j.DeadlineTime, testDateTime)
+                .Create();
+
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message_priority_must_be_more_than_0()
+        {
+            var expectedMessage = "Priority must be more than 0";
+            var testDateTime = DateTime.UtcNow.AddDays(1);
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.StartTime, testDateTime)
+                .With(j => j.DeadlineTime, testDateTime.AddDays(1))
+                .With(j => j.Priority, 0)
+                .Create();
+                        
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message_zookeeper_with_id_doesnt_exist()
+        {
+           
+            var testDateTime = DateTime.UtcNow.AddDays(1);
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.StartTime, testDateTime)
+                .With(j => j.DeadlineTime, testDateTime.AddDays(1))
+                .Create();
+            
+            var expectedMessage = $"Zookeeper with id={jobDto.ZookeeperId} doesn't exist";
+
+            var personRespone = new Fixture().Build<GetPersonResponse>()
+                .With(r => r.Person, (Person)null)
+                .Create();
+            
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                It.IsAny<GetPersonRequest>(), It.IsAny<Uri>())).ReturnsAsync(personRespone);
+            
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
         }
 
         [Fact]

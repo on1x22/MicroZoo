@@ -9,22 +9,26 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MicroZoo.ZookeepersApi.Controllers
 {
+    /// <summary>
+    /// Controller for handling jobs requests
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     public class JobsController : ControllerBase
     {
-        //private readonly IServiceProvider _provider;
+        private readonly IJobsRequestReceivingService _receivingService;
         private readonly IResponsesReceiverFromRabbitMq _receiver;
-        private readonly Uri _animalsApiUrl;
-        private readonly Uri _personsApiUrl;
-        private readonly Uri _zookeepersApiUrl;
+        //private readonly Uri _animalsApiUrl;
+        //private readonly Uri _personsApiUrl;
+        //private readonly Uri _zookeepersApiUrl;
         private readonly IConnectionService _connectionService;
 
         public JobsController(IResponsesReceiverFromRabbitMq receiver, 
-            IConnectionService connectionService)
+            IConnectionService connectionService, IJobsRequestReceivingService receivingService)
         {
             _receiver = receiver;
             _connectionService = connectionService;
+            _receivingService = receivingService;
         }
 
         /// <summary>
@@ -38,9 +42,11 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [HttpGet("{zookeeperId}")]
         public async Task<IActionResult> GetAllJobsOfZookeeper(int zookeeperId)
         {            
-            var response = await _receiver.GetResponseFromRabbitTask<GetAllJobsOfZookeeperRequest,
+            /*var response = await _receiver.GetResponseFromRabbitTask<GetAllJobsOfZookeeperRequest,
                 GetJobsResponse>(new GetAllJobsOfZookeeperRequest(zookeeperId), 
-                _connectionService.ZookeepersApiUrl);
+                _connectionService.ZookeepersApiUrl);*/
+
+            var response = await _receivingService.GetAllJobsOfZookeeperAsync(zookeeperId);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
@@ -55,9 +61,11 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [HttpGet("{zookeeperId}/current")]
         public async Task<IActionResult> GetCurrentJobsOfZookeeper(int zookeeperId)
         {
-            var response = await _receiver.GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
+            /*var response = await _receiver.GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
                 GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(zookeeperId),
-                _connectionService.ZookeepersApiUrl);
+                _connectionService.ZookeepersApiUrl);*/
+
+            var response = await _receivingService.GetCurrentJobsOfZookeeperAsync(zookeeperId);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
@@ -85,10 +93,13 @@ namespace MicroZoo.ZookeepersApi.Controllers
             var orderingOptions = new OrderingOptions(propertyName, orderDescending);
             var pageOptions = new PageOptions(pageNumber, itemsOnPage);
 
-            var response = await _receiver.GetResponseFromRabbitTask<GetJobsForDateTimeRangeRequest,
+            /*var response = await _receiver.GetResponseFromRabbitTask<GetJobsForDateTimeRangeRequest,
                     GetJobsResponse>(new GetJobsForDateTimeRangeRequest(zookeeperId, 
                     dateTimeRange, orderingOptions, pageOptions), 
-                    _connectionService.ZookeepersApiUrl);
+                    _connectionService.ZookeepersApiUrl);*/
+
+            var response = await _receivingService.GetJobsForDateTimeRangeAsync(zookeeperId,
+                dateTimeRange, orderingOptions, pageOptions);
 
             return response.Jobs != null
                     ? Ok(response.Jobs)
@@ -102,15 +113,29 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <returns>List of current jobs</returns>
         [HttpPost]
         public async Task<IActionResult> AddJob([FromBody] JobDto jobDto)
-        {   
+        {
+            /*if (jobDto.ZookeeperId <= 0)
+                return BadRequest("Zookeeper Id must be more that 0");
+
             if (jobDto.StartTime != default && jobDto.StartTime < DateTime.UtcNow)
                 return BadRequest("Start time less than current time");
 
-            if (jobDto.StartTime == default)
-                    jobDto.StartTime = DateTime.UtcNow;
+            if (jobDto.DeadlineTime == default)
+                return BadRequest("Deadline didn't set");
 
-            var response = await _receiver.GetResponseFromRabbitTask<AddJobRequest, GetJobsResponse>(
-                new AddJobRequest(jobDto), _connectionService.ZookeepersApiUrl);
+            if (jobDto.DeadlineTime <= jobDto.StartTime)
+                return BadRequest("Deadline is less or equal start time");
+
+            if (jobDto.Priority <= 0)
+                return BadRequest("Priority must be more than 0");
+
+            if (jobDto.StartTime == default)
+                    jobDto.StartTime = DateTime.UtcNow;*/
+
+            /*var response = await _receiver.GetResponseFromRabbitTask<AddJobRequest, GetJobsResponse>(
+                new AddJobRequest(jobDto), _connectionService.ZookeepersApiUrl);*/
+
+            var response = await _receivingService.AddJobAsync(jobDto);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
