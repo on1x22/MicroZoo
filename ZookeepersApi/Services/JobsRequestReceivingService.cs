@@ -125,7 +125,13 @@ namespace MicroZoo.ZookeepersApi.Services
                 if (jobDto.Description.Length < 10)
                     throw new InvalidDataException("Task description must consist of 10 or more " +
                         "symbols");
-                  
+
+                if (jobDto.DeadlineTime == default)
+                    throw new InvalidDataException("Deadline didn't set");
+
+                if (jobDto.Priority <= 0)
+                    throw new InvalidDataException("Priority must be more than 0");
+
                 if (!await IsZookeeperExist(jobDto.ZookeeperId))
                     throw new InvalidDataException($"Zookeeper with id={jobDto.ZookeeperId} " +
                         $"doesn't exist");
@@ -136,30 +142,6 @@ namespace MicroZoo.ZookeepersApi.Services
                 response.ErrorMessage = ex.Message;
                 return response;
             }
-
-            /*if (jobId <= 0)
-            {
-                response.ErrorMessage = "Task with negative or zero id doesn't exist";
-                return response;
-            }
-
-            if (jobDto.ZookeeperId <= 0)
-            {
-                response.ErrorMessage = "Zookeeper with negative or zero id doesn't exist";
-                return response;
-            }
-
-            if (jobDto.Description.Length < 10)
-            {
-                response.ErrorMessage = "Task description must consist of 10 or more symbols";
-                return response;
-            }
-
-            if (!await IsZookeeperExist(jobDto.ZookeeperId))
-            {
-                response.ErrorMessage = $"Zookeeper with id={jobDto.ZookeeperId} doesn't exist";
-                return response;
-            }*/
 
             var jobResponse = await _jobService.UpdateJobAsync(jobId, jobDto);
             if (jobResponse.Job == null)

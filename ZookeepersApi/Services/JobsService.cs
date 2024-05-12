@@ -65,15 +65,23 @@ namespace MicroZoo.ZookeepersApi.Services
 
             var response = new GetJobResponse();
 
-            if (oldJob == null)
+            try
             {
-                response.ErrorMessage = $"Task with id={jobId} not exist";
-                return response;
-            }
+                if (jobId <= 0)
+                    throw new InvalidDataException("Task with negative or zero id doesn't exist");
 
-            if (oldJob.FinishTime != null)
+                if (oldJob == null)                
+                    throw new InvalidDataException($"Task with id={jobId} not exist");
+                    
+                if (oldJob.FinishTime != null)                
+                    throw new InvalidDataException("Changing a completed task is not allowed");
+                    
+                if (jobDto.DeadlineTime <= oldJob.StartTime)                
+                    throw new InvalidDataException("New deadline time is less than start time");
+            }
+            catch (InvalidDataException ex)
             {
-                response.ErrorMessage = "Changing a completed task is not allowed";
+                response.ErrorMessage = ex.Message;
                 return response;
             }
 
@@ -91,7 +99,7 @@ namespace MicroZoo.ZookeepersApi.Services
 
             var response = new GetJobResponse();
 
-            if (finishedJob == null)
+            /*if (finishedJob == null)
             {
                 response.ErrorMessage = $"Task with id={jobId} not exist";
                 return response;
@@ -100,6 +108,20 @@ namespace MicroZoo.ZookeepersApi.Services
             if (finishedJob.FinishTime != null)
             {
                 response.ErrorMessage = $"Task wint id={jobId} already completed";
+                return response;
+            }*/
+
+            try
+            {
+                if (finishedJob == null)                
+                    throw new InvalidDataException($"Task with id={jobId} not exist");
+                    
+                if (finishedJob.FinishTime != null)                
+                    throw new InvalidDataException($"Task wint id={jobId} already completed");
+            }
+            catch (InvalidDataException ex)
+            {
+                response.ErrorMessage = ex.Message;
                 return response;
             }
 

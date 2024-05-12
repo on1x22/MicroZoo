@@ -428,12 +428,13 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             int jobId = new Fixture().Create<int>();
             var jobDto = new Fixture().Build<JobWithoutStartTimeDto>().Create();
 
-            var jobsResponse = new GetJobsResponse() { ErrorMessage = expectedMessage };
-
-            _mockReceiver.Setup(r => r.GetResponseFromRabbitTask<UpdateJobRequest,
-                GetJobsResponse>(It.IsAny<UpdateJobRequest>(), It.IsAny<Uri>()))
-                .ReturnsAsync(jobsResponse);
-
+            var jobsResponse = new Fixture().Build<GetJobsResponse>()
+                .With(r => r.Jobs, (List<Job>)null)
+                .With(r => r.ErrorMessage, expectedMessage)
+                .Create();
+               
+            _mockReceivingService.Setup(rs => rs.UpdateJobAsync(jobId, jobDto)).ReturnsAsync(jobsResponse);
+            
             var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
                 _mockReceivingService.Object);
 
@@ -466,9 +467,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var jobsResponse = new GetJobsResponse() { Jobs = jobs };
 
-            _mockReceiver.Setup(r => r.GetResponseFromRabbitTask<UpdateJobRequest,
-                GetJobsResponse>(It.IsAny<UpdateJobRequest>(), It.IsAny<Uri>()))
-                .ReturnsAsync(jobsResponse);
+            _mockReceivingService.Setup(rs => rs.UpdateJobAsync(jobId, jobDto)).ReturnsAsync(jobsResponse);
 
             var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
                 _mockReceivingService.Object);

@@ -69,6 +69,8 @@ namespace MicroZoo.ZookeepersApi.Repository
             {
                 updatedJob.ZookeeperId = jobDto.ZookeeperId;
                 updatedJob.Description = jobDto.Description;
+                updatedJob.DeadlineTime = jobDto.DeadlineTime;
+                updatedJob.Priority = jobDto.Priority;
             }
             await SaveChangesAsync();
 

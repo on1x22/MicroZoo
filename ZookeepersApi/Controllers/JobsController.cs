@@ -151,8 +151,10 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [HttpPut("{jobId}")]
         public async Task<IActionResult> UpdateJob(int jobId, [FromBody] JobWithoutStartTimeDto jobDto)
         {
-            var response = await _receiver.GetResponseFromRabbitTask<UpdateJobRequest, GetJobsResponse>(
-                new UpdateJobRequest(jobId, jobDto), _connectionService.ZookeepersApiUrl);
+            /*var response = await _receiver.GetResponseFromRabbitTask<UpdateJobRequest, GetJobsResponse>(
+                new UpdateJobRequest(jobId, jobDto), _connectionService.ZookeepersApiUrl);*/
+
+            var response = await _receivingService.UpdateJobAsync(jobId, jobDto);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)
