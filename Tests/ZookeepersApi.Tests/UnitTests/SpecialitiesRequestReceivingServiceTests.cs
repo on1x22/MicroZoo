@@ -191,8 +191,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 It.IsAny<GetPersonRequest>(), It.IsAny<Uri>())).ReturnsAsync(personResponse);
             _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetAnimalTypeRequest, GetAnimalTypeResponse>(
                 It.IsAny<GetAnimalTypeRequest>(), It.IsAny<Uri>())).ReturnsAsync(animalTypeResponse);
-            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<AddSpecialityRequest, GetSpecialityResponse>(
-                It.IsAny<AddSpecialityRequest>(), It.IsAny<Uri>())).ReturnsAsync(specialityResponse);
+            _mockSpecialitiesService.Setup(s => s.AddSpecialityAsync(It.IsAny<SpecialityDto>()))
+                .ReturnsAsync(specialityResponse);
 
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
@@ -306,7 +306,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         }
 
         [Fact]
-        public async void ChangeRelationBetweenZookeeperAndSpeciality_speciality()
+        public async void ChangeRelationBetweenZookeeperAndSpeciality_should_return_speciality()
         {
             var relationId = new Fixture().Create<int>();
             var specialityDto = new Fixture().Create<SpecialityDto>();
@@ -328,9 +328,9 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 It.IsAny<GetPersonRequest>(), It.IsAny<Uri>())).ReturnsAsync(personResponse);
             _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetAnimalTypeRequest, GetAnimalTypeResponse>(
                 It.IsAny<GetAnimalTypeRequest>(), It.IsAny<Uri>())).ReturnsAsync(animalTypeResponse);
-            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<ChangeRelationBetweenZookeeperAndSpecialityRequest,
-                GetSpecialityResponse>(It.IsAny<ChangeRelationBetweenZookeeperAndSpecialityRequest>(), It.IsAny<Uri>())).
-                ReturnsAsync(specialityResponse);
+            
+            _mockSpecialitiesService.Setup(s => s.ChangeRelationBetweenZookeeperAndSpecialityAsync(
+                It.IsAny<int>(), It.IsAny<SpecialityDto>())).ReturnsAsync(specialityResponse);
 
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
@@ -351,8 +351,9 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 .With(r => r.ErrorMessage, expectedMessage)
                 .Create();
 
-            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<DeleteSpecialityRequest, GetSpecialitiesResponse>(
-                It.IsAny<DeleteSpecialityRequest>(), It.IsAny<Uri>())).ReturnsAsync(specialitiesResponse);
+            _mockSpecialitiesService.Setup(s => s.DeleteSpecialityAsync(It.IsAny<SpecialityDto>()))
+                .ReturnsAsync(specialitiesResponse);
+
             _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest, GetAnimalTypesResponse>(
                 It.IsAny<GetAnimalTypesByIdsRequest>(), It.IsAny<Uri>()));
 
@@ -382,8 +383,9 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 .With(at => at.AnimalTypes, animalTypes)
                 .Create();
 
-            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<DeleteSpecialityRequest, GetSpecialitiesResponse>(
-                It.IsAny<DeleteSpecialityRequest>(), It.IsAny<Uri>())).ReturnsAsync(specialitiesResponse);
+            _mockSpecialitiesService.Setup(s => s.DeleteSpecialityAsync(It.IsAny<SpecialityDto>()))
+                .ReturnsAsync(specialitiesResponse);
+
             _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest, GetAnimalTypesResponse>(
                 It.IsAny<GetAnimalTypesByIdsRequest>(), It.IsAny<Uri>())).ReturnsAsync(animalTypesResponse);
 
