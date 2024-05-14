@@ -483,17 +483,21 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         {
             var expectedMessage = "Unknown error";
             int jobId = new Fixture().Create<int>();
+            var jobReport = new Fixture().Create<string>();
 
             var jobsResponse = new GetJobsResponse() { ErrorMessage = expectedMessage };
 
-            _mockReceiver.Setup(r => r.GetResponseFromRabbitTask<FinishJobRequest,
+            /*_mockReceiver.Setup(r => r.GetResponseFromRabbitTask<FinishJobRequest,
                 GetJobsResponse>(It.IsAny<FinishJobRequest>(), It.IsAny<Uri>()))
+                .ReturnsAsync(jobsResponse);*/
+
+            _mockReceivingService.Setup(rs => rs.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(jobsResponse);
 
             var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
                 _mockReceivingService.Object);
 
-            var actionResult = await jobsController.FinishJob(jobId);
+            var actionResult = await jobsController.FinishJob(jobId, jobReport);
 
             var result = actionResult.ReturnActionResultValue<BadRequestObjectResult, string>();
             Assert.Equal(expectedMessage, result);
@@ -503,6 +507,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void FinishJob_should_return_list_of_current_jobs_of_zookeeper()
         {
             int jobId = new Fixture().Create<int>();
+            var jobReport = new Fixture().Create<string>();
 
             DateTime? endDateTime = null;
 
@@ -518,14 +523,17 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var jobsResponse = new GetJobsResponse() { Jobs = jobs };
 
-            _mockReceiver.Setup(r => r.GetResponseFromRabbitTask<FinishJobRequest,
+            /*_mockReceiver.Setup(r => r.GetResponseFromRabbitTask<FinishJobRequest,
                 GetJobsResponse>(It.IsAny<FinishJobRequest>(), It.IsAny<Uri>()))
+                .ReturnsAsync(jobsResponse);*/
+
+            _mockReceivingService.Setup(rs => rs.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(jobsResponse);
 
             var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
                 _mockReceivingService.Object);
 
-            var actionResult = await jobsController.FinishJob(jobId);
+            var actionResult = await jobsController.FinishJob(jobId, jobReport);
 
             var result = actionResult.ReturnActionResultValue<OkObjectResult, List<Job>>();
             Assert.Equal(jobs, result);

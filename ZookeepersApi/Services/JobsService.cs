@@ -67,8 +67,8 @@ namespace MicroZoo.ZookeepersApi.Services
 
             try
             {
-                if (jobId <= 0)
-                    throw new InvalidDataException("Task with negative or zero id doesn't exist");
+                /*if (jobId <= 0)
+                    throw new InvalidDataException("Task with negative or zero id doesn't exist");*/
 
                 if (oldJob == null)                
                     throw new InvalidDataException($"Task with id={jobId} not exist");
@@ -93,7 +93,7 @@ namespace MicroZoo.ZookeepersApi.Services
             return response;
         }
 
-        public async Task<GetJobResponse> FinishJobAsync(int jobId)
+        public async Task<GetJobResponse> FinishJobAsync(int jobId, string jobReport)
         {
             var finishedJob = await _repository.GetJobAsync(jobId);
 
@@ -117,7 +117,7 @@ namespace MicroZoo.ZookeepersApi.Services
                     throw new InvalidDataException($"Task with id={jobId} not exist");
                     
                 if (finishedJob.FinishTime != null)                
-                    throw new InvalidDataException($"Task wint id={jobId} already completed");
+                    throw new InvalidDataException($"Task with id={jobId} already completed");
             }
             catch (InvalidDataException ex)
             {
@@ -125,7 +125,7 @@ namespace MicroZoo.ZookeepersApi.Services
                 return response;
             }
 
-            response.Job = await _repository.FinishJobAsync(jobId);
+            response.Job = await _repository.FinishJobAsync(jobId, jobReport);
 
             if (response.Job == null)
                 response.ErrorMessage = "Failed to complete task. Please check the entered data";

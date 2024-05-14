@@ -165,12 +165,15 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// Finish selected jod
         /// </summary>
         /// <param name="jobId"></param>
+        /// <param name="jobReport"></param>
         /// <returns>List of current jobs</returns>
         [HttpPut("{jobId}/finish")]
-        public async Task<IActionResult> FinishJob(int jobId)
+        public async Task<IActionResult> FinishJob(int jobId, [FromQuery] string jobReport)
         {
-            var response = await _receiver.GetResponseFromRabbitTask<FinishJobRequest, GetJobsResponse>(
-                new FinishJobRequest(jobId), _connectionService.ZookeepersApiUrl);
+            /*var response = await _receiver.GetResponseFromRabbitTask<FinishJobRequest, GetJobsResponse>(
+                new FinishJobRequest(jobId), _connectionService.ZookeepersApiUrl);*/
+
+            var response = await _receivingService.FinishJobAsync(jobId, jobReport);
 
             return response.Jobs != null
                 ? Ok(response.Jobs)

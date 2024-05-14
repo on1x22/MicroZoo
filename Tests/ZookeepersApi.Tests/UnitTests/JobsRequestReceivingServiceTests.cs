@@ -489,15 +489,34 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void FinishJobAsync_should_return_error_message_task_with_negative_or_zero_id_does_not_exist()
         {
             var jobId = new Fixture().Create<int>() * (-1);
+            var jobReport = new Fixture().Create<string>();
 
             var expectedMessage = "Task with negative or zero id doesn't exist";
 
-            _mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>()));
-            _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>()));
+            /*_mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>()));
+            _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>()));*/
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.FinishJobAsync(jobId);
+            var result = await servise.FinishJobAsync(jobId, jobReport);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void FinishJobAsync_should_return_error_message_Report_must_contain_a_comment_line()
+        {
+            var jobId = new Fixture().Create<int>();
+            var jobReport = string.Empty;
+
+            var expectedMessage = "Report must contain a comment line";
+
+            /*_mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>()));
+            _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>()));*/
+
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.FinishJobAsync(jobId, jobReport);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -506,6 +525,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void FinishJobAsync_should_return_error_message_from_FinishJobAsync()
         {
             var jobId = new Fixture().Create<int>();
+            var jobReport = new Fixture().Create<string>();
 
             var expectedMessage = "Error message from _jobService.FinishJobAsync()";
 
@@ -514,12 +534,13 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 .With(r => r.ErrorMessage, expectedMessage)
                 .Create();
 
-            _mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>())).ReturnsAsync(jobResponse);
+            _mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(jobResponse);
             _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>()));
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.FinishJobAsync(jobId);
+            var result = await servise.FinishJobAsync(jobId, jobReport);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -528,6 +549,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void FinishJobAsync_should_return_list_of_jobs()
         {
             var jobId = new Fixture().Create<int>();
+            var jobReport = new Fixture().Create<string>();
             var zookeeperId = new Fixture().Create<int>();
 
             var allJobs = JobsFactory.GetListOfAllJobs(zookeeperId);
@@ -538,12 +560,13 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var jobResponse = new Fixture().Build<GetJobResponse>().Create();
 
-            _mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>())).ReturnsAsync(jobResponse);
+            _mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(jobResponse);
             _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>())).ReturnsAsync(jobsResponse);
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.FinishJobAsync(jobId);
+            var result = await servise.FinishJobAsync(jobId, jobReport);
 
             Assert.Equal(expectedJobs, result.Jobs);
         }

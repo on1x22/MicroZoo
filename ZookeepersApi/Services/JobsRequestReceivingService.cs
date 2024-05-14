@@ -155,14 +155,16 @@ namespace MicroZoo.ZookeepersApi.Services
             return response;
         }
 
-        public async Task<GetJobsResponse> FinishJobAsync(int jobId)
+        public async Task<GetJobsResponse> FinishJobAsync(int jobId, string jobReport)
         {
             var response = new GetJobsResponse();
 
             try
             {
                 if (jobId <= 0)                
-                    throw new InvalidDataException("Task with negative or zero id doesn't exist");                   
+                    throw new InvalidDataException("Task with negative or zero id doesn't exist");    
+                if (jobReport.Length == 0)
+                    throw new InvalidDataException("Report must contain a comment line");
             }
             catch (InvalidDataException ex)
             {
@@ -176,7 +178,7 @@ namespace MicroZoo.ZookeepersApi.Services
                 return response;
             }*/
 
-            var jobResponse = await _jobService.FinishJobAsync(jobId);
+            var jobResponse = await _jobService.FinishJobAsync(jobId, jobReport);
             if (jobResponse.Job == null)
             {
                 response.ErrorMessage = jobResponse.ErrorMessage;
