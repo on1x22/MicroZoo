@@ -85,6 +85,12 @@ namespace MicroZoo.ZookeepersApi.Services
                     $"already exist";
             }
 
+            if(speciality == null)
+            {
+                response.ErrorMessage = $"Relation with id={relationId} is not exist";
+                return response;
+            }
+
             if (speciality.Id == 0 && response.ErrorMessage != null)
                 return response;
 

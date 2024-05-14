@@ -221,15 +221,52 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         }
 
         [Fact]
+        public async void UpdateJobAsync_should_return_error_message_new_deadline_time_is_less_than_start_time()
+        {
+            int jobId = new Fixture().Create<int>();
+            var expectedMessage = "New deadline time is less than start time";
+
+            DateTime startTimeOld = DateTime.UtcNow;
+            var jobWithoutStartTimeDto = new Fixture().Build<JobWithoutStartTimeDto>()
+                .With(j => j.DeadlineTime, startTimeOld.AddDays(-1))
+                .Create();
+
+            DateTime? finishTime = null;
+            var oldJob = new Fixture().Build<Job>()
+                .With(j => j.Id, jobId)
+                .With(j => j.StartTime, startTimeOld)
+                .With(j => j.DeadlineTime, startTimeOld.AddDays(1))
+                .With(j => j.FinishTime, finishTime)
+                .Create();
+
+            _mockRepo.Setup(j => j.GetJobAsync(It.IsAny<int>())).ReturnsAsync(oldJob);
+            _mockRepo.Setup(j => j.UpdateJobAsync(It.IsAny<int>(),
+                It.IsAny<JobWithoutStartTimeDto>())).ReturnsAsync(oldJob);
+
+            var jobService = new JobsService(_mockRepo.Object, _mockLogger.Object);
+
+            var result = await jobService.UpdateJobAsync(jobId, jobWithoutStartTimeDto);
+
+            Assert.Null(result.Job);
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
         public async void UpdateJobAsync_should_return_error_message_error_during_update_job()
         {
             int jobId = new Fixture().Create<int>();
             var expectedMessage = "Failed to update task. Please check the entered data";
-            var jobWithoutStartTimeDto = new Fixture().Build<JobWithoutStartTimeDto>().Create();
-            DateTime? finishTime = null;
+            
+            DateTime deadlineTimeOld = DateTime.UtcNow;
+            var jobWithoutStartTimeDto = new Fixture().Build<JobWithoutStartTimeDto>()
+                .With(j => j.DeadlineTime, deadlineTimeOld.AddDays(1))
+                .Create();
 
+            DateTime? finishTime = null;            
             var oldJob = new Fixture().Build<Job>()
                 .With(j => j.Id, jobId)
+                .With(j => j.StartTime, deadlineTimeOld.AddDays(-1))
+                .With(j => j.DeadlineTime, deadlineTimeOld)
                 .With(j => j.FinishTime, finishTime)
                 .Create();
 
@@ -251,11 +288,17 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void UpdateJobAsync_should_return_updated_job()
         {
             int jobId = new Fixture().Create<int>();
-            var jobWithoutStartTimeDto = new Fixture().Build<JobWithoutStartTimeDto>().Create();
-            DateTime? finishTime = null;
 
+            DateTime startTimeOld = DateTime.UtcNow;
+            var jobWithoutStartTimeDto = new Fixture().Build<JobWithoutStartTimeDto>()
+                .With(j => j.DeadlineTime, startTimeOld.AddDays(2))
+                .Create();
+            
+            DateTime? finishTime = null;
             var oldJob = new Fixture().Build<Job>()
                 .With(j => j.Id, jobId)
+                .With(j => j.StartTime, startTimeOld)
+                .With(j => j.DeadlineTime, startTimeOld.AddDays(1))
                 .With(j => j.FinishTime, finishTime)
                 .Create();
 
@@ -283,15 +326,18 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void FinishJobAsync_should_return_error_message_task_with_id_not_exist()
         {
             int jobId = new Fixture().Create<int>();
+            var jobReport = new Fixture().Create<string>();
+
             var expectedMessage = $"Task with id={jobId} not exist";
             Job? finishedJob = null;
 
             _mockRepo.Setup(j => j.GetJobAsync(It.IsAny<int>())).ReturnsAsync(finishedJob);
-            _mockRepo.Setup(j => j.FinishJobAsync(It.IsAny<int>())).ReturnsAsync(finishedJob);
+            _mockRepo.Setup(j => j.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(finishedJob);
 
             var jobService = new JobsService(_mockRepo.Object, _mockLogger.Object);
 
-            var result = await jobService.FinishJobAsync(jobId);
+            var result = await jobService.FinishJobAsync(jobId, jobReport);
 
             Assert.Null(result.Job);
             Assert.Equal(expectedMessage, result.ErrorMessage);
@@ -301,18 +347,21 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void FinishJobAsync_should_return_error_message_task_is_completed()
         {
             int jobId = new Fixture().Create<int>();
-            var expectedMessage = $"Task wint id={jobId} already completed";
+            var jobReport = new Fixture().Create<string>();
+
+            var expectedMessage = $"Task with id={jobId} already completed";
 
             var finishedJob = new Fixture().Build<Job>()
                 .With(j => j.Id, jobId)
                 .Create();
 
             _mockRepo.Setup(j => j.GetJobAsync(It.IsAny<int>())).ReturnsAsync(finishedJob);
-            _mockRepo.Setup(j => j.FinishJobAsync(It.IsAny<int>())).ReturnsAsync(finishedJob);
+            _mockRepo.Setup(j => j.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(finishedJob);
 
             var jobService = new JobsService(_mockRepo.Object, _mockLogger.Object);
 
-            var result = await jobService.FinishJobAsync(jobId);
+            var result = await jobService.FinishJobAsync(jobId, jobReport);
 
             Assert.Null (result.Job);
             Assert.Equal(expectedMessage, result.ErrorMessage);
@@ -322,6 +371,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void FinishJobAsync_should_return_error_message_error_during_finishing_job()
         {
             int jobId = new Fixture().Create<int>();
+            var jobReport = new Fixture().Create<string>();
+
             var expectedMessage = "Failed to complete task. Please check the entered data";
             DateTime? finishTime = null;
 
@@ -333,11 +384,12 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             Job? jobAfterFinish = null;
 
             _mockRepo.Setup(j => j.GetJobAsync(It.IsAny<int>())).ReturnsAsync(jobBeforeFinish);
-            _mockRepo.Setup(j => j.FinishJobAsync(It.IsAny<int>())).ReturnsAsync(jobAfterFinish);
+            _mockRepo.Setup(j => j.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(jobAfterFinish);
 
             var jobService = new JobsService(_mockRepo.Object, _mockLogger.Object);
 
-            var result = await jobService.FinishJobAsync(jobId);
+            var result = await jobService.FinishJobAsync(jobId, jobReport);
 
             Assert.Null(result.Job);
             Assert.Equal(expectedMessage, result.ErrorMessage);
@@ -347,6 +399,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void FinishJobAsync_should_return_finished_job()
         {
             int jobId = new Fixture().Create<int>();
+            var jobReport = new Fixture().Create<string>();
             DateTime? finishTime = null;
 
             var jobBeforeFinish = new Fixture().Build<Job>()
@@ -358,14 +411,16 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 .With(j => j.Id, jobBeforeFinish.Id)
                 .With(j => j.Description, jobBeforeFinish.Description)
                 .With(j => j.StartTime, jobBeforeFinish.StartTime)
+                .With(j => j.Report, jobReport)
                 .Create();
 
             _mockRepo.Setup(j => j.GetJobAsync(It.IsAny<int>())).ReturnsAsync(jobBeforeFinish);
-            _mockRepo.Setup(j => j.FinishJobAsync(It.IsAny<int>())).ReturnsAsync(jobAfterFinish);
+            _mockRepo.Setup(j => j.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(jobAfterFinish);
 
             var jobService = new JobsService(_mockRepo.Object, _mockLogger.Object);
 
-            var result = await jobService.FinishJobAsync(jobId);
+            var result = await jobService.FinishJobAsync(jobId, jobReport);
 
             Assert.Equal(jobAfterFinish, result.Job);
         }

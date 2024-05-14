@@ -69,17 +69,22 @@ namespace MicroZoo.ZookeepersApi.Repository
             {
                 updatedJob.ZookeeperId = jobDto.ZookeeperId;
                 updatedJob.Description = jobDto.Description;
+                updatedJob.DeadlineTime = jobDto.DeadlineTime;
+                updatedJob.Priority = jobDto.Priority;
             }
             await SaveChangesAsync();
 
             return updatedJob;
         }
 
-        public async Task<Job> FinishJobAsync(int jobId)
+        public async Task<Job> FinishJobAsync(int jobId, string jobReport)
         {
             var finishedJob = await _dBContext.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);
             if (finishedJob != null)
+            {
                 finishedJob.FinishTime = DateTime.UtcNow;
+                finishedJob.Report = jobReport;
+            }
             
             await SaveChangesAsync();
 

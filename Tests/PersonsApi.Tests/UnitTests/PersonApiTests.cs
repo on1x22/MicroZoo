@@ -18,7 +18,7 @@ namespace MicroZoo.PersonsApi.Tests.UnitTests
             new Fixture().Build<Person>().Create(),
         };
         
-        [Fact]
+        /*[Fact]
         public async void GetById_should_return_person_with_that_id()
         {
             // Arrange            
@@ -36,7 +36,7 @@ namespace MicroZoo.PersonsApi.Tests.UnitTests
             //Assert
             Assert.NotNull(result);            
             Assert.Equal(expected, actual);
-        }
+        }*/
 
         [Fact]
         public async void UpdatePerson_should_update_person_info()

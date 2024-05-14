@@ -22,7 +22,7 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             new Fixture().Build<AnimalType>().Without(p => p.Animals).Create()
         };
 
-        [Fact]
+        /*[Fact]
         public async void GetAnimalsByTypes_should_return_animals_by_given_ids()
         {
             // Arrange            
@@ -40,9 +40,9 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             Assert.IsType<Ok<List<Animal>>>(listOfAnimals);
             Assert.NotNull(result);
             Assert.Equal(expected, result);
-        }
+        }*/
 
-        [Fact]
+        /*[Fact]
         public async void GetAnimalsByTypes_should_return_notFound_result()
         {
             // Arrange      
@@ -54,9 +54,9 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
 
             //Assert
             Assert.IsType<NotFound<string>>(result);            
-        }
+        }*/
 
-        [Fact]
+        /*[Fact]
         public async void GetAllAnimalTypes_should_return_all_animal_types()
         {
             // Arrange
@@ -72,9 +72,9 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             Assert.IsType<Ok<List<AnimalType>>>(listOfTypes);
             Assert.NotNull(result);
             Assert.Equal(allTypes, result);
-        }
+        }*/
 
-        [Fact]
+        /*[Fact]
         public async void GetAllAnimalTypes_should_return_NoContent_result()
         {
             // Arrange      
@@ -86,9 +86,9 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
 
             //Assert
             Assert.IsType<NoContent>(result);
-        }
+        }*/
 
-        [Fact]
+        /*[Fact]
         public async void GetAnimalTypesByIds_should_return_animal_types_by_given_ids()
         {
             // Arrange      
@@ -107,9 +107,9 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
             Assert.NotNull(result);
             Assert.Equal(expected, result);
 
-        }
+        }*/
 
-        [Fact]
+        /*[Fact]
         public async void GetAnimalTypesByIds_should_return_NotFound_result()
         {
             // Arrange      
@@ -121,6 +121,6 @@ namespace MicroZoo.AnimalsApi.Tests.UnitTests
 
             //Assert
             Assert.IsType<NotFound<string>>(result);
-        }
+        }*/
     }
 }

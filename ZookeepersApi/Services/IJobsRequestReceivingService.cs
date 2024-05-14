@@ -17,6 +17,6 @@ namespace MicroZoo.ZookeepersApi.Services
 
         Task<GetJobsResponse> UpdateJobAsync(int jobId, JobWithoutStartTimeDto jobDto);
 
-        Task<GetJobsResponse> FinishJobAsync(int jobId);
+        Task<GetJobsResponse> FinishJobAsync(int jobId, string jobReport);
     }
 }
