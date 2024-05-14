@@ -25,10 +25,10 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
         [Theory]
         [MemberData(nameof(DateTimeRangeOrderingOptionsPageOptions))]
-        public async void GetJobsForDateTimeRangeAsync_should_return_error_message_zookeeper_with_negative_id_doesnt_exist(
+        public async void GetJobsForDateTimeRangeAsync_should_return_error_message_zookeeper_id_must_be_more_than_0(
             DateTimeRange dateTimeRange, OrderingOptions orderingOptions, PageOptions pageOptions)
         {
-            var expectedMessage = "Zookeeper with negative id doesn't exist";
+            var expectedMessage = "Zookeeper Id must be more than 0";
             var negativeZookeeperId = new Fixture().Create<int>() * (-1);
 
             var personResponse = new GetPersonResponse() { ErrorMessage = expectedMessage };
@@ -141,19 +141,141 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         }
 
         [Fact]
+        public async void AddJobAsync_should_return_error_message_zookeeper_id_must_be_more_than_0()
+        {
+            var expectedMessage = "Zookeeper Id must be more than 0";
+
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.ZookeeperId, 0)
+                .Create();
+
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message_start_time_less_than_current_time()
+        {
+            var expectedMessage = "Start time less than current time";
+
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.StartTime, DateTime.UtcNow.AddDays(-1))
+                .Create();
+
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message_deadline_didnt_set()
+        {
+            var expectedMessage = "Deadline didn't set";
+
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.StartTime, DateTime.UtcNow.AddDays(1))
+                .With(j => j.DeadlineTime, default(DateTime))
+                .Create();
+
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message_deadline_is_less_or_equal_start_time()
+        {
+            var expectedMessage = "Deadline is less or equal start time";
+            var testDateTime = DateTime.UtcNow.AddDays(1);
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.StartTime, testDateTime)
+                .With(j => j.DeadlineTime, testDateTime)
+                .Create();
+
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message_priority_must_be_more_than_0()
+        {
+            var expectedMessage = "Priority must be more than 0";
+            var testDateTime = DateTime.UtcNow.AddDays(1);
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.StartTime, testDateTime)
+                .With(j => j.DeadlineTime, testDateTime.AddDays(1))
+                .With(j => j.Priority, 0)
+                .Create();
+                        
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void AddJobAsync_should_return_error_message_zookeeper_with_id_doesnt_exist()
+        {
+           
+            var testDateTime = DateTime.UtcNow.AddDays(1);
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.StartTime, testDateTime)
+                .With(j => j.DeadlineTime, testDateTime.AddDays(1))
+                .Create();
+            
+            var expectedMessage = $"Zookeeper with id={jobDto.ZookeeperId} doesn't exist";
+
+            var personRespone = new Fixture().Build<GetPersonResponse>()
+                .With(r => r.Person, (Person)null)
+                .Create();
+            
+            _mockReceiver.Setup(s => s.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                It.IsAny<GetPersonRequest>(), It.IsAny<Uri>())).ReturnsAsync(personRespone);
+            
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.AddJobAsync(jobDto);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
         public async void AddJobAsync_should_return_error_message()
         {
-            var jobDto = new Fixture().Create<JobDto>();
+            var expectedMessage = "Test error message";
 
-            var jobResponse = new Fixture().Build<GetJobResponse>().With(r => r.Job, (Job)null).Create();
-            var expectedMessage = jobResponse.ErrorMessage;
+            var testDateTime = DateTime.UtcNow.AddDays(1);
+            var jobDto = new Fixture().Build<JobDto>()                
+                .With(j => j.StartTime, testDateTime)
+                .With(j => j.DeadlineTime, testDateTime.AddDays(1))
+                .Create();
 
-            var allJobs = JobsFactory.GetListOfAllJobs(jobDto.ZookeeperId);
-            var selectedJobs = JobsFactory.GetJobsOfSelectedZookeeper(allJobs, jobDto.ZookeeperId);
-            var jobsResponse = new Fixture().Build<GetJobsResponse>().With(j => j.Jobs, selectedJobs).Create();
+            var person = new Fixture().Build<Person>()
+                .With(p => p.IsManager, false)
+                .Create();
+            var personRespone = new Fixture().Build<GetPersonResponse>()
+                .With(p => p.Person, person)
+                .Create();
 
-            _mockJobsService.Setup(s => s.AddJobAsync(It.IsAny<JobDto>())).ReturnsAsync(jobResponse);
-            _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>())).ReturnsAsync(jobsResponse);
+            var jobResponse = new Fixture().Build<GetJobResponse>()
+                .With(r => r.Job, (Job)null)
+                .With(r => r.ErrorMessage, expectedMessage)
+                .Create();
+            
+            _mockJobsService.Setup(s => s.AddJobAsync(It.IsAny<JobDto>())).ReturnsAsync(jobResponse);            
+            _mockReceiver.Setup(r => r.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                It.IsAny<GetPersonRequest>(), It.IsAny<Uri>())).ReturnsAsync(personRespone);
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
@@ -165,7 +287,18 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         [Fact]
         public async void AddJobAsync_should_return_list_of_jobs()
         {
-            var jobDto = new Fixture().Create<JobDto>();
+            var testDateTime = DateTime.UtcNow.AddDays(1);
+            var jobDto = new Fixture().Build<JobDto>()
+                .With(j => j.StartTime, testDateTime)
+                .With(j => j.DeadlineTime, testDateTime.AddDays(1))
+                .Create();
+
+            var person = new Fixture().Build<Person>()
+                .With(p => p.IsManager, false)
+                .Create();
+            var personRespone = new Fixture().Build<GetPersonResponse>()
+                .With(p => p.Person, person)
+                .Create();
 
             var jobResponse = new Fixture().Build<GetJobResponse>().Create();
             var expectedMessage = jobResponse.ErrorMessage;
@@ -178,6 +311,9 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             _mockJobsService.Setup(s => s.AddJobAsync(It.IsAny<JobDto>())).ReturnsAsync(jobResponse);
             _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>())).ReturnsAsync(jobsResponse);
+            _mockReceiver.Setup(r => r.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
+                It.IsAny<GetPersonRequest>(), It.IsAny<Uri>())).ReturnsAsync(personRespone);
+
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
@@ -353,15 +489,34 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void FinishJobAsync_should_return_error_message_task_with_negative_or_zero_id_does_not_exist()
         {
             var jobId = new Fixture().Create<int>() * (-1);
+            var jobReport = new Fixture().Create<string>();
 
             var expectedMessage = "Task with negative or zero id doesn't exist";
 
-            _mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>()));
-            _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>()));
+            /*_mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>()));
+            _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>()));*/
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.FinishJobAsync(jobId);
+            var result = await servise.FinishJobAsync(jobId, jobReport);
+
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async void FinishJobAsync_should_return_error_message_Report_must_contain_a_comment_line()
+        {
+            var jobId = new Fixture().Create<int>();
+            var jobReport = string.Empty;
+
+            var expectedMessage = "Report must contain a comment line";
+
+            /*_mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>()));
+            _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>()));*/
+
+            var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
+
+            var result = await servise.FinishJobAsync(jobId, jobReport);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -370,6 +525,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void FinishJobAsync_should_return_error_message_from_FinishJobAsync()
         {
             var jobId = new Fixture().Create<int>();
+            var jobReport = new Fixture().Create<string>();
 
             var expectedMessage = "Error message from _jobService.FinishJobAsync()";
 
@@ -378,12 +534,13 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 .With(r => r.ErrorMessage, expectedMessage)
                 .Create();
 
-            _mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>())).ReturnsAsync(jobResponse);
+            _mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(jobResponse);
             _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>()));
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.FinishJobAsync(jobId);
+            var result = await servise.FinishJobAsync(jobId, jobReport);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -392,6 +549,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         public async void FinishJobAsync_should_return_list_of_jobs()
         {
             var jobId = new Fixture().Create<int>();
+            var jobReport = new Fixture().Create<string>();
             var zookeeperId = new Fixture().Create<int>();
 
             var allJobs = JobsFactory.GetListOfAllJobs(zookeeperId);
@@ -402,12 +560,13 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var jobResponse = new Fixture().Build<GetJobResponse>().Create();
 
-            _mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>())).ReturnsAsync(jobResponse);
+            _mockJobsService.Setup(s => s.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(jobResponse);
             _mockJobsService.Setup(s => s.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>())).ReturnsAsync(jobsResponse);
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.FinishJobAsync(jobId);
+            var result = await servise.FinishJobAsync(jobId, jobReport);
 
             Assert.Equal(expectedJobs, result.Jobs);
         }

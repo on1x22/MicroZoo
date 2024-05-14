@@ -22,6 +22,6 @@ namespace MicroZoo.ZookeepersApi.Repository
 
         Task<Job> UpdateJobAsync(int jobId, JobWithoutStartTimeDto jobDto);
 
-        Task<Job> FinishJobAsync(int jobId);
+        Task<Job> FinishJobAsync(int jobId, string jobReport);
     }
 }
