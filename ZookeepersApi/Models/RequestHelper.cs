@@ -19,7 +19,7 @@
                 RequestUri = new Uri(requestUri)
             };
 
-            var response = await _httpClient./*GetAsync(request.RequestUri);*/ SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return default;
 
