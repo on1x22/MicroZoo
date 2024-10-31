@@ -68,6 +68,20 @@ services:
     depends_on:
     - rabbitmq
 
+  identityapi:
+    image: identityapi
+    container_name: identityapi
+    build:
+      context: .
+      dockerfile: IdentityApi/Dockerfile
+    ports:
+    - 7030:80
+    - 7031:443
+    networks:
+    - microzoo_net
+    depends_on:
+    - rabbitmq
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
