@@ -1,4 +1,7 @@
 
+using IdentityApi.DbContexts;
+using Microsoft.EntityFrameworkCore;
+
 namespace IdentityApi
 {
     public class Program
@@ -8,15 +11,30 @@ namespace IdentityApi
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            RegisterServices(builder.Services, builder);            
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+            Configure(app);            
+
+            app.Run();
+        }
+
+        static void RegisterServices(IServiceCollection services, WebApplicationBuilder builder)
+        {
+            services.AddDbContext<IdentityApiDbContext>(opts =>
+                opts.UseNpgsql(builder.Configuration.GetConnectionString("IdentityApi")));
+
+            services.AddControllers();
+            
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+        }
+
+        static void Configure(WebApplication app)
+        {
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -29,8 +47,6 @@ namespace IdentityApi
 
 
             app.MapControllers();
-
-            app.Run();
         }
     }
 }
