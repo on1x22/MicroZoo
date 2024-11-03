@@ -16,16 +16,16 @@ namespace MicroZoo.IdentityApi.Repositories
         public async Task<List<User>> GetAllUsersAsync() =>
             await _dbContext.Users.ToListAsync();
 
-        public Task<User> GetUserAsync(string userId)
+        public async Task<User> GetUserAsync(string userId)
         {
             if (userId == null)
                 return default;
 
-            var user = _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
             return user;
         }
 
-        public async Task<User> CreateUserAsync(User user)
+        /*public async Task<User> CreateUserAsync(User user)
         {
             if (user == null)
                 return default;
@@ -34,6 +34,21 @@ namespace MicroZoo.IdentityApi.Repositories
             await _dbContext.SaveChangesAsync();
 
             return user;
+        }*/
+         
+        public async Task<User> UpdateUserAsync(string userId, User user)
+        {
+            if (userId == null)
+                return default;
+
+            var updatedUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (updatedUser == null)
+                return default;
+
+            updatedUser.Update(user);
+
+            await _dbContext.SaveChangesAsync();
+            return updatedUser;
         }
 
         public async Task<User> DeleteUserAsync(string userId)
@@ -46,20 +61,6 @@ namespace MicroZoo.IdentityApi.Repositories
             await _dbContext.SaveChangesAsync();
 
             return user;
-        }
-
-        public async Task<User> UpdateUserAsync(string userId, User user)
-        {
-            if (userId == null)
-                return default;
-
-            var updatedUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (updatedUser == null)
-                return default;
-
-            updatedUser = user;
-            await _dbContext.SaveChangesAsync();
-            return updatedUser;
         }
 
         private async Task SaveChangesAsync() =>

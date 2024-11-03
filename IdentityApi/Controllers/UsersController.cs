@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MicroZoo.IdentityApi.Services;
+using MicroZoo.Infrastructure.Models.Users;
 
 namespace MicroZoo.IdentityApi.Controllers
 {
@@ -7,17 +8,17 @@ namespace MicroZoo.IdentityApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUsersRequestReceivingService _usersRequestReceivingService;
+        private readonly IUsersService _usersService;
 
-        public UsersController(IUsersRequestReceivingService usersRequestReceivingService)
+        public UsersController(IUsersService usersService)
         {
-            _usersRequestReceivingService = usersRequestReceivingService;
+            _usersService = usersService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllUsersAsync()
-        {
-            var response = await _usersRequestReceivingService.GetAllUsersAsync();
+        {            
+            var response = await _usersService.GetAllUsersAsync();
 
             return response.Users != null
                 ? Ok(response.Users)
@@ -27,7 +28,17 @@ namespace MicroZoo.IdentityApi.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserAsync(string userId)
         {
-            var response = await _usersRequestReceivingService.GetUserAsync(userId);
+            var response = await _usersService.GetUserAsync(userId);
+
+            return response.User != null 
+                ? Ok(response.User) 
+                : NotFound(response.ErrorMessage);
+        }
+
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUserAsync(string userId,[FromBody] User user)
+        {
+            var response = await _usersService.UpdateUserAsync(userId, user);
 
             return response.User != null 
                 ? Ok(response.User) 
