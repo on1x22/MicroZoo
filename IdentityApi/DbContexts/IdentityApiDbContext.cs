@@ -1,12 +1,16 @@
-﻿using IdentityApi.Models;
-using IdentityApi.SeedConfiguration;
+﻿using MicroZoo.IdentityApi.Models;
+using MicroZoo.IdentityApi.SeedConfiguration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MicroZoo.Infrastructure.Models.Users;
 
-namespace IdentityApi.DbContexts
+namespace MicroZoo.IdentityApi.DbContexts
 {
     public class IdentityApiDbContext : IdentityDbContext<User, Role, string>
     {
+        public DbSet<Requirement> Requirements { get; set; }
+        public DbSet<RoleRequirement> RoleRequirements { get; set; }
+
         public IdentityApiDbContext(DbContextOptions<IdentityApiDbContext> options)
             : base(options) 
         { }
@@ -17,6 +21,11 @@ namespace IdentityApi.DbContexts
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new RoleConfiguration());
             builder.ApplyConfiguration(new UserRoleConfiguration());
+            builder.ApplyConfiguration(new RequirementConfiguration());
+            builder.ApplyConfiguration(new RoleRequirementConfiguration());
+
+            builder.Entity<RoleRequirement>()
+                .HasKey(rr => new { rr.RoleId, rr.RequirementId });
         }
     }
 }

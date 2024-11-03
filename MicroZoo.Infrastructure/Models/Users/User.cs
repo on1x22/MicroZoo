@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace IdentityApi.Models
+namespace MicroZoo.Infrastructure.Models.Users
 {
     public class User : IdentityUser
     {

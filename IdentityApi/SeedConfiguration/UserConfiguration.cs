@@ -1,8 +1,8 @@
-﻿using IdentityApi.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MicroZoo.Infrastructure.Models.Users;
 
-namespace IdentityApi.SeedConfiguration
+namespace MicroZoo.IdentityApi.SeedConfiguration
 {
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {

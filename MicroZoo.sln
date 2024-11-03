@@ -32,7 +32,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.ZookeepersApi.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagersApi", "ManagersApi\ManagersApi.csproj", "{FA9F0DA8-5A5C-41D8-B086-B5AB263B85AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityApi", "IdentityApi\IdentityApi.csproj", "{705833FA-07E4-4902-8581-5F2E53248FED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.IdentityApi", "IdentityApi\MicroZoo.IdentityApi.csproj", "{705833FA-07E4-4902-8581-5F2E53248FED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

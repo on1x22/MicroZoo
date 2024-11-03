@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityApi.Controllers
+namespace MicroZoo.IdentityApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]

@@ -1,8 +1,10 @@
 
-using IdentityApi.DbContexts;
+using MicroZoo.IdentityApi.DbContexts;
 using Microsoft.EntityFrameworkCore;
+using MicroZoo.IdentityApi.Repositories;
+using MicroZoo.IdentityApi.Services;
 
-namespace IdentityApi
+namespace MicroZoo.IdentityApi
 {
     public class Program
     {
@@ -31,6 +33,10 @@ namespace IdentityApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IUsersRequestReceivingService, UsersRequestReceivingService>();
         }
 
         static void Configure(WebApplication app)

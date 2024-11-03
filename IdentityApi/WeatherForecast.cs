@@ -1,4 +1,4 @@
-namespace IdentityApi
+namespace MicroZoo.IdentityApi
 {
     public class WeatherForecast
     {

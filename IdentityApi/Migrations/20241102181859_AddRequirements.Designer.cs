@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MicroZoo.IdentityApi.Migrations
 {
     [DbContext(typeof(IdentityApiDbContext))]
-    [Migration("20241101175520_InitializeIdentityDb")]
-    partial class InitializeIdentityDb
+    [Migration("20241102181859_AddRequirements")]
+    partial class AddRequirements
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,20 @@ namespace MicroZoo.IdentityApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("IdentityApi.Models.Requirement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Requirements");
+                });
 
             modelBuilder.Entity("IdentityApi.Models.Role", b =>
                 {
@@ -68,6 +82,21 @@ namespace MicroZoo.IdentityApi.Migrations
                             Name = "First admin",
                             NormalizedName = "FIRST ADMIN"
                         });
+                });
+
+            modelBuilder.Entity("IdentityApi.Models.RoleRequirement", b =>
+                {
+                    b.Property<string>("RoleId")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("RequirementId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("RoleId", "RequirementId");
+
+                    b.HasIndex("RequirementId");
+
+                    b.ToTable("RoleRequirements");
                 });
 
             modelBuilder.Entity("IdentityApi.Models.User", b =>
@@ -144,28 +173,28 @@ namespace MicroZoo.IdentityApi.Migrations
                         {
                             Id = "081cb69e-d710-470f-9971-96fc9df25db8",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "80ac17ec-a372-4cbd-80ba-622e2e017635",
+                            ConcurrencyStamp = "dad82446-9dbe-4e0e-8ed2-635e251434cd",
                             EmailConfirmed = false,
                             FirstName = "First",
                             LastName = "User",
                             LockoutEnabled = false,
                             NormalizedUserName = "FIRST USER",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1d9720c9-5c90-4801-a0c9-00980863d8ad",
+                            SecurityStamp = "392e21f1-6f2c-4c59-b577-ff32403fbc3a",
                             TwoFactorEnabled = false
                         },
                         new
                         {
                             Id = "870db52f-33c0-44e1-a861-0602a1a998ce",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bf9d19f8-62ed-47e6-a0b5-d7344ee563c6",
+                            ConcurrencyStamp = "fd3299ea-4739-4a81-9905-90f27afaae1b",
                             EmailConfirmed = false,
                             FirstName = "First",
                             LastName = "Admin",
                             LockoutEnabled = false,
                             NormalizedUserName = "FIRST ADMIN",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7f056917-0871-46d5-814c-8514acb52d81",
+                            SecurityStamp = "11cd1235-5dbf-4cc0-b156-a094778a641a",
                             TwoFactorEnabled = false
                         });
                 });
@@ -288,6 +317,25 @@ namespace MicroZoo.IdentityApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("IdentityApi.Models.RoleRequirement", b =>
+                {
+                    b.HasOne("IdentityApi.Models.Requirement", "Requirement")
+                        .WithMany("RoleRequirements")
+                        .HasForeignKey("RequirementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IdentityApi.Models.Role", "Role")
+                        .WithMany("RoleRequirements")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Requirement");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("IdentityApi.Models.Role", null)
@@ -337,6 +385,16 @@ namespace MicroZoo.IdentityApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("IdentityApi.Models.Requirement", b =>
+                {
+                    b.Navigation("RoleRequirements");
+                });
+
+            modelBuilder.Entity("IdentityApi.Models.Role", b =>
+                {
+                    b.Navigation("RoleRequirements");
                 });
 #pragma warning restore 612, 618
         }
