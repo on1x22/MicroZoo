@@ -1,4 +1,4 @@
-﻿using MicroZoo.IdentityApi.Models;
+﻿using MicroZoo.Infrastructure.Models.Roles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

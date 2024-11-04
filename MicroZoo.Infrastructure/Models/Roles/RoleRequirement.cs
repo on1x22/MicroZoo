@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MicroZoo.IdentityApi.Models
+namespace MicroZoo.Infrastructure.Models.Roles
 {
     [Table("RoleRequirements")]
     public class RoleRequirement

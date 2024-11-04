@@ -1,6 +1,6 @@
-﻿using MicroZoo.IdentityApi.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MicroZoo.Infrastructure.Models.Roles;
 
 namespace MicroZoo.IdentityApi.SeedConfiguration
 {

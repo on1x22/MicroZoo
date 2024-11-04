@@ -35,7 +35,10 @@ namespace MicroZoo.IdentityApi
             services.AddSwaggerGen();
 
             services.AddScoped<IUsersRepository, UsersRepository>();
-            services.AddScoped<IUsersService, UsersService>();            
+            services.AddScoped<IUsersService, UsersService>();      
+            
+            services.AddScoped<IRolesRepository, RolesRepository>();
+            services.AddScoped<IRolesService, RolesService>();
         }
 
         static void Configure(WebApplication app)

@@ -1,8 +1,8 @@
-﻿using MicroZoo.IdentityApi.Models;
-using MicroZoo.IdentityApi.SeedConfiguration;
+﻿using MicroZoo.IdentityApi.SeedConfiguration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.Infrastructure.Models.Users;
+using MicroZoo.Infrastructure.Models.Roles;
 
 namespace MicroZoo.IdentityApi.DbContexts
 {

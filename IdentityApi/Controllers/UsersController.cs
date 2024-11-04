@@ -22,7 +22,7 @@ namespace MicroZoo.IdentityApi.Controllers
 
             return response.Users != null
                 ? Ok(response.Users)
-                : NotFound(response.ErrorMessage);
+                : BadRequest(response.ErrorMessage);
         }
 
         [HttpGet("{userId}")]
@@ -32,7 +32,7 @@ namespace MicroZoo.IdentityApi.Controllers
 
             return response.User != null 
                 ? Ok(response.User) 
-                : NotFound(response.ErrorMessage);
+                : BadRequest(response.ErrorMessage);
         }
 
         [HttpPut("{userId}")]
@@ -42,7 +42,7 @@ namespace MicroZoo.IdentityApi.Controllers
 
             return response.User != null 
                 ? Ok(response.User) 
-                : NotFound(response.ErrorMessage);
+                : BadRequest(response.ErrorMessage);
         }
 
         [HttpDelete("{userId}")]
@@ -52,7 +52,7 @@ namespace MicroZoo.IdentityApi.Controllers
 
             return response.User != null
                 ? Ok(response.User)
-                : NotFound(response.ErrorMessage);
+                : BadRequest(response.ErrorMessage);
         }
     }
 }

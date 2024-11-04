@@ -1,0 +1,69 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using MicroZoo.IdentityApi.Services;
+using MicroZoo.Infrastructure.Models.Roles;
+
+namespace MicroZoo.IdentityApi.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class RolesController : ControllerBase
+    {
+        private readonly IRolesService _rolesService;
+
+        public RolesController(IRolesService rolesService)
+        {
+            _rolesService = rolesService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllRoles()
+        {
+            var response = await _rolesService.GetAllRolesAsync();
+
+            return response.Roles != null 
+                ? Ok(response.Roles) 
+                : BadRequest(response.ErrorMessage);
+        }
+
+        [HttpGet("{roleId}")]
+        public async Task<IActionResult> GetRoleAsync(string roleId)
+        {
+            var response = await _rolesService.GetRoleAsync(roleId);
+
+            return response.Role != null
+                ? Ok(response.Role)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddRoleAsync([FromBody] RoleWithoutIdDto roleWithoutIdDto)
+        {
+            var response = await _rolesService.AddRoleAsync(roleWithoutIdDto);
+
+            return response.Role != null
+                ? Ok(response.Role)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        [HttpPut("{roleId}")]
+        public async Task<IActionResult> UpdateRoleAsync(string roleId, 
+            [FromBody] RoleWithoutIdDto roleWithoutIdDto)
+        {
+            var response = await _rolesService.UpdateRoleAsync(roleId, roleWithoutIdDto);
+
+            return response.Role != null
+                ? Ok(response.Role)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        [HttpDelete("{roleId}")]
+        public async Task<IActionResult> DeleteRoleAsync(string roleId)
+        {
+            var response = await _rolesService.DeleteRoleAsync(roleId);
+
+            return response.Role != null
+                ? Ok(response.Role)
+                : BadRequest(response.ErrorMessage);
+        }
+    }
+}
