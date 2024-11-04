@@ -61,5 +61,19 @@ namespace MicroZoo.IdentityApi.Services
 
             return response;
         }
+
+        public async Task <GetUserResponse> DeleteUserAsync(string userId)
+        {
+            var response = new GetUserResponse();
+            if (!Guid.TryParse(userId, out _))
+            {
+                response.ErrorMessage = "User Id is not Guid";
+                return response;
+            }
+
+            response.User = await _userRepository.DeleteUserAsync(userId);
+
+            return response;
+        }
     }
 }

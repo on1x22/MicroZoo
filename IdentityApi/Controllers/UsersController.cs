@@ -44,5 +44,15 @@ namespace MicroZoo.IdentityApi.Controllers
                 ? Ok(response.User) 
                 : NotFound(response.ErrorMessage);
         }
+
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> DeleteUserAsync(string userId)
+        {
+            var response = await _usersService.DeleteUserAsync(userId);
+
+            return response.User != null
+                ? Ok(response.User)
+                : NotFound(response.ErrorMessage);
+        }
     }
 }
