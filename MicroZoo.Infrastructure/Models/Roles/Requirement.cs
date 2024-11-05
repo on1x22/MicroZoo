@@ -12,5 +12,11 @@ namespace MicroZoo.Infrastructure.Models.Roles
         public string? Name { get; set; }
 
         public List<RoleRequirement>? RoleRequirements { get; set; }
+
+        public void SetValues(RequirementWithoutIdDto requirementWithoutIdDto)
+        {
+            Id = Guid.NewGuid();
+            Name = requirementWithoutIdDto.Name;
+        }
     }
 }
