@@ -26,5 +26,29 @@ namespace MicroZoo.Infrastructure.Models.Users
             LockoutEnabled = userForUpdate.LockoutEnabled;
             AccessFailedCount = userForUpdate.AccessFailedCount;
         }
+
+        public UserWithRoles ConvertToUserWithRoles()
+        {
+            return new UserWithRoles
+            {
+                Id = Id,
+                FirstName = FirstName,
+                LastName = LastName,
+                UserName = UserName,
+                NormalizedUserName = NormalizedUserName,
+                Email = Email,
+                NormalizedEmail = NormalizedEmail,
+                EmailConfirmed = EmailConfirmed,
+                PasswordHash = PasswordHash,
+                SecurityStamp = SecurityStamp,
+                ConcurrencyStamp = ConcurrencyStamp,
+                PhoneNumber = PhoneNumber,
+                PhoneNumberConfirmed = PhoneNumberConfirmed,
+                TwoFactorEnabled = TwoFactorEnabled,
+                LockoutEnd = LockoutEnd,
+                LockoutEnabled = LockoutEnabled,
+                AccessFailedCount = AccessFailedCount
+            };
+        }
     }
 }

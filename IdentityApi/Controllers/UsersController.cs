@@ -9,10 +9,12 @@ namespace MicroZoo.IdentityApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _usersService;
+        private readonly IUserRolesService _userRolesService;
 
-        public UsersController(IUsersService usersService)
+        public UsersController(IUsersService usersService, IUserRolesService userRolesService)
         {
             _usersService = usersService;
+            _userRolesService = userRolesService;
         }
 
         [HttpGet]
@@ -52,6 +54,16 @@ namespace MicroZoo.IdentityApi.Controllers
 
             return response.User != null
                 ? Ok(response.User)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        [HttpGet("{userId}/with-roles")]
+        public async Task<IActionResult> GetUserWithRolesAsync(string userId)
+        {
+            var response = await _userRolesService.GetUserWithRolesAsync(userId);
+
+            return response.UserWithRoles != null
+                ? Ok(response.UserWithRoles) 
                 : BadRequest(response.ErrorMessage);
         }
     }

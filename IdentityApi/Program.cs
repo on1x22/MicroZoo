@@ -42,6 +42,9 @@ namespace MicroZoo.IdentityApi
 
             services.AddScoped<IRequirementsRepository, RequirementsRepository>();
             services.AddScoped<IRequirementsService, RequirementsService>();
+
+            services.AddScoped<IUserRolesRepository, UserRolesRepository>();
+            services.AddScoped<IUserRolesService, UserRolesService>();
         }
 
         static void Configure(WebApplication app)
