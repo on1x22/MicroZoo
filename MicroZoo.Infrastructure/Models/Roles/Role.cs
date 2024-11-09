@@ -24,5 +24,17 @@ namespace MicroZoo.Infrastructure.Models.Roles
             NormalizedName = roleWithoutIdDto?.NormalizedName;
             ConcurrencyStamp = roleWithoutIdDto?.ConcurrencyStamp;
         }
+
+        public RoleWithRequirements ConvertToRoleWithRequirements()
+        {
+            return new RoleWithRequirements
+            {
+                Id = Id,
+                Description = Description,
+                Name = Name,
+                NormalizedName = NormalizedName,
+                ConcurrencyStamp = ConcurrencyStamp                
+            };
+        }
     }
 }

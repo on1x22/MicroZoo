@@ -9,10 +9,13 @@ namespace MicroZoo.IdentityApi.Controllers
     public class RolesController : ControllerBase
     {
         private readonly IRolesService _rolesService;
+        private readonly IRoleRequirementsService _roleRequirementsService;
 
-        public RolesController(IRolesService rolesService)
+        public RolesController(IRolesService rolesService, 
+            IRoleRequirementsService roleRequirementsService)
         {
             _rolesService = rolesService;
+            _roleRequirementsService = roleRequirementsService;
         }
 
         [HttpGet]
@@ -63,6 +66,16 @@ namespace MicroZoo.IdentityApi.Controllers
 
             return response.Role != null
                 ? Ok(response.Role)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        [HttpGet("{roleId}/with-requirements")]
+        public async Task<IActionResult> GetRoleWithRequirementsAsync(string roleId)
+        {
+            var response = await _roleRequirementsService.GetRoleWithRequirementsAsync(roleId);
+
+            return response.RoleWithRequirements != null
+                ? Ok(response.RoleWithRequirements) 
                 : BadRequest(response.ErrorMessage);
         }
     }
