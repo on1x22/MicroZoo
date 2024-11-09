@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using MicroZoo.IdentityApi.DbContexts;
 using MicroZoo.Infrastructure.Models.Roles;
 using MicroZoo.Infrastructure.Models.Users;
@@ -30,6 +31,36 @@ namespace MicroZoo.IdentityApi.Repositories
             userWithRoles!.Roles = userRoles;
             return userWithRoles;            
         }
+            
+        public async Task<bool> UpdateUserWithRolesAsync(string userId, List<string> roleIds)
+        {
+            if (userId == null)
+                return default!;
+
+            var selectedUser = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (selectedUser == null)
+                return default!;
+
+            await DeleteUserRolesAsync(userId);
+
+            var newUserRoles = new List<IdentityUserRole<string>>();
+            foreach (var roleId in roleIds)
+            {
+                var userRole = new IdentityUserRole<string>()
+                {
+                    UserId = userId,
+                    RoleId = roleId
+                };
+                newUserRoles.Add(userRole);
+            }
+
+            await AddUserRolesAsync(newUserRoles);
+            await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
 
         private async Task<List<Role>> GetUserRolesAsync(string userId)
         {
@@ -54,5 +85,20 @@ namespace MicroZoo.IdentityApi.Repositories
                     ConcurrencyStamp = role.ConcurrencyStamp
                 }).ToListAsync();
         }
+
+        private async Task AddUserRolesAsync(List<IdentityUserRole<string>> userRoles)
+        {
+            await _dbContext.UserRoles.AddRangeAsync(userRoles);
+        }
+
+        private async Task DeleteUserRolesAsync(string userId)
+        {
+            var userRolesForDelete = await _dbContext.UserRoles.Where(ur => ur.UserId == userId)
+                .ToListAsync();
+            _dbContext.UserRoles.RemoveRange(userRolesForDelete);
+        }
+
+        private async Task SaveChangesAsync() =>
+            await _dbContext.SaveChangesAsync();        
     }
 }

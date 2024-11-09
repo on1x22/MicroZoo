@@ -66,5 +66,16 @@ namespace MicroZoo.IdentityApi.Controllers
                 ? Ok(response.UserWithRoles) 
                 : BadRequest(response.ErrorMessage);
         }
+
+        [HttpPut("{userId}/with-roles")]
+        public async Task<IActionResult> UpdateUserWithRolesAsync(string userId,
+            [FromBody] List<string> roleIds)
+        {
+            var response = await _userRolesService.UpdateUserWithRolesAsync(userId, roleIds);
+
+            return response.UserWithRoles != null
+                ? Ok(response.UserWithRoles)
+                : BadRequest(response.ErrorMessage);
+        }
     }
 }
