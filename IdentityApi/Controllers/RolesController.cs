@@ -78,5 +78,17 @@ namespace MicroZoo.IdentityApi.Controllers
                 ? Ok(response.RoleWithRequirements) 
                 : BadRequest(response.ErrorMessage);
         }
+
+        [HttpPut("{roleId}/with-requirements")]
+        public async Task<IActionResult> UpdateRoleWithRequirementsAsync(string roleId,
+            [FromBody] List<Guid> requirementIds)
+        {
+            var response = await _roleRequirementsService.UpdateRoleWithRequirementsAsync(
+                roleId, requirementIds);
+
+            return response.RoleWithRequirements != null
+                ? Ok(response.RoleWithRequirements)
+                : BadRequest(response.ErrorMessage);
+        }
     }
 }

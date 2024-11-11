@@ -57,7 +57,7 @@ namespace MicroZoo.IdentityApi.Repositories
             }
 
             await AddUserRolesAsync(newUserRoles);
-            await _dbContext.SaveChangesAsync();
+            await SaveChangesAsync();
 
             return true;
         }
@@ -86,10 +86,9 @@ namespace MicroZoo.IdentityApi.Repositories
                 }).ToListAsync();
         }
 
-        private async Task AddUserRolesAsync(List<IdentityUserRole<string>> userRoles)
-        {
+        private async Task AddUserRolesAsync(List<IdentityUserRole<string>> userRoles) =>        
             await _dbContext.UserRoles.AddRangeAsync(userRoles);
-        }
+        
 
         private async Task DeleteUserRolesAsync(string userId)
         {

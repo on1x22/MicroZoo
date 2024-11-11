@@ -31,6 +31,36 @@ namespace MicroZoo.IdentityApi.Repositories
             return roleWithRequirements;
         }
 
+        public async Task<bool> UpdateRoleWithRequirementsAsync(string roleId, 
+            List<Guid> requirementIds)
+        {
+            if(roleId == null)
+                return false;
+
+            var selectedRole = _dbContext.Roles.FirstOrDefault(r => r.Id == roleId);
+
+            if (selectedRole == null)
+                return false;
+
+            await DeleteRoleRequirementsAsync(roleId);
+
+            var newRoleRequirements = new List<RoleRequirement>();
+            foreach (var requirement in requirementIds)
+            {
+                var roleRequirement = new RoleRequirement()
+                {
+                    RoleId = roleId,
+                    RequirementId = requirement
+                };
+                newRoleRequirements.Add(roleRequirement);
+            }
+
+            await AddRoleRequirementAsync(newRoleRequirements);
+            await SaveChangesAsync();
+
+            return true;
+        }
+
         private async Task<List<Requirement>> GetRoleRequirementsAsync(string roleId)
         {
             return await _dbContext.Roles.Join(_dbContext.RoleRequirements,
@@ -51,5 +81,18 @@ namespace MicroZoo.IdentityApi.Repositories
                     Name = requirement.Name
                 }).ToListAsync();
         }
+
+        private async Task AddRoleRequirementAsync(List<RoleRequirement> roleRequirements) =>
+            await _dbContext.RoleRequirements.AddRangeAsync(roleRequirements);
+
+        private async Task DeleteRoleRequirementsAsync(string roleId)
+        {
+            var roleRequirementsForDelete = await _dbContext.RoleRequirements
+                .Where(rr => rr.RoleId == roleId).ToListAsync();
+            _dbContext.RoleRequirements.RemoveRange(roleRequirementsForDelete);
+        }
+
+        private async Task SaveChangesAsync() =>
+            await _dbContext.SaveChangesAsync();
     }
 }
