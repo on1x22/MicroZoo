@@ -34,6 +34,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagersApi", "ManagersApi\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.IdentityApi", "IdentityApi\MicroZoo.IdentityApi.csproj", "{705833FA-07E4-4902-8581-5F2E53248FED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroZoo.EmailService", "MicroZoo.EmailService\MicroZoo.EmailService.csproj", "{B34C5FE1-A510-42B7-A56B-1004655E472D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +86,10 @@ Global
 		{705833FA-07E4-4902-8581-5F2E53248FED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{705833FA-07E4-4902-8581-5F2E53248FED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{705833FA-07E4-4902-8581-5F2E53248FED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B34C5FE1-A510-42B7-A56B-1004655E472D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B34C5FE1-A510-42B7-A56B-1004655E472D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B34C5FE1-A510-42B7-A56B-1004655E472D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B34C5FE1-A510-42B7-A56B-1004655E472D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
