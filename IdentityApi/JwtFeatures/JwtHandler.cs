@@ -28,7 +28,7 @@ namespace MicroZoo.IdentityApi.JwtFeatures
 
         private SigningCredentials GetSigningCredentials()
         {
-            var key = Encoding.UTF8.GetBytes(_jwtSettings["securityKey"]);
+            var key = Encoding.UTF8.GetBytes(_jwtSettings["securityKey"]!);
             var secret = new SymmetricSecurityKey(key);
 
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.Models.Roles;
 
@@ -19,6 +20,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Visitor")]
         public async Task<IActionResult> GetAllRoles()
         {
             var response = await _rolesService.GetAllRolesAsync();
