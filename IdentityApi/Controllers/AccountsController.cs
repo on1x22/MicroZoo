@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -81,7 +80,7 @@ namespace MicroZoo.IdentityApi.Controllers
         public async Task<IActionResult> Authenticate(
             [FromBody] UserForAuthenticationDto userForAuthentication)
         {
-            var user = await _userManager.FindByNameAsync(userForAuthentication.Email!);
+            var user = await _userManager.FindByEmailAsync(userForAuthentication.Email!);
             if (user == null)
                 return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid authentication" });
 
@@ -116,6 +115,57 @@ namespace MicroZoo.IdentityApi.Controllers
             await _userManager.ResetAccessFailedCountAsync(user);
 
             return Ok(new AuthResponseDto { IsAuthSuccessful = true, Token = token });
+        }
+
+        [HttpPost("forgotpassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPassword)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByEmailAsync(forgotPassword.Email!);
+            if (user == null)
+                return BadRequest("Invalid request");
+
+            var token =await _userManager.GeneratePasswordResetTokenAsync(user);
+            var param = new Dictionary<string, string?>
+            {
+                { "token", token },
+                { "email", forgotPassword.Email! }
+            };
+
+            var callback = QueryHelpers.AddQueryString(forgotPassword.ClientUri!, param);
+
+            var message = new Message([user.Email], "Reset password token", callback);
+
+            await _emailSender.SendEmailAsync(message);
+
+            return Ok();
+        }
+
+        [HttpPost("resetpassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPassword)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByEmailAsync(resetPassword.Email!);
+            if (user == null)
+                return BadRequest("Invalid request");
+
+            var result = await _userManager.ResetPasswordAsync(user, 
+                System.Web.HttpUtility.UrlDecode(resetPassword.Token!), resetPassword.Password!);
+
+            if(!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+
+                return BadRequest(new { Errors = errors });
+            }
+
+            await _userManager.SetLockoutEndDateAsync(user, null);
+
+            return Ok();
         }
     }
 }
