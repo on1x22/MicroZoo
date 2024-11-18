@@ -13,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using MicroZoo.IdentityApi.JwtFeatures;
 using MicroZoo.EmailService;
+using MicroZoo.IdentityApi.Policies;
 
 namespace MicroZoo.IdentityApi
 {
@@ -76,6 +77,12 @@ namespace MicroZoo.IdentityApi
                             .GetBytes(jwtSettings["securityKey"]!))
                     };
                 });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IdentityApi.Read",
+                    policy => policy.Requirements.Add(new AllowedRequirementsRequirement()));
+            });
 
             services.AddSingleton<JwtHandler>();
 
