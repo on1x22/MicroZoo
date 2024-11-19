@@ -6,12 +6,12 @@ using MicroZoo.Infrastructure.Models.Users;
 
 namespace MicroZoo.IdentityApi.Policies
 {
-    public class AllowedRequirementsProvider : AuthorizationHandler<AllowedRequirementsRequirement>
+    public class AllowedRequirementsHandler : AuthorizationHandler<AllowedRequirementsRequirement>
     {
         private readonly UserManager<User> _userManager;
         private readonly IdentityApiDbContext _dbContext;
 
-        public AllowedRequirementsProvider(UserManager<User> userManager,
+        public AllowedRequirementsHandler(UserManager<User> userManager,
                                            IdentityApiDbContext dbContext)
         {
             _userManager = userManager;
@@ -22,7 +22,7 @@ namespace MicroZoo.IdentityApi.Policies
                                                        AllowedRequirementsRequirement requirement)
         {
             var calimsPrincipal = context.User;
-            if (calimsPrincipal.Identity.IsAuthenticated == false)
+            if (calimsPrincipal.Identity!.IsAuthenticated == false)
             {
                 context.Fail();
                 return Task.CompletedTask;
@@ -33,7 +33,7 @@ namespace MicroZoo.IdentityApi.Policies
             if (user == null) 
                 context.Fail();
 
-            var /*allowedRequirements*/rolesOfUser = /*await*/ _dbContext.Users.Join(_dbContext.UserRoles,
+            var rolesOfUser = _dbContext.Users.Join(_dbContext.UserRoles,
                 u => u.Id,
                 ur => ur.UserId,
                 (u, ur) => new

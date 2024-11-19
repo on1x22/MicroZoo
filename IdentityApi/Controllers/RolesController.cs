@@ -31,6 +31,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpGet("{roleId}")]
+        [Authorize(Policy = "IdentityApi.Read")]
         public async Task<IActionResult> GetRoleAsync(string roleId)
         {
             var response = await _rolesService.GetRoleAsync(roleId);

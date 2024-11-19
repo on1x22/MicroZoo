@@ -14,6 +14,7 @@ using System.Text;
 using MicroZoo.IdentityApi.JwtFeatures;
 using MicroZoo.EmailService;
 using MicroZoo.IdentityApi.Policies;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MicroZoo.IdentityApi
 {
@@ -78,11 +79,8 @@ namespace MicroZoo.IdentityApi
                     };
                 });
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("IdentityApi.Read",
-                    policy => policy.Requirements.Add(new AllowedRequirementsRequirement()));
-            });
+            services.AddAuthorization(opt => PoliciesConfiguration.AddAuthorizationOptions(opt));
+            services.AddScoped<IAuthorizationHandler,AllowedRequirementsHandler>();
 
             services.AddSingleton<JwtHandler>();
 
