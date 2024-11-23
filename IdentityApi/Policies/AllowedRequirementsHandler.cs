@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.IdentityApi.DbContexts;
 using MicroZoo.Infrastructure.Models.Users;
+using Org.BouncyCastle.Bcpg;
 
 namespace MicroZoo.IdentityApi.Policies
 {
@@ -33,13 +34,16 @@ namespace MicroZoo.IdentityApi.Policies
             if (user == null) 
                 context.Fail();
 
-            var rolesOfUser = _dbContext.Users.Join(_dbContext.UserRoles,
+            var rolesOfUser = _dbContext.Users.Where(usr => usr.Id == user!.Id)
+                .Join(_dbContext.UserRoles,
                 u => u.Id,
                 ur => ur.UserId,
                 (u, ur) => new
                 {
+                    UserId = ur.UserId,
                     RoleId = ur.RoleId
-                }).Join(_dbContext.Roles,
+                })   
+                .Join(_dbContext.Roles,
                 ur => ur.RoleId,
                 r => r.Id,
                 (ur, r) => new
@@ -47,8 +51,9 @@ namespace MicroZoo.IdentityApi.Policies
                     r.Id
                 })
                 .Select(x => x.Id);
-            
-            var allowedRequirementsOfUser = await rolesOfUser.Join(_dbContext.RoleRequirements,
+
+            var allowedRequirementsOfUser = await rolesOfUser
+                .Join(_dbContext.RoleRequirements,
                 r => r,
                 rr => rr.RoleId,
                 (r, rr) => new

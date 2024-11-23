@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.Models.Roles;
 using System.Linq.Expressions;
@@ -17,6 +18,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "IdentityApi.Read")]
         public async Task<IActionResult> GetAllRequirementsAsync() 
         { 
             var response = await _requirementsService.GetAllRequirementsAsync();
@@ -27,6 +29,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpGet("{requirementId}")]
+        [Authorize(Policy = "IdentityApi.Read")]
         public async Task<IActionResult> GetRequirementAsync(Guid requirementId)
         {
             var response = await _requirementsService.GetRequirementAsync(requirementId);
@@ -37,6 +40,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "IdentityApi.Create")]
         public async Task<IActionResult> AddRequirementAsync(
             [FromBody] RequirementWithoutIdDto requirementDto)
         {
@@ -48,6 +52,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpDelete("{requirementId}")]
+        [Authorize(Policy = "IdentityApi.Delete")]
         public async Task<IActionResult> DeleteRequirementasync(Guid requirementId)
         {
             var response = await _requirementsService.DeleteRequirementAsync(requirementId);

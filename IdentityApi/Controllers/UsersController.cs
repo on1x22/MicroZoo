@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.Models.Users;
 
@@ -18,6 +19,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "IdentityApi.Read")]
         public async Task<IActionResult> GetAllUsersAsync()
         {            
             var response = await _usersService.GetAllUsersAsync();
@@ -28,6 +30,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpGet("{userId}")]
+        [Authorize(Policy = "IdentityApi.Read")]
         public async Task<IActionResult> GetUserAsync(string userId)
         {
             var response = await _usersService.GetUserAsync(userId);
@@ -38,6 +41,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpPut("{userId}")]
+        [Authorize(Policy = "IdentityApi.Update")]
         public async Task<IActionResult> UpdateUserAsync(string userId,[FromBody] User user)
         {
             var response = await _usersService.UpdateUserAsync(userId, user);
@@ -48,6 +52,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpDelete("{userId}")]
+        [Authorize(Policy = "IdentityApi.Delete")]
         public async Task<IActionResult> DeleteUserAsync(string userId)
         {
             var response = await _usersService.DeleteUserAsync(userId);
@@ -58,6 +63,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpGet("{userId}/with-roles")]
+        [Authorize(Policy = "IdentityApi.Read")]
         public async Task<IActionResult> GetUserWithRolesAsync(string userId)
         {
             var response = await _userRolesService.GetUserWithRolesAsync(userId);
@@ -68,6 +74,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpPut("{userId}/with-roles")]
+        [Authorize(Policy = "IdentityApi.Update")]
         public async Task<IActionResult> UpdateUserWithRolesAsync(string userId,
             [FromBody] List<string> roleIds)
         {

@@ -20,7 +20,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Visitor")]
+        [Authorize(Policy = "IdentityApi.Read")]
         public async Task<IActionResult> GetAllRoles()
         {
             var response = await _rolesService.GetAllRolesAsync();
@@ -31,7 +31,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpGet("{roleId}")]
-        [Authorize(Policy = "IdentityApi.Read")]
+        [Authorize(Policy = "IdentityApi.Read")]        
         public async Task<IActionResult> GetRoleAsync(string roleId)
         {
             var response = await _rolesService.GetRoleAsync(roleId);
@@ -42,6 +42,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "IdentityApi.Create")]
         public async Task<IActionResult> AddRoleAsync([FromBody] RoleWithoutIdDto roleWithoutIdDto)
         {
             var response = await _rolesService.AddRoleAsync(roleWithoutIdDto);
@@ -52,6 +53,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpPut("{roleId}")]
+        [Authorize(Policy = "IdentityApi.Update")]
         public async Task<IActionResult> UpdateRoleAsync(string roleId, 
             [FromBody] RoleWithoutIdDto roleWithoutIdDto)
         {
@@ -63,6 +65,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpDelete("{roleId}")]
+        [Authorize(Policy = "IdentityApi.Delete")]
         public async Task<IActionResult> DeleteRoleAsync(string roleId)
         {
             var response = await _rolesService.DeleteRoleAsync(roleId);
@@ -73,6 +76,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpGet("{roleId}/with-requirements")]
+        [Authorize(Policy = "IdentityApi.Read")]
         public async Task<IActionResult> GetRoleWithRequirementsAsync(string roleId)
         {
             var response = await _roleRequirementsService.GetRoleWithRequirementsAsync(roleId);
@@ -83,6 +87,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpPut("{roleId}/with-requirements")]
+        [Authorize(Policy = "IdentityApi.Update")]
         public async Task<IActionResult> UpdateRoleWithRequirementsAsync(string roleId,
             [FromBody] List<Guid> requirementIds)
         {

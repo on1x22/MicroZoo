@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -144,6 +145,7 @@ namespace MicroZoo.IdentityApi.Controllers
         }
 
         [HttpPost("resetpassword")]
+        [Authorize]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPassword)
         {
             if (!ModelState.IsValid)
