@@ -21,7 +21,8 @@ namespace MicroZoo.IdentityApi.Repositories
             if (userId == null)
                 return default;
 
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            //var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await GetUserFromDbAsync(userId);
             return user;
         }
 
@@ -41,13 +42,14 @@ namespace MicroZoo.IdentityApi.Repositories
             if (userId == null)
                 return default;
 
-            var updatedUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            //var updatedUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var updatedUser = await GetUserFromDbAsync(userId);
             if (updatedUser == null)
                 return default;
 
             updatedUser.Update(user);
 
-            await _dbContext.SaveChangesAsync();
+            await SaveChangesAsync();
             return updatedUser;
         }
 
@@ -56,12 +58,16 @@ namespace MicroZoo.IdentityApi.Repositories
             if (userId == null)
                 return default;
 
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            //var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await GetUserFromDbAsync(userId);
             _dbContext.Users.Remove(user);
-            await _dbContext.SaveChangesAsync();
+            await SaveChangesAsync();
 
             return user;
         }
+
+        private async Task<User?> GetUserFromDbAsync(string userId) =>
+            await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
         private async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();

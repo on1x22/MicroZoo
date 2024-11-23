@@ -169,5 +169,37 @@ namespace MicroZoo.IdentityApi.Controllers
 
             return Ok();
         }
+
+        [HttpPost("lockoutuser/{userId}")]
+        [Authorize(Policy = "IdentityApi.Update")]
+        public async Task<IActionResult> LockOutUser(string userId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return BadRequest("Invalid request");
+
+            await _userManager.SetLockoutEnabledAsync(user, true);
+            await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+            return Ok($"User with Id = \"{userId}\" was locked out");
+        }
+
+        [HttpPost("unlockuser/{userId}")]
+        [Authorize(Policy = "IdentityApi.Update")]
+        public async Task<IActionResult> UnlockUser(string userId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return BadRequest("Invalid request");
+
+            await _userManager.SetLockoutEnabledAsync(user, false);
+            await _userManager.SetLockoutEndDateAsync(user, null);
+            return Ok($"User with Id = \"{userId}\" was unlocked");
+        }
     }
 }
