@@ -17,7 +17,7 @@ namespace MicroZoo.IdentityApi.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IEmailSender _emailSender;
-        private readonly JwtHandler _jwtHandler;
+        private readonly JwtHandler _jwtHandler;        
 
         public AccountsController(UserManager<User> userManager, IMapper mapper,
             IEmailSender emailSender, JwtHandler jwtHandler)
@@ -77,8 +77,8 @@ namespace MicroZoo.IdentityApi.Controllers
             return Ok();
         }
 
-        [HttpPost("authenticate")]
-        public async Task<IActionResult> Authenticate(
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(
             [FromBody] UserForAuthenticationDto userForAuthentication)
         {
             var user = await _userManager.FindByEmailAsync(userForAuthentication.Email!);
@@ -111,11 +111,17 @@ namespace MicroZoo.IdentityApi.Controllers
             }
 
             var roles = await _userManager.GetRolesAsync(user);
-            var token = _jwtHandler.CreateToken(user, roles);
+            var accessToken = _jwtHandler.CreateAccessToken(user, roles);
+            var refreshToken = _jwtHandler.CreateRefreshToken();
 
-            await _userManager.ResetAccessFailedCountAsync(user);
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = _jwtHandler.GetRefreshTokenExpiryTimeSpanInDays();
+            user.AccessFailedCount = 0;
 
-            return Ok(new AuthResponseDto { IsAuthSuccessful = true, Token = token });
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new AuthResponseDto { IsAuthSuccessful = true, AccessToken = accessToken,
+                                                RefreshToken = refreshToken});
         }
 
         [HttpPost("forgotpassword")]
@@ -137,7 +143,7 @@ namespace MicroZoo.IdentityApi.Controllers
 
             var callback = QueryHelpers.AddQueryString(forgotPassword.ClientUri!, param);
 
-            var message = new Message([user.Email], "Reset password token", callback);
+            var message = new Message([user.Email!], "Reset password token", callback);
 
             await _emailSender.SendEmailAsync(message);
 
