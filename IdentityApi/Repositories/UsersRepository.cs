@@ -14,16 +14,17 @@ namespace MicroZoo.IdentityApi.Repositories
         }
 
         public async Task<List<User>> GetAllUsersAsync() =>
-            await _dbContext.Users.ToListAsync();
+            await _dbContext.Users.Where(u => u.Deleted == false).ToListAsync();
 
         public async Task<User> GetUserAsync(string userId)
         {
-            if (userId == null)
-                return default;
+            /*if (userId == null)
+                return default;*/
 
-            //var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            var user = await GetUserFromDbAsync(userId);
-            return user;
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId && 
+                                                                  u.Deleted == false);
+            //var user = await GetUserFromDbAsync(userId);
+            return user!;
         }
 
         /*public async Task<User> CreateUserAsync(User user)
@@ -39,35 +40,41 @@ namespace MicroZoo.IdentityApi.Repositories
          
         public async Task<User> UpdateUserAsync(string userId, User user)
         {
-            if (userId == null)
-                return default;
+            /*if (userId == null)
+                return default;*/
 
             //var updatedUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            var updatedUser = await GetUserFromDbAsync(userId);
+            /*var updatedUser = await GetUserAsync(userId); //GetUserFromDbAsync(userId);
             if (updatedUser == null)
-                return default;
+                return default;*/
 
-            updatedUser.Update(user);
+            //updatedUser.Update(user);
+            user.Id = userId;
+            _dbContext.Update(user);
 
             await SaveChangesAsync();
-            return updatedUser;
+            return /*updatedUser*/user;
         }
 
-        public async Task<User> DeleteUserAsync(string userId)
+        public async Task<User> SoftDeleteUserAsync(User user)
         {
-            if (userId == null)
-                return default;
+            /*if (userId == null)
+                return default;*/
 
             //var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            var user = await GetUserFromDbAsync(userId);
-            _dbContext.Users.Remove(user);
+            //var user = await GetUserAsync(userId);
+            //_dbContext.Users.Remove(user);
+            //await _dbContext.Users.Where(u => u.Id == userId).ExecuteDeleteAsync();
+            user.Deleted = true;
+            _dbContext.Update(user);
+
             await SaveChangesAsync();
 
             return user;
         }
 
-        private async Task<User?> GetUserFromDbAsync(string userId) =>
-            await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        /*private async Task<User?> GetUserFromDbAsync(string userId) =>
+            await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);*/
 
         private async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();

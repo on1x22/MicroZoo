@@ -11,6 +11,8 @@ namespace MicroZoo.Infrastructure.Models.Roles
 
         public string? Name { get; set; }
 
+        public bool Deleted { get; set; }
+
         public List<RoleRequirement>? RoleRequirements { get; set; }
 
         public void SetValues(RequirementWithoutIdDto requirementWithoutIdDto)

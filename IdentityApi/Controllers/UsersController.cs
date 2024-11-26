@@ -53,32 +53,55 @@ namespace MicroZoo.IdentityApi.Controllers
 
         [HttpDelete("{userId}")]
         [Authorize(Policy = "IdentityApi.Delete")]
-        public async Task<IActionResult> DeleteUserAsync(string userId)
+        public async Task<IActionResult> SoftDeleteUserAsync(string userId)
         {
-            var response = await _usersService.DeleteUserAsync(userId);
+            var response = await _usersService.SoftDeleteUserAsync(userId);
 
             return response.User != null
                 ? Ok(response.User)
                 : BadRequest(response.ErrorMessage);
         }
 
-        [HttpGet("{userId}/with-roles")]
+        [HttpGet("v1/{userId}/with-roles")]
         [Authorize(Policy = "IdentityApi.Read")]
-        public async Task<IActionResult> GetUserWithRolesAsync(string userId)
+        public async Task<IActionResult> GetUserWithRolesAsync_v1(string userId)
         {
-            var response = await _userRolesService.GetUserWithRolesAsync(userId);
+            var response = await _userRolesService.GetUserWithRolesAsync_v1(userId);
 
             return response.UserWithRoles != null
                 ? Ok(response.UserWithRoles) 
                 : BadRequest(response.ErrorMessage);
         }
 
-        [HttpPut("{userId}/with-roles")]
+        [HttpGet("v2/{userId}/with-roles")]
+        [Authorize(Policy = "IdentityApi.Read")]
+        public async Task<IActionResult> GetUserWithRolesAsync_v2(string userId)
+        {
+            var response = await _userRolesService.GetUserWithRolesAsync_v2(userId);
+
+            return response.UserWithRoles != null
+                ? Ok(response.UserWithRoles)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        [HttpPut("v1/{userId}/with-roles")]
         [Authorize(Policy = "IdentityApi.Update")]
-        public async Task<IActionResult> UpdateUserWithRolesAsync(string userId,
+        public async Task<IActionResult> UpdateUserWithRolesAsync_v1(string userId,
             [FromBody] List<string> roleIds)
         {
-            var response = await _userRolesService.UpdateUserWithRolesAsync(userId, roleIds);
+            var response = await _userRolesService.UpdateUserWithRolesAsync_v1(userId, roleIds);
+
+            return response.UserWithRoles != null
+                ? Ok(response.UserWithRoles)
+                : BadRequest(response.ErrorMessage);
+        }
+
+        [HttpPut("v2/{userId}/with-roles")]
+        [Authorize(Policy = "IdentityApi.Update")]
+        public async Task<IActionResult> UpdateUserWithRolesAsync_v2(string userId,
+            [FromBody] List<string> roleIds)
+        {
+            var response = await _userRolesService.UpdateUserWithRolesAsync_v2(userId, roleIds);
 
             return response.UserWithRoles != null
                 ? Ok(response.UserWithRoles)

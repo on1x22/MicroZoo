@@ -69,6 +69,9 @@ namespace MicroZoo.IdentityApi.Controllers
             if (user == null) 
                 return BadRequest("Invalid email confirmation request");
 
+            if (user.Deleted == true)
+                return BadRequest("Invalid request");
+
             var confirmResult = await _userManager.ConfirmEmailAsync(user,
                 System.Web.HttpUtility.UrlDecode(token));
             if (!confirmResult.Succeeded) 
@@ -84,6 +87,9 @@ namespace MicroZoo.IdentityApi.Controllers
             var user = await _userManager.FindByEmailAsync(userForAuthentication.Email!);
             if (user == null)
                 return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid authentication" });
+
+            if (user.Deleted == true)
+                return BadRequest("Invalid request");
 
             if (await _userManager.IsLockedOutAsync(user))
                 return Unauthorized(new AuthResponseDto { ErrorMessage = "The account is locked out"});
@@ -134,6 +140,9 @@ namespace MicroZoo.IdentityApi.Controllers
             if (user == null)
                 return BadRequest("Invalid request");
 
+            if (user.Deleted == true)
+                return BadRequest("Invalid request");
+
             var token =await _userManager.GeneratePasswordResetTokenAsync(user);
             var param = new Dictionary<string, string?>
             {
@@ -159,6 +168,9 @@ namespace MicroZoo.IdentityApi.Controllers
 
             var user = await _userManager.FindByEmailAsync(resetPassword.Email!);
             if (user == null)
+                return BadRequest("Invalid request");
+
+            if (user.Deleted == true)
                 return BadRequest("Invalid request");
 
             var result = await _userManager.ResetPasswordAsync(user, 

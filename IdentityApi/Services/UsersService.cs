@@ -49,6 +49,12 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
+            if (user == null)
+            {
+                response.ErrorMessage = "Invalid data for update";
+                return response;
+            }
+
             var userForUpdate = await _userRepository.GetUserAsync(userId);
 
             if (userForUpdate == null)
@@ -59,10 +65,16 @@ namespace MicroZoo.IdentityApi.Services
 
             response.User = await _userRepository.UpdateUserAsync(userId, user);
 
+            if (response.User == null)
+            {
+                response.ErrorMessage = "Inner server error";
+                return response;
+            }
+
             return response;
         }
 
-        public async Task <GetUserResponse> DeleteUserAsync(string userId)
+        public async Task <GetUserResponse> SoftDeleteUserAsync(string userId)
         {
             var response = new GetUserResponse();
             if (!Guid.TryParse(userId, out _))
@@ -71,7 +83,15 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
-            response.User = await _userRepository.DeleteUserAsync(userId);
+            var userForDelete = await _userRepository.GetUserAsync(userId);
+
+            if (userForDelete == null)
+            {
+                response.ErrorMessage = $"User with Id {userId} does not exist";
+                return response;
+            }
+
+            response.User = await _userRepository.SoftDeleteUserAsync(userForDelete);
 
             return response;
         }

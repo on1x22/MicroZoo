@@ -3,6 +3,7 @@ using System;
 using MicroZoo.IdentityApi.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MicroZoo.IdentityApi.Migrations
 {
     [DbContext(typeof(IdentityApiDbContext))]
-    partial class IdentityApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241126174940_AddedDeleteValue")]
+    partial class AddedDeleteValue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

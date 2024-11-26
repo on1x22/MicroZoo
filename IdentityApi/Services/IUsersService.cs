@@ -8,6 +8,6 @@ namespace MicroZoo.IdentityApi.Services
         Task<GetUsersResponse> GetAllUsersAsync();
         Task<GetUserResponse> GetUserAsync(string userId);
         Task<GetUserResponse> UpdateUserAsync(string userId, User user);
-        Task<GetUserResponse> DeleteUserAsync(string userId);
+        Task<GetUserResponse> SoftDeleteUserAsync(string userId);
     }
 }

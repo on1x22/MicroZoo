@@ -1,18 +1,22 @@
-﻿using MicroZoo.IdentityApi.Repositories;
+﻿using Microsoft.AspNetCore.Identity;
+using MicroZoo.IdentityApi.Repositories;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
 
 namespace MicroZoo.IdentityApi.Services
 {
     public class UserRolesService : IUserRolesService
     {
+        private readonly IUsersRepository _usersRepository;
         private readonly IUserRolesRepository _userRolesRepository;
 
-        public UserRolesService(IUserRolesRepository userRolesRepository)
+        public UserRolesService(IUsersRepository usersRepository,
+                                IUserRolesRepository userRolesRepository)
         {
+            _usersRepository = usersRepository;
             _userRolesRepository = userRolesRepository;
         }
 
-        public async Task<GetUserWithRolesResponse> GetUserWithRolesAsync(string userId)
+        public async Task<GetUserWithRolesResponse> GetUserWithRolesAsync_v1(string userId)
         {
             var response = new GetUserWithRolesResponse();
             if (!Guid.TryParse(userId, out _))
@@ -21,7 +25,7 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
-            var userWithRoles = await _userRolesRepository.GetUserWithRolesAsync(userId);
+            var userWithRoles = await _userRolesRepository.GetUserWithRolesAsync_v1(userId);
 
             if (userWithRoles == null)
             {
@@ -33,7 +37,32 @@ namespace MicroZoo.IdentityApi.Services
             return response;
         }
 
-        public async Task<GetUserWithRolesResponse> UpdateUserWithRolesAsync(string userId, List<string> RoleIds)
+        public async Task<GetUserWithRolesResponse> GetUserWithRolesAsync_v2(string userId)
+        {
+            var response = new GetUserWithRolesResponse();
+            if (!Guid.TryParse(userId, out _))
+            {
+                response.ErrorMessage = "User Id is not Guid";
+                return response;
+            }
+
+            var selectedUser = await _usersRepository.GetUserAsync(userId);
+            if (selectedUser == null)
+            {
+                response.ErrorMessage = $"User with Id {userId} does not exist";
+                return response;
+            }
+
+            var rolesOfUser = await _userRolesRepository.GetRolesOfUserAsync(userId);
+
+            var userWithRoles = selectedUser.ConvertToUserWithRoles();
+            userWithRoles.Roles = rolesOfUser;
+
+            response.UserWithRoles = userWithRoles;
+            return response;
+        }
+
+        public async Task<GetUserWithRolesResponse> UpdateUserWithRolesAsync_v1(string userId, List<string> RoleIds)
         {
             var response = new GetUserWithRolesResponse();
             if (!Guid.TryParse(userId, out _))
@@ -52,7 +81,7 @@ namespace MicroZoo.IdentityApi.Services
             }
 
             var isSuccessfullyUpdated = await _userRolesRepository
-                .UpdateUserWithRolesAsync(userId, RoleIds);
+                .UpdateUserWithRolesAsync_1(userId, RoleIds);
 
             if (isSuccessfullyUpdated == false)
             {
@@ -60,7 +89,65 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
-            return await GetUserWithRolesAsync(userId);
+            return await GetUserWithRolesAsync_v1(userId);
+        }
+
+        public async Task<GetUserWithRolesResponse> UpdateUserWithRolesAsync_v2(string userId, 
+                                                                              List<string> roleIds)
+        {
+            var response = new GetUserWithRolesResponse();
+            if (!Guid.TryParse(userId, out _))
+            {
+                response.ErrorMessage = "User Id is not Guid";
+                return response;
+            }
+
+            foreach (var roleId in roleIds)
+            {
+                if (!Guid.TryParse(roleId, out _))
+                {
+                    response.ErrorMessage = "Not all role Ids are Guid";
+                    return response;
+                }
+            }
+
+            var selectedUser = await _usersRepository.GetUserAsync(userId);
+            if (selectedUser == null)
+            {
+                response.ErrorMessage = $"User with Id {userId} does not exist";
+                return response;
+            }
+
+            var isSuccessfullyDeleted = await _userRolesRepository
+                .DeleteUserRolesAsyncPublic(userId);
+
+            if (!isSuccessfullyDeleted)
+            {
+                response.ErrorMessage = "Innser server error";
+                return response;
+            }
+
+            var newUserRoles = new List<IdentityUserRole<string>>();
+            foreach (var roleId in roleIds)
+            {
+                var userRole = new IdentityUserRole<string>()
+                {
+                    UserId = userId,
+                    RoleId = roleId
+                };
+                newUserRoles.Add(userRole);
+            }
+
+            var isSuccessfullyAdded = await _userRolesRepository
+                .AddUserRolesAsyncPublic(newUserRoles);
+
+            if (!isSuccessfullyAdded)
+            {
+                response.ErrorMessage = "Innser server error";
+                return response;
+            }
+
+            return await GetUserWithRolesAsync_v2(userId);
         }
     }
 }

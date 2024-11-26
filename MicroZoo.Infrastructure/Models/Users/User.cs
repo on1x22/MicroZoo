@@ -8,6 +8,7 @@ namespace MicroZoo.Infrastructure.Models.Users
         public string? LastName { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
+        public bool Deleted { get; set; }
 
         public void Update(User userForUpdate)
         {
