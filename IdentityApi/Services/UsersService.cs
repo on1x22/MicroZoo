@@ -1,6 +1,6 @@
-﻿using MicroZoo.IdentityApi.Repositories;
+﻿using MicroZoo.IdentityApi.Models.DTO;
+using MicroZoo.IdentityApi.Repositories;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
-using MicroZoo.Infrastructure.Models.Users;
 
 namespace MicroZoo.IdentityApi.Services
 {
@@ -40,7 +40,8 @@ namespace MicroZoo.IdentityApi.Services
             return response;
         }
 
-        public async Task<GetUserResponse> UpdateUserAsync(string userId, User user)
+        public async Task<GetUserResponse> UpdateUserAsync(string userId, 
+            UserForUpdateDto userForUpdateDto)
         {
             var response = new GetUserResponse();
             if (!Guid.TryParse(userId, out _))
@@ -49,25 +50,17 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
-            if (user == null)
+            if (userForUpdateDto == null)
             {
                 response.ErrorMessage = "Invalid data for update";
                 return response;
             }
 
-            var userForUpdate = await _userRepository.GetUserAsync(userId);
-
-            if (userForUpdate == null)
-            {
-                response.ErrorMessage = $"User with Id {userId} does not exist";
-                return response;
-            }
-
-            response.User = await _userRepository.UpdateUserAsync(userId, user);
+            response.User = await _userRepository.UpdateUserAsync(userId, userForUpdateDto);
 
             if (response.User == null)
             {
-                response.ErrorMessage = "Inner server error";
+                response.ErrorMessage = $"User with Id {userId} does not exist";
                 return response;
             }
 

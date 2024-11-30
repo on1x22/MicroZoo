@@ -19,7 +19,7 @@ namespace MicroZoo.IdentityApi.Repositories
         public async Task<Role> GetRoleAsync(string roleId)
         {
             if (roleId == null)
-                return default;
+                return default!;
 
             var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
             return role;            
@@ -28,7 +28,7 @@ namespace MicroZoo.IdentityApi.Repositories
         public async Task<Role> AddRoleAsync(Role role)
         {
             if (role == null)
-                return default;
+                return default!;
 
             await _dbContext.Roles.AddAsync(role);
             await SaveChangesAsync();
@@ -39,11 +39,11 @@ namespace MicroZoo.IdentityApi.Repositories
         public async Task<Role> UpdateRoleAsync(string roleId, Role role)
         {
             if (roleId == null)
-                return default;
+                return default!;
 
             var updatedRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
             if (updatedRole == null)
-                return default;
+                return default!;
 
             updatedRole.Update(role);
             await SaveChangesAsync();
@@ -54,7 +54,7 @@ namespace MicroZoo.IdentityApi.Repositories
         public async Task<Role> DeleteRoleAsync(string roleId)
         {
             if (roleId == null)
-                return default;
+                return default!;
 
             var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
             _dbContext.Roles.Remove(role);
@@ -62,6 +62,10 @@ namespace MicroZoo.IdentityApi.Repositories
 
             return role;
         }
+
+        public bool CheckEntriesIsExistInDatabase(List<string> roleIds) => 
+            roleIds.All(rid => _dbContext.Roles.Any(r => r.Id == rid));
+        
 
         private async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();

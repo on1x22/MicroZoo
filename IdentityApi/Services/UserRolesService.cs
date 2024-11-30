@@ -8,36 +8,18 @@ namespace MicroZoo.IdentityApi.Services
     {
         private readonly IUsersRepository _usersRepository;
         private readonly IUserRolesRepository _userRolesRepository;
+        private readonly IRolesRepository _rolesRepository;
 
         public UserRolesService(IUsersRepository usersRepository,
-                                IUserRolesRepository userRolesRepository)
+                                IUserRolesRepository userRolesRepository,
+                                IRolesRepository rolesRepository)
         {
             _usersRepository = usersRepository;
             _userRolesRepository = userRolesRepository;
+            _rolesRepository = rolesRepository;
         }
 
-        public async Task<GetUserWithRolesResponse> GetUserWithRolesAsync_v1(string userId)
-        {
-            var response = new GetUserWithRolesResponse();
-            if (!Guid.TryParse(userId, out _))
-            {
-                response.ErrorMessage = "User Id is not Guid";
-                return response;
-            }
-
-            var userWithRoles = await _userRolesRepository.GetUserWithRolesAsync_v1(userId);
-
-            if (userWithRoles == null)
-            {
-                response.ErrorMessage = $"User with Id {userId} does not exist";
-                return response;
-            }
-
-            response.UserWithRoles = userWithRoles;
-            return response;
-        }
-
-        public async Task<GetUserWithRolesResponse> GetUserWithRolesAsync_v2(string userId)
+        public async Task<GetUserWithRolesResponse> GetUserWithRolesAsync(string userId)
         {
             var response = new GetUserWithRolesResponse();
             if (!Guid.TryParse(userId, out _))
@@ -61,38 +43,8 @@ namespace MicroZoo.IdentityApi.Services
             response.UserWithRoles = userWithRoles;
             return response;
         }
-
-        public async Task<GetUserWithRolesResponse> UpdateUserWithRolesAsync_v1(string userId, List<string> RoleIds)
-        {
-            var response = new GetUserWithRolesResponse();
-            if (!Guid.TryParse(userId, out _))
-            {
-                response.ErrorMessage = "User Id is not Guid";
-                return response;
-            }
-
-            foreach (var roleId in RoleIds)
-            {
-                if (!Guid.TryParse(roleId, out _))
-                {
-                    response.ErrorMessage = "Not all role Ids are Guid";
-                    return response;
-                }
-            }
-
-            var isSuccessfullyUpdated = await _userRolesRepository
-                .UpdateUserWithRolesAsync_1(userId, RoleIds);
-
-            if (isSuccessfullyUpdated == false)
-            {
-                response.ErrorMessage = $"User with Id {userId} does not exist";
-                return response;
-            }
-
-            return await GetUserWithRolesAsync_v1(userId);
-        }
-
-        public async Task<GetUserWithRolesResponse> UpdateUserWithRolesAsync_v2(string userId, 
+            
+        public async Task<GetUserWithRolesResponse> UpdateUserWithRolesAsync(string userId, 
                                                                               List<string> roleIds)
         {
             var response = new GetUserWithRolesResponse();
@@ -111,6 +63,13 @@ namespace MicroZoo.IdentityApi.Services
                 }
             }
 
+            var areAllIdsExistInDb = _rolesRepository.CheckEntriesIsExistInDatabase(roleIds);
+            if(!areAllIdsExistInDb)
+            {
+                response.ErrorMessage = $"Invalid list of roles Ids";
+                return response;
+            }
+
             var selectedUser = await _usersRepository.GetUserAsync(userId);
             if (selectedUser == null)
             {
@@ -119,7 +78,7 @@ namespace MicroZoo.IdentityApi.Services
             }
 
             var isSuccessfullyDeleted = await _userRolesRepository
-                .DeleteUserRolesAsyncPublic(userId);
+                .DeleteUserRolesAsync(userId);
 
             if (!isSuccessfullyDeleted)
             {
@@ -139,7 +98,7 @@ namespace MicroZoo.IdentityApi.Services
             }
 
             var isSuccessfullyAdded = await _userRolesRepository
-                .AddUserRolesAsyncPublic(newUserRoles);
+                .AddUserRolesAsync(newUserRoles);
 
             if (!isSuccessfullyAdded)
             {
@@ -147,7 +106,7 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
-            return await GetUserWithRolesAsync_v2(userId);
+            return await GetUserWithRolesAsync(userId);
         }
     }
 }

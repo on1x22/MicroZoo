@@ -1,4 +1,5 @@
-﻿using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
+﻿using MicroZoo.IdentityApi.Models.DTO;
+using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
 using MicroZoo.Infrastructure.Models.Users;
 
 namespace MicroZoo.IdentityApi.Services
@@ -7,7 +8,7 @@ namespace MicroZoo.IdentityApi.Services
     {
         Task<GetUsersResponse> GetAllUsersAsync();
         Task<GetUserResponse> GetUserAsync(string userId);
-        Task<GetUserResponse> UpdateUserAsync(string userId, User user);
+        Task<GetUserResponse> UpdateUserAsync(string userId, UserForUpdateDto userForUpdateDto);
         Task<GetUserResponse> SoftDeleteUserAsync(string userId);
     }
 }
