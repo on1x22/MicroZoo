@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.IdentityApi.DbContexts;
 using MicroZoo.Infrastructure.Models.Users;
-using Org.BouncyCastle.Bcpg;
 
 namespace MicroZoo.IdentityApi.Policies
 {

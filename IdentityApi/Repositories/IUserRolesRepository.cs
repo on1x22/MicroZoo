@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using MicroZoo.Infrastructure.Models.Roles;
-using MicroZoo.Infrastructure.Models.Users;
 
 namespace MicroZoo.IdentityApi.Repositories
 {

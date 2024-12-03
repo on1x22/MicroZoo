@@ -7,10 +7,13 @@ namespace MicroZoo.IdentityApi.Services
     public class UsersService : IUsersService
     {
         private readonly IUsersRepository _userRepository;
+        private readonly IUserRolesService _userRolesService;
 
-        public UsersService(IUsersRepository userRepository)
+        public UsersService(IUsersRepository userRepository,
+            IUserRolesService userRolesService)
         {
             _userRepository = userRepository;
+            _userRolesService = userRolesService;
         }
 
         public async Task<GetUsersResponse> GetAllUsersAsync() =>
@@ -83,9 +86,10 @@ namespace MicroZoo.IdentityApi.Services
                 response.ErrorMessage = $"User with Id {userId} does not exist";
                 return response;
             }
-
+            
+            await _userRolesService.DeleteUserRolesAsync(userId);
             response.User = await _userRepository.SoftDeleteUserAsync(userForDelete);
-
+ 
             return response;
         }
     }

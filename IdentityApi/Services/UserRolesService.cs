@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Identity;
 using MicroZoo.IdentityApi.Repositories;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
 
@@ -107,6 +108,20 @@ namespace MicroZoo.IdentityApi.Services
             }
 
             return await GetUserWithRolesAsync(userId);
+        }
+
+        public async Task<bool> DeleteUserRolesAsync(string userId)
+        {
+            if (!Guid.TryParse(userId, out _))
+                return false;
+
+            var isSuccessfullyDeleted = await _userRolesRepository
+                .DeleteUserRolesAsync(userId);
+
+            if(!isSuccessfullyDeleted)
+                return false;
+
+            return true;
         }
     }
 }

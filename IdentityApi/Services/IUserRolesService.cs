@@ -7,5 +7,6 @@ namespace MicroZoo.IdentityApi.Services
         Task<GetUserWithRolesResponse> GetUserWithRolesAsync(string userId);        
         Task<GetUserWithRolesResponse> UpdateUserWithRolesAsync(string userId,
             List<string> roleIds);
+        Task<bool> DeleteUserRolesAsync(string userId);
     }
 }
