@@ -8,6 +8,6 @@ namespace MicroZoo.IdentityApi.Services
         Task<GetRequirementsResponse> GetAllRequirementsAsync();
         Task<GetRequirementResponse> GetRequirementAsync(Guid requirementId);
         Task<GetRequirementResponse> AddRequirementAsync(RequirementWithoutIdDto requirementDto);
-        Task<GetRequirementResponse> DeleteRequirementAsync(Guid requirementId);
+        Task<GetRequirementResponse> SoftDeleteRequirementAsync(Guid requirementId);
     }
 }

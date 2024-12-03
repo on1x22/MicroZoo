@@ -6,24 +6,27 @@ namespace MicroZoo.IdentityApi.Services
 {
     public class RequirementsService : IRequirementsService
     {
-        private readonly IRequirementsRepository _repository;
+        private readonly IRequirementsRepository _requirementRepository;
+        private readonly IRoleRequirementsService _roleRequirementsService;
 
-        public RequirementsService(IRequirementsRepository repository)
+        public RequirementsService(IRequirementsRepository requirementRepository,
+            IRoleRequirementsService roleRequirementsService)
         {
-            _repository = repository;
+            _requirementRepository = requirementRepository;
+            _roleRequirementsService = roleRequirementsService;
         }
         
         public async Task<GetRequirementsResponse> GetAllRequirementsAsync() =>        
             new GetRequirementsResponse()
             {
-                Requirements = await _repository.GetAllRequirementsAsync()
+                Requirements = await _requirementRepository.GetAllRequirementsAsync()
             };
         
         public async Task<GetRequirementResponse> GetRequirementAsync(Guid requirementId)
         {
             var response = new GetRequirementResponse();
 
-            var requirement = await _repository.GetRequirementAsync(requirementId);
+            var requirement = await _requirementRepository.GetRequirementAsync(requirementId);
 
             if (requirement == null)
             {
@@ -53,7 +56,7 @@ namespace MicroZoo.IdentityApi.Services
             var newRequirement = new Requirement();
             newRequirement.SetValues(requirementDto);
 
-            var addedRequirement = await _repository.AddRequirementAsync(newRequirement);
+            var addedRequirement = await _requirementRepository.AddRequirementAsync(newRequirement);
             if (addedRequirement == null) 
             {
                 response.ErrorMessage = $"Requirement with name {newRequirement.Name} already exist";
@@ -64,18 +67,27 @@ namespace MicroZoo.IdentityApi.Services
             return response;
         }
 
-        public async Task<GetRequirementResponse> DeleteRequirementAsync(Guid requirementId)
+        public async Task<GetRequirementResponse> SoftDeleteRequirementAsync(Guid requirementId)
         {
             var response = new GetRequirementResponse();
 
-            var deletedRequirement = await _repository.DeleteRequirementAsync(requirementId);
-            if(deletedRequirement == null)
+            var requirementForDelete = await _requirementRepository.GetRequirementAsync(requirementId);
+            if (requirementForDelete == null)
             {
                 response.ErrorMessage = $"Requirement with Id {requirementId} does not exist";
                 return response;
             }
 
-            response.Requirement = deletedRequirement;
+            await _roleRequirementsService.DeleteRoleRequirementsAsync(requirementId);
+            /*var deletedRequirement*/ 
+            response.Requirement = await _requirementRepository.SoftDeleteRequirementAsync(requirementForDelete);
+            /*if(deletedRequirement == null)
+            {
+                response.ErrorMessage = $"Requirement with Id {requirementId} does not exist";
+                return response;
+            }
+
+            response.Requirement = deletedRequirement;*/
             return response;
         }        
     }

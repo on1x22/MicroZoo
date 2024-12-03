@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.Models.Roles;
-using System.Linq.Expressions;
 
 namespace MicroZoo.IdentityApi.Controllers
 {
@@ -53,9 +52,9 @@ namespace MicroZoo.IdentityApi.Controllers
 
         [HttpDelete("{requirementId}")]
         [Authorize(Policy = "IdentityApi.Delete")]
-        public async Task<IActionResult> DeleteRequirementasync(Guid requirementId)
+        public async Task<IActionResult> SoftDeleteRequirementAsync(Guid requirementId)
         {
-            var response = await _requirementsService.DeleteRequirementAsync(requirementId);
+            var response = await _requirementsService.SoftDeleteRequirementAsync(requirementId);
 
             return response.Requirement != null
                 ? Ok(response.Requirement)

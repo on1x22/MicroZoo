@@ -7,6 +7,6 @@ namespace MicroZoo.IdentityApi.Repositories
         Task<List<Requirement>> GetAllRequirementsAsync();
         Task<Requirement> GetRequirementAsync(Guid requirementId);
         Task<Requirement> AddRequirementAsync(Requirement requirement);
-        Task<Requirement> DeleteRequirementAsync(Guid requirementId);
+        Task<Requirement> SoftDeleteRequirementAsync(Requirement requirement);
     }
 }

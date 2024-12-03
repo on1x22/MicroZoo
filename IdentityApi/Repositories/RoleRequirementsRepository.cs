@@ -92,6 +92,15 @@ namespace MicroZoo.IdentityApi.Repositories
             _dbContext.RoleRequirements.RemoveRange(roleRequirementsForDelete);
         }
 
+        public async Task<bool> DeleteRoleRequirementsAsync(Guid requirementId)
+        {
+            var roleRequirementsForDelete = await _dbContext.RoleRequirements
+                .Where(rr => rr.RequirementId == requirementId).ToListAsync();
+            _dbContext.RoleRequirements.RemoveRange(roleRequirementsForDelete);
+
+            return true;
+        }
+
         private async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();
     }

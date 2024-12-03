@@ -1,5 +1,4 @@
 ﻿using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
-using MicroZoo.Infrastructure.Models.Roles;
 
 namespace MicroZoo.IdentityApi.Services
 {
@@ -8,5 +7,6 @@ namespace MicroZoo.IdentityApi.Services
         Task<GetRoleWithRequirementsResponse> GetRoleWithRequirementsAsync(string roleId);
         Task<GetRoleWithRequirementsResponse> UpdateRoleWithRequirementsAsync(string roleId,
             List<Guid> requirementIds);
+        Task<bool> DeleteRoleRequirementsAsync(Guid requirementId);
     }
 }

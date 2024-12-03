@@ -1,6 +1,5 @@
 ﻿using MicroZoo.IdentityApi.Repositories;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
-using MicroZoo.Infrastructure.Models.Roles;
 
 namespace MicroZoo.IdentityApi.Services
 {
@@ -54,6 +53,17 @@ namespace MicroZoo.IdentityApi.Services
             }
 
             return await GetRoleWithRequirementsAsync(roleId);
+        }
+
+        public async Task<bool> DeleteRoleRequirementsAsync(Guid requirementId)
+        {
+            var isSuccessfulyDeleted = await _roleRequirementsRepository
+                .DeleteRoleRequirementsAsync(requirementId);
+
+            if (!isSuccessfulyDeleted) 
+                return false;
+
+            return true;
         }
     }
 }
