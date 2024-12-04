@@ -66,9 +66,9 @@ namespace MicroZoo.IdentityApi.Controllers
 
         [HttpDelete("{roleId}")]
         [Authorize(Policy = "IdentityApi.Delete")]
-        public async Task<IActionResult> DeleteRoleAsync(string roleId)
+        public async Task<IActionResult> SoftDeleteRoleAsync(string roleId)
         {
-            var response = await _rolesService.DeleteRoleAsync(roleId);
+            var response = await _rolesService.SoftDeleteRoleAsync(roleId);
 
             return response.Role != null
                 ? Ok(response.Role)

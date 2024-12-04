@@ -9,6 +9,6 @@ namespace MicroZoo.IdentityApi.Services
         Task<GetRoleResponse> GetRoleAsync(string roleId);
         Task<GetRoleResponse> AddRoleAsync(RoleWithoutIdDto roleWithoutIdDto);
         Task<GetRoleResponse> UpdateRoleAsync(string roleId, RoleWithoutIdDto roleWithoutIdDto);
-        Task<GetRoleResponse> DeleteRoleAsync(string roleId);
+        Task<GetRoleResponse> SoftDeleteRoleAsync(string roleId);
     }
 }

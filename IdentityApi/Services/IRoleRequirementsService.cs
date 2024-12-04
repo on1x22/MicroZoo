@@ -7,6 +7,7 @@ namespace MicroZoo.IdentityApi.Services
         Task<GetRoleWithRequirementsResponse> GetRoleWithRequirementsAsync(string roleId);
         Task<GetRoleWithRequirementsResponse> UpdateRoleWithRequirementsAsync(string roleId,
             List<Guid> requirementIds);
-        Task<bool> DeleteRoleRequirementsAsync(Guid requirementId);
+        Task<bool> DeleteRoleRequirementsByRequirementIdAsync(Guid requirementId);
+        Task<bool> DeleteRoleRequirementsByRoleIdAsync(string roleId);
     }
 }

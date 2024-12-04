@@ -87,7 +87,7 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
             
-            await _userRolesService.DeleteUserRolesAsync(userId);
+            await _userRolesService.DeleteUserRolesByUserIdAsync(userId);
             response.User = await _userRepository.SoftDeleteUserAsync(userForDelete);
  
             return response;

@@ -42,7 +42,7 @@ namespace MicroZoo.IdentityApi.Repositories
             if (selectedRole == null)
                 return false;
 
-            await DeleteRoleRequirementsAsync(roleId);
+            await DeleteRoleRequirementsByRoleIdAsync(roleId);
 
             var newRoleRequirements = new List<RoleRequirement>();
             foreach (var requirement in requirementIds)
@@ -81,18 +81,8 @@ namespace MicroZoo.IdentityApi.Repositories
                     Name = requirement.Name
                 }).ToListAsync();
         }
-
-        private async Task AddRoleRequirementAsync(List<RoleRequirement> roleRequirements) =>
-            await _dbContext.RoleRequirements.AddRangeAsync(roleRequirements);
-
-        private async Task DeleteRoleRequirementsAsync(string roleId)
-        {
-            var roleRequirementsForDelete = await _dbContext.RoleRequirements
-                .Where(rr => rr.RoleId == roleId).ToListAsync();
-            _dbContext.RoleRequirements.RemoveRange(roleRequirementsForDelete);
-        }
-
-        public async Task<bool> DeleteRoleRequirementsAsync(Guid requirementId)
+        
+        public async Task<bool> DeleteRoleRequirementsByRequirementIdAsync(Guid requirementId)
         {
             var roleRequirementsForDelete = await _dbContext.RoleRequirements
                 .Where(rr => rr.RequirementId == requirementId).ToListAsync();
@@ -100,6 +90,18 @@ namespace MicroZoo.IdentityApi.Repositories
 
             return true;
         }
+        
+        public async Task<bool> DeleteRoleRequirementsByRoleIdAsync(string roleId)
+        {
+            var roleRequirementsForDelete = await _dbContext.RoleRequirements
+                .Where(rr => rr.RoleId == roleId).ToListAsync();
+            _dbContext.RoleRequirements.RemoveRange(roleRequirementsForDelete);
+
+            return true;
+        }
+
+        private async Task AddRoleRequirementAsync(List<RoleRequirement> roleRequirements) =>
+            await _dbContext.RoleRequirements.AddRangeAsync(roleRequirements);
 
         private async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();

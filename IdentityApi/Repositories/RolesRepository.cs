@@ -14,15 +14,13 @@ namespace MicroZoo.IdentityApi.Repositories
         }
 
         public async Task<List<Role>> GetAllRolesAsync() =>
-             await _dbContext.Roles.ToListAsync();
+             await _dbContext.Roles.Where(r => r.Deleted == false).ToListAsync();
                 
         public async Task<Role> GetRoleAsync(string roleId)
         {
-            if (roleId == null)
-                return default!;
-
-            var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
-            return role;            
+            var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == roleId &&
+                                                                  r.Deleted == false);
+            return role!;            
         }
 
         public async Task<Role> AddRoleAsync(Role role)
@@ -41,7 +39,7 @@ namespace MicroZoo.IdentityApi.Repositories
             if (roleId == null)
                 return default!;
 
-            var updatedRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
+            var updatedRole = await GetRoleAsync(roleId);
             if (updatedRole == null)
                 return default!;
 
@@ -51,20 +49,18 @@ namespace MicroZoo.IdentityApi.Repositories
             return updatedRole;
         }
 
-        public async Task<Role> DeleteRoleAsync(string roleId)
+        public async Task<Role> SoftDeleteRoleAsync(Role role)
         {
-            if (roleId == null)
-                return default!;
+            role.Deleted = true;
+            _dbContext.Update(role);
 
-            var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
-            _dbContext.Roles.Remove(role);
             await SaveChangesAsync();
 
             return role;
         }
 
         public bool CheckEntriesIsExistInDatabase(List<string> roleIds) => 
-            roleIds.All(rid => _dbContext.Roles.Any(r => r.Id == rid));
+            roleIds.All(rid => _dbContext.Roles.Any(r => r.Id == rid && r.Deleted == false));
         
 
         private async Task SaveChangesAsync() =>

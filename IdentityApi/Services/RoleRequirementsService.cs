@@ -55,12 +55,23 @@ namespace MicroZoo.IdentityApi.Services
             return await GetRoleWithRequirementsAsync(roleId);
         }
 
-        public async Task<bool> DeleteRoleRequirementsAsync(Guid requirementId)
+        public async Task<bool> DeleteRoleRequirementsByRequirementIdAsync(Guid requirementId)
         {
             var isSuccessfulyDeleted = await _roleRequirementsRepository
-                .DeleteRoleRequirementsAsync(requirementId);
+                .DeleteRoleRequirementsByRequirementIdAsync(requirementId);
 
             if (!isSuccessfulyDeleted) 
+                return false;
+
+            return true;
+        }
+
+        public async Task<bool> DeleteRoleRequirementsByRoleIdAsync(string roleId)
+        {
+            var isSuccessfulyDeleted = await _roleRequirementsRepository
+                .DeleteRoleRequirementsByRoleIdAsync(roleId);
+
+            if (!isSuccessfulyDeleted)
                 return false;
 
             return true;

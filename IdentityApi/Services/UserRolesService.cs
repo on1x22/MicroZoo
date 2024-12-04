@@ -79,7 +79,7 @@ namespace MicroZoo.IdentityApi.Services
             }
 
             var isSuccessfullyDeleted = await _userRolesRepository
-                .DeleteUserRolesAsync(userId);
+                .DeleteUserRolesByUserIdAsync(userId);
 
             if (!isSuccessfullyDeleted)
             {
@@ -110,15 +110,29 @@ namespace MicroZoo.IdentityApi.Services
             return await GetUserWithRolesAsync(userId);
         }
 
-        public async Task<bool> DeleteUserRolesAsync(string userId)
+        public async Task<bool> DeleteUserRolesByUserIdAsync(string userId)
         {
             if (!Guid.TryParse(userId, out _))
                 return false;
 
             var isSuccessfullyDeleted = await _userRolesRepository
-                .DeleteUserRolesAsync(userId);
+                .DeleteUserRolesByUserIdAsync(userId);
 
             if(!isSuccessfullyDeleted)
+                return false;
+
+            return true;
+        }
+
+        public async Task<bool> DeleteUserRolesByRoleIdAsync(string roleId)
+        {
+            if (!Guid.TryParse(roleId, out _))
+                return false;
+
+            var isSuccessfullyDeleted = await _userRolesRepository
+                .DeleteUserRolesByRoleIdAsync(roleId);
+
+            if (!isSuccessfullyDeleted)
                 return false;
 
             return true;

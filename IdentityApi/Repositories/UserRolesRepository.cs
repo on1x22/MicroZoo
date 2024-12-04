@@ -38,8 +38,15 @@ namespace MicroZoo.IdentityApi.Repositories
                     Deleted = role.Deleted
                 }).ToListAsync();
         }
+        public async Task<bool> AddUserRolesAsync(List<IdentityUserRole<string>> userRoles)
+        {
+            await _dbContext.UserRoles.AddRangeAsync(userRoles);
+            await SaveChangesAsync();
 
-        public async Task<bool> DeleteUserRolesAsync(string userId)
+            return true;
+        }
+
+        public async Task<bool> DeleteUserRolesByUserIdAsync(string userId)
         {
             var userRolesForDelete = await _dbContext.UserRoles.Where(ur => ur.UserId == userId)
                 .ToListAsync();
@@ -47,11 +54,11 @@ namespace MicroZoo.IdentityApi.Repositories
             return true;
         }
 
-        public async Task<bool> AddUserRolesAsync(List<IdentityUserRole<string>> userRoles)
+        public async Task<bool> DeleteUserRolesByRoleIdAsync(string roleId)
         {
-            await _dbContext.UserRoles.AddRangeAsync(userRoles);
-            await SaveChangesAsync();
-
+            var userRolesForDelete = await _dbContext.UserRoles.Where(ur => ur.RoleId == roleId)
+                .ToListAsync();
+            _dbContext.UserRoles.RemoveRange(userRolesForDelete);
             return true;
         }
 

@@ -78,7 +78,7 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
-            await _roleRequirementsService.DeleteRoleRequirementsAsync(requirementId);
+            await _roleRequirementsService.DeleteRoleRequirementsByRequirementIdAsync(requirementId);
             /*var deletedRequirement*/ 
             response.Requirement = await _requirementRepository.SoftDeleteRequirementAsync(requirementForDelete);
             /*if(deletedRequirement == null)
