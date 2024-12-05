@@ -65,7 +65,7 @@ namespace MicroZoo.IdentityApi.Controllers
 
         [HttpGet("{userId}/with-roles")]
         [Authorize(Policy = "IdentityApi.Read")]
-        public async Task<IActionResult> GetUserWithRolesAsync_v2(string userId)
+        public async Task<IActionResult> GetUserWithRolesAsync(string userId)
         {
             var response = await _userRolesService.GetUserWithRolesAsync(userId);
 
@@ -76,7 +76,7 @@ namespace MicroZoo.IdentityApi.Controllers
 
         [HttpPut("{userId}/with-roles")]
         [Authorize(Policy = "IdentityApi.Update")]
-        public async Task<IActionResult> UpdateUserWithRolesAsync_v2(string userId,
+        public async Task<IActionResult> UpdateUserWithRolesAsync(string userId,
             [FromBody] List<string> roleIds)
         {
             var response = await _userRolesService.UpdateUserWithRolesAsync(userId, roleIds);

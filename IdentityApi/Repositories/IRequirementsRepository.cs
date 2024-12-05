@@ -8,5 +8,6 @@ namespace MicroZoo.IdentityApi.Repositories
         Task<Requirement> GetRequirementAsync(Guid requirementId);
         Task<Requirement> AddRequirementAsync(Requirement requirement);
         Task<Requirement> SoftDeleteRequirementAsync(Requirement requirement);
+        bool CheckEntriesAreExistInDatabase(List<Guid> requirementIds);
     }
 }

@@ -61,8 +61,7 @@ namespace MicroZoo.IdentityApi.Repositories
 
         public bool CheckEntriesIsExistInDatabase(List<string> roleIds) => 
             roleIds.All(rid => _dbContext.Roles.Any(r => r.Id == rid && r.Deleted == false));
-        
-
+       
         private async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();
     }

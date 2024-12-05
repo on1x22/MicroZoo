@@ -33,6 +33,9 @@ namespace MicroZoo.IdentityApi.Policies
             if (user == null) 
                 context.Fail();
 
+            if (user.Deleted == true)
+                context.Fail();
+
             var rolesOfUser = _dbContext.Users.Where(usr => usr.Id == user!.Id)
                 .Join(_dbContext.UserRoles,
                 u => u.Id,

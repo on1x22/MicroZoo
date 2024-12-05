@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using MicroZoo.IdentityApi.Repositories;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
 
@@ -67,7 +66,7 @@ namespace MicroZoo.IdentityApi.Services
             var areAllIdsExistInDb = _rolesRepository.CheckEntriesIsExistInDatabase(roleIds);
             if(!areAllIdsExistInDb)
             {
-                response.ErrorMessage = $"Invalid list of roles Ids";
+                response.ErrorMessage = "Invalid list of roles Ids";
                 return response;
             }
 

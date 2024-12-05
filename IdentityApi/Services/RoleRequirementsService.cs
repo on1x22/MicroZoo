@@ -1,18 +1,26 @@
 ﻿using MicroZoo.IdentityApi.Repositories;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
+using MicroZoo.Infrastructure.Models.Roles;
 
 namespace MicroZoo.IdentityApi.Services
 {
     public class RoleRequirementsService : IRoleRequirementsService
     {
         private readonly IRoleRequirementsRepository _roleRequirementsRepository;
+        private readonly IRolesRepository _rolesRepository;
+        private readonly IRequirementsRepository _requirementsRepository;
 
-        public RoleRequirementsService(IRoleRequirementsRepository roleRequirementsRepository)
+        public RoleRequirementsService(IRoleRequirementsRepository roleRequirementsRepository,
+            IRolesRepository rolesRepository,
+            IRequirementsRepository requirementsRepository)
         {
             _roleRequirementsRepository = roleRequirementsRepository;
+            _rolesRepository = rolesRepository;
+            _requirementsRepository = requirementsRepository;
         }
 
-        public async Task<GetRoleWithRequirementsResponse> GetRoleWithRequirementsAsync(string roleId)
+        public async Task<GetRoleWithRequirementsResponse> GetRoleWithRequirementsAsync(
+            string roleId)
         {
             var response = new GetRoleWithRequirementsResponse();
             if (!Guid.TryParse(roleId, out _))
@@ -21,20 +29,26 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
-            var roleWithRequirements = await _roleRequirementsRepository
-                .GetRoleWithRequirementsAsync(roleId);
-
-            if (roleWithRequirements == null)
+            var selectedRole = await _rolesRepository.GetRoleAsync(roleId);
+            if (selectedRole == null)
             {
                 response.ErrorMessage = $"Role with Id {roleId} does not exist";
                 return response;
             }
 
+            var requirementsOfRole = await _roleRequirementsRepository
+                .GetRequirementsOfRoleAsync(roleId);
+
+            var roleWithRequirements = selectedRole.ConvertToRoleWithRequirements();
+            roleWithRequirements.Requirements = requirementsOfRole;
+
             response.RoleWithRequirements = roleWithRequirements;
+            
             return response;
         }
 
-        public async Task<GetRoleWithRequirementsResponse> UpdateRoleWithRequirementsAsync(string roleId, List<Guid> requirementIds)
+        public async Task<GetRoleWithRequirementsResponse> UpdateRoleWithRequirementsAsync(
+            string roleId, List<Guid> requirementIds)
         {
             var response = new GetRoleWithRequirementsResponse();
             if (!Guid.TryParse(roleId, out _))
@@ -43,12 +57,51 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
-            var isSuccessfulyUpdated = await _roleRequirementsRepository
-                .UpdateRoleWithRequirementsAsync(roleId, requirementIds);
+            if (requirementIds == null)
+            {
+                response.ErrorMessage = "Invalid list of requirements Ids";
+                return response;
+            }
 
-            if (isSuccessfulyUpdated == false)
+            var areAllRequirementIdsExistInDb = _requirementsRepository
+                .CheckEntriesAreExistInDatabase(requirementIds);
+            if (!areAllRequirementIdsExistInDb)
+            {
+                response.ErrorMessage = "Invalid list of requirements Ids";
+                return response;
+            }
+
+            var selectedRole = await _rolesRepository.GetRoleAsync(roleId);
+            if (selectedRole == null)
             {
                 response.ErrorMessage = $"Role with Id {roleId} does not exist";
+                return response;
+            }
+
+            var isSuccessfullyDeleted = await _roleRequirementsRepository
+                .DeleteRoleRequirementsByRoleIdAsync(roleId);
+            if (!isSuccessfullyDeleted)
+            {
+                response.ErrorMessage = "Innser server error";
+                return response;
+            }
+
+            var newRoleRequirements = new List<RoleRequirement>();
+            foreach (var requirementId in requirementIds)
+            {
+                var roleRequirement = new RoleRequirement()
+                {
+                    RoleId = roleId,
+                    RequirementId = requirementId
+                };
+                newRoleRequirements.Add(roleRequirement);
+            }
+
+            var isSuccessfullyAdded = await _roleRequirementsRepository
+                .AddRoleRequirementsAsync(newRoleRequirements);
+            if (!isSuccessfullyAdded)
+            {
+                response.ErrorMessage = "Innser server error";
                 return response;
             }
 

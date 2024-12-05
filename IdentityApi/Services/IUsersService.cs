@@ -1,6 +1,5 @@
 ﻿using MicroZoo.IdentityApi.Models.DTO;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
-using MicroZoo.Infrastructure.Models.Users;
 
 namespace MicroZoo.IdentityApi.Services
 {

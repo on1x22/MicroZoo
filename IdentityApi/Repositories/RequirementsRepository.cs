@@ -40,8 +40,6 @@ namespace MicroZoo.IdentityApi.Repositories
 
         public async Task<Requirement> SoftDeleteRequirementAsync(Requirement requirement)
         {            
-            /*var requirement = await _dbContext.Requirements.FirstOrDefaultAsync(r => r.Id == requirement);
-            _dbContext.Requirements.Remove(requirement!);*/
             requirement.Deleted = true;
             _dbContext.Update(requirement);
 
@@ -49,6 +47,10 @@ namespace MicroZoo.IdentityApi.Repositories
 
             return requirement;
         }
+
+        public bool CheckEntriesAreExistInDatabase(List<Guid> requirementIds) =>
+            requirementIds.All(reqId => _dbContext.Requirements.Any(req => req.Id == reqId &&
+                                                                    req.Deleted == false));
 
         private async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();

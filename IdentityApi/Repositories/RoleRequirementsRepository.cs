@@ -13,55 +13,7 @@ namespace MicroZoo.IdentityApi.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<RoleWithRequirements> GetRoleWithRequirementsAsync(string roleId)
-        {
-            if (roleId == null)
-                return default!;
-
-            var selectedRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
-
-            if (selectedRole == null) 
-                return default!;
-
-            var requirements = await GetRoleRequirementsAsync(roleId);
-
-            var roleWithRequirements = selectedRole.ConvertToRoleWithRequirements();
-            roleWithRequirements.Requirements = requirements;
-
-            return roleWithRequirements;
-        }
-
-        public async Task<bool> UpdateRoleWithRequirementsAsync(string roleId, 
-            List<Guid> requirementIds)
-        {
-            if(roleId == null)
-                return false;
-
-            var selectedRole = _dbContext.Roles.FirstOrDefault(r => r.Id == roleId);
-
-            if (selectedRole == null)
-                return false;
-
-            await DeleteRoleRequirementsByRoleIdAsync(roleId);
-
-            var newRoleRequirements = new List<RoleRequirement>();
-            foreach (var requirement in requirementIds)
-            {
-                var roleRequirement = new RoleRequirement()
-                {
-                    RoleId = roleId,
-                    RequirementId = requirement
-                };
-                newRoleRequirements.Add(roleRequirement);
-            }
-
-            await AddRoleRequirementAsync(newRoleRequirements);
-            await SaveChangesAsync();
-
-            return true;
-        }
-
-        private async Task<List<Requirement>> GetRoleRequirementsAsync(string roleId)
+        public async Task<List<Requirement>> GetRequirementsOfRoleAsync(string roleId)
         {
             return await _dbContext.Roles.Join(_dbContext.RoleRequirements,
                 role => role.Id,
@@ -81,7 +33,7 @@ namespace MicroZoo.IdentityApi.Repositories
                     Name = requirement.Name
                 }).ToListAsync();
         }
-        
+
         public async Task<bool> DeleteRoleRequirementsByRequirementIdAsync(Guid requirementId)
         {
             var roleRequirementsForDelete = await _dbContext.RoleRequirements
@@ -100,8 +52,13 @@ namespace MicroZoo.IdentityApi.Repositories
             return true;
         }
 
-        private async Task AddRoleRequirementAsync(List<RoleRequirement> roleRequirements) =>
+        public async Task<bool> AddRoleRequirementsAsync(List<RoleRequirement> roleRequirements)
+        {
             await _dbContext.RoleRequirements.AddRangeAsync(roleRequirements);
+            await SaveChangesAsync();
+
+            return true;
+        }
 
         private async Task SaveChangesAsync() =>
             await _dbContext.SaveChangesAsync();

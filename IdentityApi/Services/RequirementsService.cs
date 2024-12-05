@@ -78,17 +78,10 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
-            await _roleRequirementsService.DeleteRoleRequirementsByRequirementIdAsync(requirementId);
-            /*var deletedRequirement*/ 
+            await _roleRequirementsService.DeleteRoleRequirementsByRequirementIdAsync(requirementId);            
             response.Requirement = await _requirementRepository.SoftDeleteRequirementAsync(requirementForDelete);
-            /*if(deletedRequirement == null)
-            {
-                response.ErrorMessage = $"Requirement with Id {requirementId} does not exist";
-                return response;
-            }
-
-            response.Requirement = deletedRequirement;*/
+            
             return response;
-        }        
+        }
     }
 }
