@@ -2,6 +2,7 @@
 using MicroZoo.Infrastructure.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.IdentityApi.Models.DTO;
+using MicroZoo.IdentityApi.Models.Mappers;
 
 namespace MicroZoo.IdentityApi.Repositories
 {
@@ -31,14 +32,11 @@ namespace MicroZoo.IdentityApi.Repositories
 
             if (userForUpdate == null)  
                 return default!;
-                      
-            userForUpdate.FirstName = userForUpdateDto.FirstName;
-            userForUpdate.LastName = userForUpdateDto.LastName;
-            userForUpdate.UserName = userForUpdate.UserName;
-            userForUpdate.Email = userForUpdateDto.Email;
-            userForUpdate.PhoneNumber = userForUpdateDto.PhoneNumber;
+                 
+            userForUpdate = UserUpdater.UpdateFromUserForUpdateDto(userForUpdateDto, userForUpdate);
            
             await SaveChangesAsync();
+
             return userForUpdate;
         }
 

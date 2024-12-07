@@ -136,8 +136,6 @@ namespace MicroZoo.IdentityApi
 
             services.AddScoped<IRoleRequirementsRepository, RoleRequirementsRepository>();
             services.AddScoped<IRoleRequirementsService, RoleRequirementsService>();
-
-            services.AddAutoMapper(typeof(UserProfile));
         }
 
         static void Configure(WebApplication app)

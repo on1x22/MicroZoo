@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MicroZoo.IdentityApi.Models.Mappers;
 using MicroZoo.IdentityApi.Repositories;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
 
@@ -37,7 +38,7 @@ namespace MicroZoo.IdentityApi.Services
 
             var rolesOfUser = await _userRolesRepository.GetRolesOfUserAsync(userId);
 
-            var userWithRoles = selectedUser.ConvertToUserWithRoles();
+            var userWithRoles = UserUpdater.ConvertToUserWithRoles(selectedUser);
             userWithRoles.Roles = rolesOfUser;
 
             response.UserWithRoles = userWithRoles;

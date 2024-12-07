@@ -1,11 +1,11 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using MicroZoo.EmailService;
 using MicroZoo.IdentityApi.JwtFeatures;
 using MicroZoo.IdentityApi.Models.DTO;
+using MicroZoo.IdentityApi.Models.Mappers;
 using MicroZoo.Infrastructure.Models.Users;
 
 namespace MicroZoo.IdentityApi.Controllers
@@ -15,15 +15,13 @@ namespace MicroZoo.IdentityApi.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
-        private readonly IMapper _mapper;
         private readonly IEmailSender _emailSender;
         private readonly JwtHandler _jwtHandler;        
 
-        public AccountsController(UserManager<User> userManager, IMapper mapper,
-            IEmailSender emailSender, JwtHandler jwtHandler)
+        public AccountsController(UserManager<User> userManager, IEmailSender emailSender, 
+            JwtHandler jwtHandler)
         {
-            _userManager = userManager;
-            _mapper = mapper;
+            _userManager = userManager;            
             _emailSender = emailSender;
             _jwtHandler = jwtHandler;
         }
@@ -34,7 +32,7 @@ namespace MicroZoo.IdentityApi.Controllers
             if (userForRegistration == null)
                 return BadRequest();
 
-            var user = _mapper.Map<User>(userForRegistration);
+            var user = UserUpdater.ConvertFromUserForRegistrationDto(userForRegistration);
             var result = await _userManager.CreateAsync(user, userForRegistration.Password!);
             if (!result.Succeeded)
             {
