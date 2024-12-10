@@ -59,7 +59,7 @@ namespace MicroZoo.IdentityApi.Controllers
             return StatusCode(201);
         }
 
-        [HttpGet("emailconfirmation")]
+        [HttpGet("email-confirmation")]
         public async Task<IActionResult> EmailConfirmation([FromQuery] string email,
                                                            [FromQuery] string token)
         {
@@ -128,7 +128,7 @@ namespace MicroZoo.IdentityApi.Controllers
                                                 RefreshToken = refreshToken});
         }
 
-        [HttpPost("forgotpassword")]
+        [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPassword)
         {
             if (!ModelState.IsValid)
@@ -157,7 +157,7 @@ namespace MicroZoo.IdentityApi.Controllers
             return Ok();
         }
 
-        [HttpPost("resetpassword")]
+        [HttpPost("reset-password")]
         [Authorize]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPassword)
         {
@@ -186,7 +186,7 @@ namespace MicroZoo.IdentityApi.Controllers
             return Ok();
         }
 
-        [HttpPost("lockoutuser/{userId}")]
+        [HttpPost("lockout-user/{userId}")]
         [Authorize(Policy = "IdentityApi.Update")]
         public async Task<IActionResult> LockOutUser(string userId)
         {
@@ -202,7 +202,7 @@ namespace MicroZoo.IdentityApi.Controllers
             return Ok($"User with Id = \"{userId}\" was locked out");
         }
 
-        [HttpPost("unlockuser/{userId}")]
+        [HttpPost("unlock-user/{userId}")]
         [Authorize(Policy = "IdentityApi.Update")]
         public async Task<IActionResult> UnlockUser(string userId)
         {

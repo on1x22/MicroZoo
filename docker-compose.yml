@@ -71,6 +71,7 @@ services:
   identityapi:
     image: identityapi
     container_name: identityapi
+    hostname: identityapi
     build:
       context: .
       dockerfile: IdentityApi/Dockerfile

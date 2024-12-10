@@ -2,9 +2,10 @@
 
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using MicroZoo.JwtConfiguration;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddJsonFile("ocelot.json");
+builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
 
 RegisterServices(builder.Services);
 
@@ -22,17 +23,30 @@ void RegisterServices(IServiceCollection services)
     services.AddEndpointsApiExplorer();
     services.AddSwaggerGen();
     services.AddOcelot(builder.Configuration);
+    /*services.AddJwtAuthentication();
+    services.AddCors(opt =>
+    {
+        opt.AddPolicy("CORSPolicy", builder => builder.AllowAnyHeader()
+        .AllowAnyHeader().AllowCredentials().SetIsOriginAllowed((host) => true));
+    });
+    services.AddLogging(builder => builder.AddConsole());*/
 }
 
 async void Configure(WebApplication app)
-{
-    await app.UseOcelot();
+{    
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
         app.UseSwaggerUI();
     }
-
+    
+    //app.UseCors("CORSPolicy");
     app.UseHttpsRedirection();
+    //app.UseRouting();
+    //app.UseAuthentication();
+    //app.UseAuthorization();
+    //app.MapControllers();
+    
+    await app.UseOcelot();
 }
