@@ -20,7 +20,7 @@ namespace MicroZoo.IdentityApi.Controllers
             _jwtHandler = jwtHandler;
         }
 
-        [HttpPost("refreshtoken")]
+        [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
         {
             if (tokenModel == null)
@@ -56,7 +56,7 @@ namespace MicroZoo.IdentityApi.Controllers
             });
         }
 
-        [HttpPost("revokerefreshtoken")]
+        [HttpPost("revoke-refresh-token")]
         [Authorize]
         public async Task<IActionResult> RevokeRefreshToken()
         {

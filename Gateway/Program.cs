@@ -5,7 +5,8 @@ using Ocelot.Middleware;
 using MicroZoo.JwtConfiguration;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+//builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddOcelot(builder.Environment);
 
 RegisterServices(builder.Services);
 
@@ -22,7 +23,8 @@ void RegisterServices(IServiceCollection services)
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     services.AddEndpointsApiExplorer();
     services.AddSwaggerGen();
-    services.AddOcelot(builder.Configuration);
+    //services.AddOcelot(builder.Configuration);
+    services.AddOcelot();
     /*services.AddJwtAuthentication();
     services.AddCors(opt =>
     {
