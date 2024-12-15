@@ -1,0 +1,52 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/gateway/specialities",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE" ],
+      "DownstreamPathTemplate": "/specialities",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/specialities/animalTypes/{animalTypeId}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/specialities/animalTypes/{animalTypeId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/specialities/zookeepers/{personId}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/specialities/zookeepers/{personId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/specialities/{relationId}",
+      "UpstreamHttpMethod": [ "PUT" ],
+      "DownstreamPathTemplate": "/specialities/{relationId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    }
+  ]
+}

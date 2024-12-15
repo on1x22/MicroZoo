@@ -1,22 +1,3 @@
 {
-  "Routes": [
-    {
-      "UpstreamPathTemplate": "/gateway/jobs/{zookeeperId}",
-      "UpstreamHttpMethod": [ "GET" ],
-      "DownstreamPathTemplate": "/jobs/{zookeeperId}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "zookeepersapi",
-          "Port": 80
-        }
-      ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "10s",
-        "Limit": 3,
-        "PeriodTimespan": 10
-      }
-    }
-  ]
+  
 }
