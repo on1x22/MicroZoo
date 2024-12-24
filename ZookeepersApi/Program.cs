@@ -1,8 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using MicroZoo.Infrastructure.Models.Specialities;
-using Newtonsoft.Json;
-using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Http.Json;
 using System.Reflection;
 using MassTransit;
 using MicroZoo.ZookeepersApi.Services;
@@ -66,7 +62,8 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
     services.AddScoped<__IZookeeperApiService, __ZookeeperApiService>();
     services.AddScoped<IJobsService, JobsService>();
     services.AddScoped<ISpecialitiesService, SpecialitiesService>();
-    services.AddTransient<IJobsRequestReceivingService,JobsRequestReceivingService>();
+    services.AddScoped<IAuthorizationService, AuthorizationService>();
+    services.AddTransient<IJobsRequestReceivingService,JobsRequestReceivingService>();    
     services.AddTransient<ISpecialitiesRequestReceivingService, SpecialitiesRequestReceivingService>();
     services.AddTransient<IResponsesReceiverFromRabbitMq, ResponsesReceiverFromRabbitMq>();
     services.AddTransient<IApi, MicroZoo.ZookeepersApi.Apis.ZookeepersApi>();

@@ -1,0 +1,32 @@
+﻿using MicroZoo.Infrastructure.MassTransit;
+using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
+using MicroZoo.ZookeepersApi.Services;
+
+namespace MicroZoo.ZookeepersApi.Services
+{
+    public class AuthorizationService : IAuthorizationService
+    {
+        private readonly IResponsesReceiverFromRabbitMq _receiver;
+        private readonly IConnectionService _connectionService;
+
+        public AuthorizationService(IResponsesReceiverFromRabbitMq receiver, 
+            IConnectionService connectionService)
+        {
+            _receiver = receiver;
+            _connectionService = connectionService;
+        }
+
+        public async Task<bool> IsResourceAccessConfirmed(string accessToken, List<string> endpointPolicies)
+        {
+            var accessResponse = await _receiver.GetResponseFromRabbitTask<CheckAccessRequest,
+                CheckAccessResponse>(new CheckAccessRequest(accessToken, endpointPolicies),
+                _connectionService.IdentityApiUrl);
+            
+            if (!accessResponse.IsAccessConfirmed)
+                return false;
+
+            return true;
+        }
+    }
+}

@@ -15,6 +15,8 @@ using MicroZoo.IdentityApi.JwtFeatures;
 using MicroZoo.EmailService;
 using MicroZoo.IdentityApi.Policies;
 using Microsoft.AspNetCore.Authorization;
+using MassTransit;
+using MicroZoo.IdentityApi.Consumers;
 
 namespace MicroZoo.IdentityApi
 {
@@ -136,6 +138,23 @@ namespace MicroZoo.IdentityApi
 
             services.AddScoped<IRoleRequirementsRepository, RoleRequirementsRepository>();
             services.AddScoped<IRoleRequirementsService, RoleRequirementsService>();
+
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<CheckAccessConsumer>();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(builder.Configuration.GetConnectionString("RabbitMq"));
+                    cfg.ReceiveEndpoint("identity-queue", e =>
+                    {
+                        e.PrefetchCount = 20;
+                        e.UseMessageRetry(r => r.Interval(2, 100));
+
+                        e.ConfigureConsumer<CheckAccessConsumer>(context);
+                    });
+                });
+            });
         }
 
         static void Configure(WebApplication app)

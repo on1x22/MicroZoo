@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MicroZoo.Infrastructure.Generals;
 using MicroZoo.Infrastructure.MassTransit;
-using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
+using MicroZoo.JwtConfiguration;
+using MicroZoo.ZookeepersApi.Policies;
 using MicroZoo.ZookeepersApi.Services;
 using System.ComponentModel.DataAnnotations;
 
@@ -17,6 +17,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
     public class JobsController : ControllerBase
     {
         private readonly IJobsRequestReceivingService _receivingService;
+        private readonly IAuthorizationService _authorizationService;
         private readonly IResponsesReceiverFromRabbitMq _receiver;
         //private readonly Uri _animalsApiUrl;
         //private readonly Uri _personsApiUrl;
@@ -24,11 +25,13 @@ namespace MicroZoo.ZookeepersApi.Controllers
         private readonly IConnectionService _connectionService;
 
         public JobsController(IResponsesReceiverFromRabbitMq receiver, 
-            IConnectionService connectionService, IJobsRequestReceivingService receivingService)
+            IConnectionService connectionService, IJobsRequestReceivingService receivingService,
+            IAuthorizationService authorizationService)
         {
             _receiver = receiver;
             _connectionService = connectionService;
             _receivingService = receivingService;
+            _authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -59,11 +62,22 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <param name="zookeeperId"></param>
         /// <returns>List of jobs</returns>
         [HttpGet("{zookeeperId}/current")]
+        [PolicyValidation(Policy = "ZookeepersApi.Read")]
+        [PolicyValidation(Policy = "ZookeepersApi.Create")]
         public async Task<IActionResult> GetCurrentJobsOfZookeeper(int zookeeperId)
         {
-            /*var response = await _receiver.GetResponseFromRabbitTask<GetCurrentJobsOfZookeeperRequest,
-                GetJobsResponse>(new GetCurrentJobsOfZookeeperRequest(zookeeperId),
-                _connectionService.ZookeepersApiUrl);*/
+            //var ht = HttpContext.Request.Headers;
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(HttpContext.Request);
+            var methodName = nameof(GetCurrentJobsOfZookeeper);
+            var endpointPolicies = PoliciesValidator.GetPolicies(typeof(JobsController), methodName);
+            
+            if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))
+                return Unauthorized();
+
+            var isAccessConfirmed = await _authorizationService.IsResourceAccessConfirmed(accessToken,
+                endpointPolicies);
+            if (!isAccessConfirmed)
+                return Unauthorized();
 
             var response = await _receivingService.GetCurrentJobsOfZookeeperAsync(zookeeperId);
 

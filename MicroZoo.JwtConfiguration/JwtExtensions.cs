@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -43,6 +44,17 @@ namespace MicroZoo.JwtConfiguration
                             .GetBytes(jwtSettings["securityKey"]!))
                     };
                 });
+        }
+
+        public static string GetAccessTokenFromRequest(HttpRequest request)
+        {
+            var authorizationHeader = request.Headers["Authorization"]!.ToString();
+
+            if (authorizationHeader == null)
+                return default!;
+
+            var accessToken = authorizationHeader.ToString().Substring("Bearer ".Length).Trim();
+            return accessToken;
         }
     }
 }
