@@ -17,16 +17,18 @@ namespace MicroZoo.ZookeepersApi.Services
             _connectionService = connectionService;
         }
 
-        public async Task<bool> IsResourceAccessConfirmed(string accessToken, List<string> endpointPolicies)
+        public async Task<CheckAccessResponse> IsResourceAccessConfirmed(string accessToken, List<string> endpointPolicies)
         {
             var accessResponse = await _receiver.GetResponseFromRabbitTask<CheckAccessRequest,
                 CheckAccessResponse>(new CheckAccessRequest(accessToken, endpointPolicies),
                 _connectionService.IdentityApiUrl);
             
-            if (!accessResponse.IsAccessConfirmed)
-                return false;
+            if (accessResponse == null)
+            {
+                accessResponse.ErrorMessage = "Internal server error";
+            }                
 
-            return true;
+            return accessResponse;
         }
     }
 }

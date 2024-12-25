@@ -27,24 +27,28 @@ namespace MicroZoo.IdentityApi.Consumers
         public async Task Consume(ConsumeContext<CheckAccessRequest> context)
         {
             var response = new CheckAccessResponse();
+            response.OperationId = context.Message.OperationId;
 
-            var claimsPrincipal = _jwtHandler.GetPrincipalFromExpiredToken(context.Message.AccessToken!);
+            var claimsPrincipal = _jwtHandler.GetPrincipalFromToken(context.Message.AccessToken!);
             if (claimsPrincipal == null)
             {
                 response.IsAuthenticated = false;
                 await context.RespondAsync(response);
+                return;
             }
 
             if (!claimsPrincipal!.Identity!.IsAuthenticated)
             {
                 response.IsAuthenticated = false;
                 await context.RespondAsync(response);
+                return;
             }
 
             if (context.Message.Policies == null || context.Message.Policies.Count == 0)
             {
                 response.IsAccessConfirmed = false;
                 await context.RespondAsync(response);
+                return;
             }
 
             var userName = claimsPrincipal.Identity.Name;
@@ -57,6 +61,23 @@ namespace MicroZoo.IdentityApi.Consumers
             if (user!.Deleted == true)
                 response.IsAuthenticated = false;
 
+            var allowedRequirementsOfUser = await GetAllowedRequirementsOfUser(user);
+
+            var isRequirementsMatch = checkedPolicies!.Any(req =>
+                allowedRequirementsOfUser.Contains(req));
+            if (!isRequirementsMatch)
+                response.IsAccessConfirmed = false;
+            else
+            {
+                response.IsAuthenticated = true;
+                response.IsAccessConfirmed = true;
+            }
+
+            await context.RespondAsync(response);
+        }
+
+        private async Task<List<string>> GetAllowedRequirementsOfUser(User user)
+        {
             var rolesOfUser = _dbContext.Users.Where(usr => usr.Id == user!.Id)
                 .Join(_dbContext.UserRoles,
                 u => u.Id,
@@ -91,17 +112,7 @@ namespace MicroZoo.IdentityApi.Consumers
                 })
                 .Select(x => x.RequirementName).ToListAsync();
 
-            var isRequirementsMatch = checkedPolicies!.Any(req =>
-                allowedRequirementsOfUser.Contains(req));
-            if (!isRequirementsMatch)
-                response.IsAccessConfirmed = false;
-            else
-            {
-                response.IsAuthenticated = true;
-                response.IsAccessConfirmed = true;
-            }
-
-            await context.RespondAsync(response);
+            return allowedRequirementsOfUser;
         }
     }
 }

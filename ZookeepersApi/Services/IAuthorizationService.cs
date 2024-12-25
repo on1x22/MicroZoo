@@ -1,7 +1,9 @@
-﻿namespace MicroZoo.ZookeepersApi.Services
+﻿using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
+
+namespace MicroZoo.ZookeepersApi.Services
 {
     public interface IAuthorizationService
     {
-        public Task<bool> IsResourceAccessConfirmed(string accessToken, List<string> endpointPolicies);
+        public Task<CheckAccessResponse> IsResourceAccessConfirmed(string accessToken, List<string> endpointPolicies);
     }
 }

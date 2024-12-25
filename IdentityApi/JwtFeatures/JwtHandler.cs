@@ -36,8 +36,21 @@ namespace MicroZoo.IdentityApi.JwtFeatures
                 return Convert.ToBase64String(randomNumber);
             }
         }
+        
+        public ClaimsPrincipal GetPrincipalFromToken(string token) =>       
+            ExtractPrincipalFromToken(token: token, validateLifetimeValue: true);
 
-        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token) =>                    
+            ExtractPrincipalFromToken(token: token, validateLifetimeValue : false);
+        
+
+        public DateTime GetRefreshTokenExpiryTimeSpanInDays()
+        {
+            var refreshTokenExpiryTimeSpanInDays = Convert.ToDouble(_jwtSettings["refreshTokenExpiryTimeSpanInDays"]);
+            return DateTime.UtcNow.AddDays(refreshTokenExpiryTimeSpanInDays);
+        }
+
+        private ClaimsPrincipal ExtractPrincipalFromToken(string token, bool validateLifetimeValue)
         {
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -46,25 +59,28 @@ namespace MicroZoo.IdentityApi.JwtFeatures
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(_jwtSettings["securityKey"]!)),
-                ValidateLifetime = false
+                ValidateLifetime = validateLifetimeValue
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, 
-                out securityToken);
+            ClaimsPrincipal principal;
+            
+            try
+            {
+                principal = tokenHandler.ValidateToken(token, tokenValidationParameters,
+                        out securityToken);
+            }
+            catch (SecurityTokenExpiredException)
+            {
+                return default!;
+            }
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if (jwtSecurityToken == null ||
                 !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 throw new InvalidOperationException("Invalid token");
 
             return principal;
-        }
-
-        public DateTime GetRefreshTokenExpiryTimeSpanInDays()
-        {
-            var refreshTokenExpiryTimeSpanInDays = Convert.ToDouble(_jwtSettings["refreshTokenExpiryTimeSpanInDays"]);
-            return DateTime.UtcNow.AddDays(refreshTokenExpiryTimeSpanInDays);
         }
 
         private SigningCredentials GetSigningCredentials()

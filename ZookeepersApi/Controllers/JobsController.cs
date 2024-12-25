@@ -66,7 +66,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [PolicyValidation(Policy = "ZookeepersApi.Create")]
         public async Task<IActionResult> GetCurrentJobsOfZookeeper(int zookeeperId)
         {
-            //var ht = HttpContext.Request.Headers;
             var accessToken = JwtExtensions.GetAccessTokenFromRequest(HttpContext.Request);
             var methodName = nameof(GetCurrentJobsOfZookeeper);
             var endpointPolicies = PoliciesValidator.GetPolicies(typeof(JobsController), methodName);
@@ -74,10 +73,16 @@ namespace MicroZoo.ZookeepersApi.Controllers
             if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))
                 return Unauthorized();
 
-            var isAccessConfirmed = await _authorizationService.IsResourceAccessConfirmed(accessToken,
+            var accessResponse = await _authorizationService.IsResourceAccessConfirmed(accessToken,
                 endpointPolicies);
-            if (!isAccessConfirmed)
+            if (accessResponse.ErrorMessage != null)
+                return BadRequest(accessResponse.ErrorMessage);
+
+            if (!accessResponse.IsAuthenticated)
                 return Unauthorized();
+
+            if (!accessResponse.IsAccessConfirmed)
+                return Forbid();
 
             var response = await _receivingService.GetCurrentJobsOfZookeeperAsync(zookeeperId);
 
