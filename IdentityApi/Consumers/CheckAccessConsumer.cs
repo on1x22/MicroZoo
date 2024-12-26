@@ -66,7 +66,10 @@ namespace MicroZoo.IdentityApi.Consumers
             var isRequirementsMatch = checkedPolicies!.Any(req =>
                 allowedRequirementsOfUser.Contains(req));
             if (!isRequirementsMatch)
+            {
+                response.IsAuthenticated = true;
                 response.IsAccessConfirmed = false;
+            }
             else
             {
                 response.IsAuthenticated = true;

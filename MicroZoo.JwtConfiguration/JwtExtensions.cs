@@ -50,7 +50,7 @@ namespace MicroZoo.JwtConfiguration
         {
             var authorizationHeader = request.Headers["Authorization"]!.ToString();
 
-            if (authorizationHeader == null)
+            if (authorizationHeader == null || authorizationHeader == string.Empty)
                 return default!;
 
             var accessToken = authorizationHeader.ToString().Substring("Bearer ".Length).Trim();

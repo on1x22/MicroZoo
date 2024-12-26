@@ -9,6 +9,7 @@ using MicroZoo.ZookeepersApi.Models;
 using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.ZookeepersApi.Consumers.Jobs;
 using MicroZoo.ZookeepersApi.Consumers.Specialities;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,14 +42,40 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
 
     services.AddHttpClient();
     services.AddLogging(builder => builder.AddConsole());
+    services.AddAuthentication("Bearer").AddJwtBearer();
     services.AddControllers();
     services.AddEndpointsApiExplorer();
-    services.AddSwaggerGen(c =>
+    services.AddSwaggerGen(opt =>
     {
         // Set the comments path for the Swagger JSON and UI.
         var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-        c.IncludeXmlComments(xmlPath);
+        opt.IncludeXmlComments(xmlPath);
+
+        opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter token",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = "bearer"
+        });
+
+        opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] { }
+            }
+        });
     });
 
     services.AddDbContext<ZookeeperDBContext>(options =>
@@ -120,7 +147,7 @@ void Configure(WebApplication app)
 
     app.UseHttpsRedirection();
 
-    //app.UseAuthentication();
+    app.UseAuthentication();
     //app.UseAuthorization();
 
     app.MapControllers();
