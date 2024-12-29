@@ -18,16 +18,13 @@ namespace MicroZoo.ZookeepersApi.Controllers
     {
         private readonly IJobsRequestReceivingService _receivingService;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IConnectionService _connectionService;
 
         /// <summary>
         /// Controller for handling jobs requests
         /// </summary>
-        public JobsController(IConnectionService connectionService, 
-            IJobsRequestReceivingService receivingService,
-            IAuthorizationService authorizationService)
+        public JobsController(IJobsRequestReceivingService receivingService,
+                              IAuthorizationService authorizationService)
         {
-            _connectionService = connectionService;
             _receivingService = receivingService;
             _authorizationService = authorizationService;
         }

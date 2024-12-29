@@ -7,6 +7,10 @@ using MicroZoo.Infrastructure.Models.Jobs.Dto;
 
 namespace MicroZoo.ZookeepersApi.Services
 {
+    /// <summary>
+    /// Procceses request from controllers and RabbitMq consumers. Interconnections with other 
+    /// microservices doing here 
+    /// </summary>
     public class JobsRequestReceivingService : IJobsRequestReceivingService
     {
         private readonly IJobsService _jobService;
@@ -172,12 +176,6 @@ namespace MicroZoo.ZookeepersApi.Services
                 return response;
             }
 
-            /*if (jobId <= 0)
-            {
-                response.ErrorMessage = "Task with negative or zero id doesn't exist";
-                return response;
-            }*/
-
             var jobResponse = await _jobService.FinishJobAsync(jobId, jobReport);
             if (jobResponse.Job == null)
             {
@@ -190,7 +188,7 @@ namespace MicroZoo.ZookeepersApi.Services
             return response;
         }
 
-        internal async Task<bool> IsZookeeperExist(int zookeeperId)
+        private async Task<bool> IsZookeeperExist(int zookeeperId)
         {
             var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest,
                     GetPersonResponse>(new GetPersonRequest(zookeeperId), _connectionService.PersonsApiUrl);
