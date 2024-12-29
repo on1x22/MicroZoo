@@ -17,6 +17,12 @@ namespace MicroZoo.ZookeepersApi.Services
         private readonly IResponsesReceiverFromRabbitMq _receiver;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="JobsRequestReceivingService"/> class 
+        /// </summary>
+        /// <param name="jobService"></param>
+        /// <param name="receiver"></param>
+        /// <param name="connectionService"></param>
         public JobsRequestReceivingService(IJobsService jobService, IResponsesReceiverFromRabbitMq receiver,
             IConnectionService connectionService)
         {

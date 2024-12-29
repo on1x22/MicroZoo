@@ -18,7 +18,9 @@ namespace MicroZoo.PersonsApi.Consumers
         {
             var personId = context.Message.PersonId;
 
+            //var response = await _service.DeletePersonAsync(personId);
             var response = await _service.DeletePersonAsync(personId);
+            
             response.OperationId = context.Message.OperationId;
 
             await context.RespondAsync<GetPersonResponse>(response);
