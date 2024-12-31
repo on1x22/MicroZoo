@@ -193,7 +193,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
             if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))                          
                 return new AccessResult(IsAccessAllowed: false, Result: Unauthorized());
             
-
             var accessResponse = await _authorizationService.IsResourceAccessConfirmed(accessToken,
                 endpointPolicies);
             if (accessResponse.ErrorMessage != null)

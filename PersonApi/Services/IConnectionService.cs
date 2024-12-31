@@ -1,10 +1,8 @@
-﻿namespace MicroZoo.ZookeepersApi.Services
+﻿namespace MicroZoo.PersonsApi.Services
 {
     public interface IConnectionService
     {
-        Uri AnimalsApiUrl { get; }
         Uri IdentityApiUrl { get; }
-        Uri PersonsApiUrl { get; }
         Uri ZookeepersApiUrl { get; }
     }
 }
