@@ -4,7 +4,7 @@
     /// Identifies policy which checks in IdentityApi
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class PolicyValidationAttribute : Attribute
+    public class __PolicyValidationAttribute : Attribute
     {
         /// <summary>
         /// Creates policy

@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MicroZoo.AuthService.Policies;
 using MicroZoo.AuthService.Services;
 using MicroZoo.Infrastructure.Generals;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
-using MicroZoo.JwtConfiguration;
-using MicroZoo.ZookeepersApi.Models;
-using MicroZoo.ZookeepersApi.Policies;
 using MicroZoo.ZookeepersApi.Services;
 using System.ComponentModel.DataAnnotations;
 
@@ -57,10 +55,15 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [HttpGet("{zookeeperId}/current")]        
         [PolicyValidation(Policy = "ZookeepersApi.Read")]        
         public async Task<IActionResult> GetCurrentJobsOfZookeeper(int zookeeperId)
-        {            
-            var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-                                                              type: typeof(JobsController),
-                                                              methodName: nameof(GetCurrentJobsOfZookeeper));
+        {
+            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
+            //                                                  type: typeof(JobsController),
+            //                                                  methodName: nameof(GetCurrentJobsOfZookeeper));
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                httpRequest: HttpContext.Request,
+                type: typeof(JobsController),
+                methodName: nameof(GetCurrentJobsOfZookeeper),
+                IdentityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
@@ -91,9 +94,15 @@ namespace MicroZoo.ZookeepersApi.Controllers
             [FromQuery] string propertyName = "DeadlineTime", [FromQuery] bool orderDescending = false,
             [FromQuery] int pageNumber = 1, [FromQuery] int itemsOnPage = 20)
         {
-            var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-                                                              type: typeof(JobsController),
-                                                              methodName: nameof(GetJobsForTimeRange));
+            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
+            //                                                  type: typeof(JobsController),
+            //                                                  methodName: nameof(GetJobsForTimeRange));
+
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                httpRequest: HttpContext.Request,
+                type: typeof(JobsController),
+                methodName: nameof(GetJobsForTimeRange),
+                IdentityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
@@ -119,9 +128,14 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [PolicyValidation(Policy = "ZookeepersApi.Create")]
         public async Task<IActionResult> AddJob([FromBody] JobDto jobDto)
         {
-            var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-                                                              type: typeof(JobsController),
-                                                              methodName: nameof(AddJob));
+            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
+            //                                                  type: typeof(JobsController),
+            //                                                  methodName: nameof(AddJob));
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                httpRequest: HttpContext.Request,
+                type: typeof(JobsController),
+                methodName: nameof(AddJob),
+                IdentityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
@@ -143,9 +157,14 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [PolicyValidation(Policy = "ZookeepersApi.Update")]
         public async Task<IActionResult> UpdateJob(int jobId, [FromBody] JobWithoutStartTimeDto jobDto)
         {            
-            var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-                                                  type: typeof(JobsController),
-                                                  methodName: nameof(UpdateJob));
+            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
+            //                                      type: typeof(JobsController),
+            //                                      methodName: nameof(UpdateJob));
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                httpRequest: HttpContext.Request,
+                type: typeof(JobsController),
+                methodName: nameof(UpdateJob),
+                IdentityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
@@ -167,9 +186,14 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [PolicyValidation(Policy = "ZookeepersApi.Update")]
         public async Task<IActionResult> FinishJob(int jobId, [FromQuery] string jobReport)
         {            
-            var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-                                      type: typeof(JobsController),
-                                      methodName: nameof(FinishJob));
+            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
+            //                          type: typeof(JobsController),
+            //                          methodName: nameof(FinishJob));
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                httpRequest: HttpContext.Request,
+                type: typeof(JobsController),
+                methodName: nameof(FinishJob),
+                IdentityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
@@ -181,7 +205,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 : BadRequest(response.ErrorMessage);
         }
 
-        /// <summary>
+        /*/// <summary>
         /// Check access to executing resource in IdentityApi.
         /// </summary>
         /// <param name="httpRequest">Current http request for extracting access token</param>
@@ -197,7 +221,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
             if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))                          
                 return new AccessResult(IsAccessAllowed: false, Result: Unauthorized());
             
-            var accessResponse = await _authorizationService.IsResourceAccessConfirmed(
+            var accessResponse = await _authorizationService.IsResourceAccessConfirmedAsync(
                 _connectionService.IdentityApiUrl,
                 accessToken,
                 endpointPolicies);
@@ -212,6 +236,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 return new AccessResult(IsAccessAllowed: false, Result: Forbid());
             
             return new AccessResult(IsAccessAllowed: true, Result: Ok());
-        }
+        }*/
     }
 }
