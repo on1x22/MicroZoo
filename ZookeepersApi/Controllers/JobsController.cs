@@ -56,9 +56,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [PolicyValidation(Policy = "ZookeepersApi.Read")]        
         public async Task<IActionResult> GetCurrentJobsOfZookeeper(int zookeeperId)
         {
-            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-            //                                                  type: typeof(JobsController),
-            //                                                  methodName: nameof(GetCurrentJobsOfZookeeper));
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 httpRequest: HttpContext.Request,
                 type: typeof(JobsController),
@@ -94,10 +91,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
             [FromQuery] string propertyName = "DeadlineTime", [FromQuery] bool orderDescending = false,
             [FromQuery] int pageNumber = 1, [FromQuery] int itemsOnPage = 20)
         {
-            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-            //                                                  type: typeof(JobsController),
-            //                                                  methodName: nameof(GetJobsForTimeRange));
-
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 httpRequest: HttpContext.Request,
                 type: typeof(JobsController),
@@ -128,9 +121,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [PolicyValidation(Policy = "ZookeepersApi.Create")]
         public async Task<IActionResult> AddJob([FromBody] JobDto jobDto)
         {
-            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-            //                                                  type: typeof(JobsController),
-            //                                                  methodName: nameof(AddJob));
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 httpRequest: HttpContext.Request,
                 type: typeof(JobsController),
@@ -157,9 +147,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [PolicyValidation(Policy = "ZookeepersApi.Update")]
         public async Task<IActionResult> UpdateJob(int jobId, [FromBody] JobWithoutStartTimeDto jobDto)
         {            
-            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-            //                                      type: typeof(JobsController),
-            //                                      methodName: nameof(UpdateJob));
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 httpRequest: HttpContext.Request,
                 type: typeof(JobsController),
@@ -186,9 +173,6 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [PolicyValidation(Policy = "ZookeepersApi.Update")]
         public async Task<IActionResult> FinishJob(int jobId, [FromQuery] string jobReport)
         {            
-            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-            //                          type: typeof(JobsController),
-            //                          methodName: nameof(FinishJob));
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 httpRequest: HttpContext.Request,
                 type: typeof(JobsController),
@@ -204,38 +188,5 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 ? Ok(response.Jobs)
                 : BadRequest(response.ErrorMessage);
         }
-
-        /*/// <summary>
-        /// Check access to executing resource in IdentityApi.
-        /// </summary>
-        /// <param name="httpRequest">Current http request for extracting access token</param>
-        /// <param name="type">Current class</param>
-        /// <param name="methodName">Name of current method</param>
-        /// <returns></returns>
-        private async Task<AccessResult> CheckAccessInIdentityApi(HttpRequest httpRequest,
-                                                                  Type type,
-                                                                  string methodName)
-        {            
-            var accessToken = JwtExtensions.GetAccessTokenFromRequest(httpRequest);            
-            var endpointPolicies = PoliciesValidator.GetPoliciesFromEndpoint(type, methodName);
-            if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))                          
-                return new AccessResult(IsAccessAllowed: false, Result: Unauthorized());
-            
-            var accessResponse = await _authorizationService.IsResourceAccessConfirmedAsync(
-                _connectionService.IdentityApiUrl,
-                accessToken,
-                endpointPolicies);
-            if (accessResponse.ErrorMessage != null)
-                return new AccessResult(IsAccessAllowed: false,
-                                        Result: BadRequest(accessResponse.ErrorMessage));            
-
-            if (!accessResponse.IsAuthenticated)
-                return new AccessResult(IsAccessAllowed: false, Result: Unauthorized());
-            
-            if (!accessResponse.IsAccessConfirmed)
-                return new AccessResult(IsAccessAllowed: false, Result: Forbid());
-            
-            return new AccessResult(IsAccessAllowed: true, Result: Ok());
-        }*/
     }
 }

@@ -32,13 +32,6 @@ app.Run();
 
 void RegisterServices(IServiceCollection services, IConfiguration configuration)
 {
-    /*var animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
-    var personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
-    var zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
-
-    services.AddScoped<IConnectionService>(s => new ConnectionService(animalsApiUrl,
-                                                                          personsApiUrl, 
-                                                                          zookeepersApiUrl));*/
     services.AddScoped<IConnectionService, ConnectionService>();
 
     services.AddHttpClient();
@@ -149,7 +142,6 @@ void Configure(WebApplication app)
     app.UseHttpsRedirection();
 
     app.UseAuthentication();
-    //app.UseAuthorization();
 
     app.MapControllers();
 }

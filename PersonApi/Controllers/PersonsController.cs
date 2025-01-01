@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MicroZoo.AuthService.Models;
+using MicroZoo.AuthService.Policies;
+using MicroZoo.AuthService.Services;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.Models.Persons.Dto;
 using MicroZoo.PersonsApi.Services;
-using MicroZoo.JwtConfiguration;
-using MicroZoo.AuthService.Policies;
-using MicroZoo.Infrastructure.MassTransit;
-using MicroZoo.AuthService.Services;
 
 namespace MicroZoo.PersonsApi.Controllers
 {
+    /// <summary>
+    /// Controller for handling persons requests
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     public class PersonsController : ControllerBase
@@ -19,6 +20,15 @@ namespace MicroZoo.PersonsApi.Controllers
         private readonly IResponsesReceiverFromRabbitMq _receiver;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="PersonsController"/> class 
+        /// </summary>
+        /// <param name="provider"></param>
+        /// <param name="configuration"></param>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="receiver"></param>
+        /// <param name="connectionService"></param>
         public PersonsController(IServiceProvider provider, IConfiguration configuration,
             IPersonsRequestReceivingService receivingService, 
             IAuthorizationService authorizationService,
@@ -41,10 +51,6 @@ namespace MicroZoo.PersonsApi.Controllers
         [PolicyValidation(Policy = "PersonsApi.Read")]
         public async Task<IActionResult> GetPerson(int personId)
         {
-            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-            //                                                  type: typeof(PersonsController),
-            //                                                  methodName: nameof(GetPerson));
-
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 httpRequest: HttpContext.Request,
                 type: typeof(PersonsController),
@@ -70,9 +76,6 @@ namespace MicroZoo.PersonsApi.Controllers
         [PolicyValidation(Policy = "PersonsApi.Create")]
         public async Task<IActionResult> AddPerson([FromBody] PersonDto personDto)
         {
-            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-            //                                                  type: typeof(PersonsController),
-            //                                                  methodName: nameof(AddPerson));
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 httpRequest: HttpContext.Request,
                 type: typeof(PersonsController),
@@ -99,9 +102,6 @@ namespace MicroZoo.PersonsApi.Controllers
         [PolicyValidation(Policy = "PersonsApi.Update")]
         public async Task<IActionResult> UpdatePerson(int personId, [FromBody] PersonDto personDto)
         {
-            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-            //                                                  type: typeof(PersonsController),
-            //                                                  methodName: nameof(UpdatePerson));
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 httpRequest: HttpContext.Request,
                 type: typeof(PersonsController),
@@ -127,9 +127,6 @@ namespace MicroZoo.PersonsApi.Controllers
         [PolicyValidation(Policy = "PersonsApi.Delete")]
         public async Task<IActionResult> DeletePerson(int personId)
         {
-            //var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-            //                                                  type: typeof(PersonsController),
-            //                                                  methodName: nameof(DeletePerson));
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 httpRequest: HttpContext.Request,
                 type: typeof(PersonsController),
@@ -155,9 +152,6 @@ namespace MicroZoo.PersonsApi.Controllers
         [PolicyValidation(Policy = "PersonsApi.Read")]
         public async Task<IActionResult> GetSubordinatePersonnel(int personId)
         {
-            ////var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-            ////                                                  type: typeof(PersonsController),
-            ////                                                  methodName: nameof(GetSubordinatePersonnel));
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 httpRequest: HttpContext.Request,
                 type: typeof(PersonsController),
@@ -185,9 +179,6 @@ namespace MicroZoo.PersonsApi.Controllers
         public async Task<IActionResult> ChangeManagerForSubordinatePersonnel(int currentId,
                                                                               int newId)
         {
-            ////var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
-            ////                                                  type: typeof(PersonsController),
-            ////                                                  methodName: nameof(ChangeManagerForSubordinatePersonnel));
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 httpRequest: HttpContext.Request,
                 type: typeof(PersonsController),
@@ -204,31 +195,5 @@ namespace MicroZoo.PersonsApi.Controllers
             ? Ok(response.Persons)
             : BadRequest(response.ErrorMessage);
         }
-
-        /*private async Task<AccessResult> CheckAccessInIdentityApi(HttpRequest httpRequest,
-                                                            Type type,
-                                                            string methodName)
-        {
-            var accessToken = JwtExtensions.GetAccessTokenFromRequest(httpRequest);
-            var endpointPolicies = PoliciesValidator.GetPoliciesFromEndpoint(type, methodName);
-            if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))
-                return new AccessResult(IsAccessAllowed: false, Result: Unauthorized());
-
-            var accessResponse = await _authorizationService.IsResourceAccessConfirmed(
-                _connectionService.IdentityApiUrl,
-                accessToken,
-                endpointPolicies);
-            if (accessResponse.ErrorMessage != null)
-                return new AccessResult(IsAccessAllowed: false,
-                                        Result: BadRequest(accessResponse.ErrorMessage));
-
-            if (!accessResponse.IsAuthenticated)
-                return new AccessResult(IsAccessAllowed: false, Result: Unauthorized());
-
-            if (!accessResponse.IsAccessConfirmed)
-                return new AccessResult(IsAccessAllowed: false, Result: Forbid());
-
-            return new AccessResult(IsAccessAllowed: true, Result: Ok());
-        }*/
     }
 }

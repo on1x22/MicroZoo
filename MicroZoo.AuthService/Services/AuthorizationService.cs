@@ -9,20 +9,25 @@ using MicroZoo.JwtConfiguration;
 
 namespace MicroZoo.AuthService.Services
 {
+    /// <summary>
+    /// Provides to send authorization requests to Identity microservice 
+    /// and checks access to resource
+    /// </summary>
     public class AuthorizationService : IAuthorizationService
     {
         private readonly IResponsesReceiverFromRabbitMq _receiver;
-        //private readonly IConnectionService _connectionService;
 
-        public AuthorizationService(IResponsesReceiverFromRabbitMq receiver/*, 
-            IConnectionService connectionService*/)
+        /// <summary>
+        /// Initialize a new instance of <see cref="AuthorizationService"/> class 
+        /// </summary>
+        /// <param name="receiver"></param>
+        public AuthorizationService(IResponsesReceiverFromRabbitMq receiver)
         {
             _receiver = receiver;
-            //_connectionService = connectionService;
         }
 
         /// <summary>
-        /// Check access to executing resource in IdentityApi.
+        /// Check access to executing resource in IdentityApi
         /// </summary>
         /// <param name="httpRequest">Current http request for extracting access token</param>
         /// <param name="type">Current class</param>
@@ -64,7 +69,10 @@ namespace MicroZoo.AuthService.Services
 
             if (accessResponse == null)
             {
-                accessResponse.ErrorMessage = "Internal server error";
+                accessResponse = new CheckAccessResponse()
+                { 
+                    ErrorMessage = "Internal server error" 
+                };
             }
 
             return accessResponse;
