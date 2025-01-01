@@ -1,4 +1,4 @@
-﻿namespace MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi
+﻿namespace MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi
 {
     public class CheckAccessRequest
     {

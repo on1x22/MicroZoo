@@ -3,7 +3,7 @@
     /// <summary>
     /// Reads connection strings of other microservices from configuration files
     /// </summary>
-    public class ConnectionService
+    public class ConnectionService : IConnectionService
     {
         private readonly Uri _identityApiUrl;
         private readonly Uri _zookeepersApiUrl;

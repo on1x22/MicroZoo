@@ -10,6 +10,7 @@ using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.ZookeepersApi.Consumers.Jobs;
 using MicroZoo.ZookeepersApi.Consumers.Specialities;
 using Microsoft.OpenApi.Models;
+using MicroZoo.AuthService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

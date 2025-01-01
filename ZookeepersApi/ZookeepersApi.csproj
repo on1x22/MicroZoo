@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MicroZoo.AuthService\MicroZoo.AuthService.csproj" />
     <ProjectReference Include="..\MicroZoo.Infrastructure\MicroZoo.Infrastructure.csproj" />
     <ProjectReference Include="..\MicroZoo.JwtConfiguration\MicroZoo.JwtConfiguration.csproj" />
 	<InternalsVisibleTo Include="MicroZoo.ZookeepersApi.Tests" />

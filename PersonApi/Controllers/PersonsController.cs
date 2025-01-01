@@ -1,13 +1,11 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MicroZoo.AuthService.Models;
 using MicroZoo.Infrastructure.Models.Persons.Dto;
-using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.PersonsApi.Services;
 using MicroZoo.JwtConfiguration;
 using MicroZoo.AuthService.Policies;
 using MicroZoo.Infrastructure.MassTransit;
+using MicroZoo.AuthService.Services;
 
 namespace MicroZoo.PersonsApi.Controllers
 {
@@ -20,9 +18,6 @@ namespace MicroZoo.PersonsApi.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IResponsesReceiverFromRabbitMq _receiver;
         private readonly IConnectionService _connectionService;
-        //private readonly Uri _rabbitMqUrl = new Uri("rabbitmq://localhost/persons-queue");
-        //private readonly Uri _personsApiUrl;
-        //private readonly Uri _zookeepersApiUrl;
 
         public PersonsController(IServiceProvider provider, IConfiguration configuration,
             IPersonsRequestReceivingService receivingService, 
@@ -35,8 +30,6 @@ namespace MicroZoo.PersonsApi.Controllers
             _authorizationService = authorizationService;
             _receiver = receiver;
             _connectionService = connectionService;
-            //_personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
-            //_zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
 
         /// <summary>
@@ -72,7 +65,7 @@ namespace MicroZoo.PersonsApi.Controllers
         {
             var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
                                                               type: typeof(PersonsController),
-                                                              methodName: nameof(GetPerson));
+                                                              methodName: nameof(AddPerson));
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
 
@@ -95,7 +88,7 @@ namespace MicroZoo.PersonsApi.Controllers
         {
             var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
                                                               type: typeof(PersonsController),
-                                                              methodName: nameof(GetPerson));
+                                                              methodName: nameof(UpdatePerson));
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
 
@@ -117,25 +110,9 @@ namespace MicroZoo.PersonsApi.Controllers
         {
             var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
                                                               type: typeof(PersonsController),
-                                                              methodName: nameof(GetPerson));
+                                                              methodName: nameof(DeletePerson));
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
-
-            //var isZookeeperExists = await
-            //    GetResponseFromRabbitTask<CheckZokeepersWithSpecialityAreExistRequest,
-            //    CheckZokeepersWithSpecialityAreExistResponse>
-            //    (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.Person, personId), 
-            //    _zookeepersApiUrl);
-            var isZookeeperExists = await _receiver.
-                GetResponseFromRabbitTask<CheckZokeepersWithSpecialityAreExistRequest,
-                CheckZokeepersWithSpecialityAreExistResponse>
-                (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.Person, personId),
-                _connectionService.ZookeepersApiUrl);
-
-            if (isZookeeperExists.IsThereZookeeperWithThisSpeciality)
-                return BadRequest($"There is zookeeper with id={personId}. " +
-                    "Before deleting a zookeeper, you must remove the zookeeper " +
-                    "associations with all specialties.");
                        
             var response = await _receivingService.DeletePersonAsync(personId);
             
@@ -155,7 +132,7 @@ namespace MicroZoo.PersonsApi.Controllers
         {
             var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
                                                               type: typeof(PersonsController),
-                                                              methodName: nameof(GetPerson));
+                                                              methodName: nameof(GetSubordinatePersonnel));
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
 
@@ -181,7 +158,7 @@ namespace MicroZoo.PersonsApi.Controllers
         {
             var accessResult = await CheckAccessInIdentityApi(httpRequest: HttpContext.Request,
                                                               type: typeof(PersonsController),
-                                                              methodName: nameof(GetPerson));
+                                                              methodName: nameof(ChangeManagerForSubordinatePersonnel));
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
 
@@ -193,17 +170,6 @@ namespace MicroZoo.PersonsApi.Controllers
             : BadRequest(response.ErrorMessage);
         }
 
-        /*private async Task<TOut> __GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
-            where TIn : class
-            where TOut : class
-        {
-            var clientFactory = _provider.GetRequiredService<IClientFactory>();
-
-            var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
-            var response = await client.GetResponse<TOut>(request);
-            return response.Message;
-        }*/
-
         private async Task<AccessResult> CheckAccessInIdentityApi(HttpRequest httpRequest,
                                                             Type type,
                                                             string methodName)
@@ -213,7 +179,9 @@ namespace MicroZoo.PersonsApi.Controllers
             if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))
                 return new AccessResult(IsAccessAllowed: false, Result: Unauthorized());
 
-            var accessResponse = await _authorizationService.IsResourceAccessConfirmed(accessToken,
+            var accessResponse = await _authorizationService.IsResourceAccessConfirmed(
+                _connectionService.IdentityApiUrl,
+                accessToken,
                 endpointPolicies);
             if (accessResponse.ErrorMessage != null)
                 return new AccessResult(IsAccessAllowed: false,
@@ -225,7 +193,7 @@ namespace MicroZoo.PersonsApi.Controllers
             if (!accessResponse.IsAccessConfirmed)
                 return new AccessResult(IsAccessAllowed: false, Result: Forbid());
 
-            return new AccessResult(IsAccessAllowed: false, Result: Ok());
+            return new AccessResult(IsAccessAllowed: true, Result: Ok());
         }
     }
 }

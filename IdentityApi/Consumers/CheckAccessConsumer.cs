@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.IdentityApi.DbContexts;
 using MicroZoo.IdentityApi.JwtFeatures;
-using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
+using MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
 using MicroZoo.Infrastructure.Models.Users;
 
 namespace MicroZoo.IdentityApi.Consumers

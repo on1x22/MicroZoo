@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MicroZoo.AuthService.Services;
 using MicroZoo.Infrastructure.Generals;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
 using MicroZoo.JwtConfiguration;
@@ -18,15 +19,18 @@ namespace MicroZoo.ZookeepersApi.Controllers
     {
         private readonly IJobsRequestReceivingService _receivingService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IConnectionService _connectionService;
 
         /// <summary>
         /// Controller for handling jobs requests
         /// </summary>
         public JobsController(IJobsRequestReceivingService receivingService,
-                              IAuthorizationService authorizationService)
+                              IAuthorizationService authorizationService,
+                              IConnectionService connectionService)
         {
             _receivingService = receivingService;
             _authorizationService = authorizationService;
+            _connectionService = connectionService;
         }
 
         /// <summary>
@@ -193,7 +197,9 @@ namespace MicroZoo.ZookeepersApi.Controllers
             if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))                          
                 return new AccessResult(IsAccessAllowed: false, Result: Unauthorized());
             
-            var accessResponse = await _authorizationService.IsResourceAccessConfirmed(accessToken,
+            var accessResponse = await _authorizationService.IsResourceAccessConfirmed(
+                _connectionService.IdentityApiUrl,
+                accessToken,
                 endpointPolicies);
             if (accessResponse.ErrorMessage != null)
                 return new AccessResult(IsAccessAllowed: false,

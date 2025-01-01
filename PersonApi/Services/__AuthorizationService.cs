@@ -1,16 +1,15 @@
 ﻿using MicroZoo.Infrastructure.MassTransit;
-using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
-using MicroZoo.ZookeepersApi.Services;
+using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
+using MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi;
 
-namespace MicroZoo.ZookeepersApi.Services
+namespace MicroZoo.PersonsApi.Services
 {
-    public class AuthorizationService : IAuthorizationService
+    public class __AuthorizationService : __IAuthorizationService
     {
         private readonly IResponsesReceiverFromRabbitMq _receiver;
         private readonly IConnectionService _connectionService;
 
-        public AuthorizationService(IResponsesReceiverFromRabbitMq receiver, 
+        public __AuthorizationService(IResponsesReceiverFromRabbitMq receiver,
             IConnectionService connectionService)
         {
             _receiver = receiver;
@@ -22,11 +21,11 @@ namespace MicroZoo.ZookeepersApi.Services
             var accessResponse = await _receiver.GetResponseFromRabbitTask<CheckAccessRequest,
                 CheckAccessResponse>(new CheckAccessRequest(accessToken, endpointPolicies),
                 _connectionService.IdentityApiUrl);
-            
+
             if (accessResponse == null)
             {
                 accessResponse.ErrorMessage = "Internal server error";
-            }                
+            }
 
             return accessResponse;
         }
