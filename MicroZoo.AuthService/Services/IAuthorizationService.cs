@@ -21,5 +21,18 @@ namespace MicroZoo.AuthService.Services
                                                                   Type type,
                                                                   string methodName,
                                                                   Uri IdentityApiUrl);
+
+        /// <summary>
+        /// Check access to executing resource in IdentityApi
+        /// </summary>
+        /// <param name="accessToken">Access token from http request</param>
+        /// <param name="type">Current class</param>
+        /// <param name="methodName">Name of current method</param>
+        /// <param name="IdentityApiUrl">Url of IdentityApi</param>
+        /// <returns></returns>
+        Task<AccessResult> CheckAccessInIdentityApiAsync(string accessToken,
+                                                                  Type type,
+                                                                  string methodName,
+                                                                  Uri IdentityApiUrl);
     }
 }

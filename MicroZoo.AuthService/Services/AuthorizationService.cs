@@ -40,6 +40,37 @@ namespace MicroZoo.AuthService.Services
                                                                   Uri IdentityApiUrl)
         {
             var accessToken = JwtExtensions.GetAccessTokenFromRequest(httpRequest);
+            /*var endpointPolicies = PoliciesValidator.GetPoliciesFromEndpoint(type, methodName);
+            if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))
+                return new AccessResult(IsAccessAllowed: false, Result: new UnauthorizedResult());
+
+            var accessResponse = await IsResourceAccessConfirmedAsync(IdentityApiUrl,
+                                                                 accessToken,
+                                                                 endpointPolicies);
+            if (accessResponse.ErrorMessage != null)
+                return new AccessResult(IsAccessAllowed: false,
+                    Result: new BadRequestObjectResult(accessResponse.ErrorMessage));
+
+            if (!accessResponse.IsAuthenticated)
+                return new AccessResult(IsAccessAllowed: false, Result: new UnauthorizedResult());
+
+            if (!accessResponse.IsAccessConfirmed)
+                return new AccessResult(IsAccessAllowed: false, Result: new ForbidResult());
+
+            return new AccessResult(IsAccessAllowed: true, Result: new OkResult());*/
+            return await CheckAccessInIdentityApiAsync(accessToken, type, methodName, IdentityApiUrl);
+        }
+
+        /// <summary>
+        /// Check access to executing resource in IdentityApi
+        /// </summary>
+        /// <param name="accessToken">Access token from http request</param>
+        /// <param name="type">Current class</param>
+        /// <param name="methodName">Name of current method</param>
+        /// <param name="IdentityApiUrl">Url of IdentityApi</param>
+        /// <returns></returns>
+        public async Task<AccessResult> CheckAccessInIdentityApiAsync(string accessToken, Type type, string methodName, Uri IdentityApiUrl)
+        {
             var endpointPolicies = PoliciesValidator.GetPoliciesFromEndpoint(type, methodName);
             if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))
                 return new AccessResult(IsAccessAllowed: false, Result: new UnauthorizedResult());
