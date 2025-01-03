@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.ZookeepersApi.Services;
 
 namespace MicroZoo.ZookeepersApi.Consumers.Jobs
@@ -19,7 +18,7 @@ namespace MicroZoo.ZookeepersApi.Consumers.Jobs
         {
             var response = await _service.GetJobsForDateTimeRangeAsync(context.Message.ZookeeperId,
                 context.Message.DateTimeRange, context.Message.OrderingOptions,
-                context.Message.PageOptions);
+                context.Message.PageOptions, context.Message.AccessToken);
 
             if (response.Jobs == null)
                 response.ErrorMessage = "Unknown error";

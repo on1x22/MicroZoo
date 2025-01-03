@@ -3,6 +3,7 @@ using MicroZoo.AuthService.Policies;
 using MicroZoo.AuthService.Services;
 using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.Models.Persons.Dto;
+using MicroZoo.JwtConfiguration;
 using MicroZoo.PersonsApi.Services;
 
 namespace MicroZoo.PersonsApi.Controllers
@@ -51,11 +52,12 @@ namespace MicroZoo.PersonsApi.Controllers
         [PolicyValidation(Policy = "PersonsApi.Read")]
         public async Task<IActionResult> GetPerson(int personId)
         {
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
-                httpRequest: HttpContext.Request,
+                accessToken: accessToken,
                 type: typeof(PersonsController),
                 methodName: nameof(GetPerson),
-                IdentityApiUrl: _connectionService.IdentityApiUrl);
+                identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed) 
                 return accessResult.Result;
@@ -76,11 +78,12 @@ namespace MicroZoo.PersonsApi.Controllers
         [PolicyValidation(Policy = "PersonsApi.Create")]
         public async Task<IActionResult> AddPerson([FromBody] PersonDto personDto)
         {
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
-                httpRequest: HttpContext.Request,
+                accessToken: accessToken,
                 type: typeof(PersonsController),
                 methodName: nameof(AddPerson),
-                IdentityApiUrl: _connectionService.IdentityApiUrl);
+                identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
@@ -102,11 +105,12 @@ namespace MicroZoo.PersonsApi.Controllers
         [PolicyValidation(Policy = "PersonsApi.Update")]
         public async Task<IActionResult> UpdatePerson(int personId, [FromBody] PersonDto personDto)
         {
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
-                httpRequest: HttpContext.Request,
+                accessToken: accessToken,
                 type: typeof(PersonsController),
                 methodName: nameof(UpdatePerson),
-                IdentityApiUrl: _connectionService.IdentityApiUrl);
+                identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
@@ -127,11 +131,12 @@ namespace MicroZoo.PersonsApi.Controllers
         [PolicyValidation(Policy = "PersonsApi.Delete")]
         public async Task<IActionResult> DeletePerson(int personId)
         {
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
-                httpRequest: HttpContext.Request,
+                accessToken: accessToken,
                 type: typeof(PersonsController),
                 methodName: nameof(DeletePerson),
-                IdentityApiUrl: _connectionService.IdentityApiUrl);
+                identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
@@ -152,11 +157,12 @@ namespace MicroZoo.PersonsApi.Controllers
         [PolicyValidation(Policy = "PersonsApi.Read")]
         public async Task<IActionResult> GetSubordinatePersonnel(int personId)
         {
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
-                httpRequest: HttpContext.Request,
+                accessToken: accessToken,
                 type: typeof(PersonsController),
                 methodName: nameof(GetSubordinatePersonnel),
-                IdentityApiUrl: _connectionService.IdentityApiUrl);
+                identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
@@ -179,11 +185,12 @@ namespace MicroZoo.PersonsApi.Controllers
         public async Task<IActionResult> ChangeManagerForSubordinatePersonnel(int currentId,
                                                                               int newId)
         {
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
-                httpRequest: HttpContext.Request,
+                accessToken: accessToken,
                 type: typeof(PersonsController),
                 methodName: nameof(ChangeManagerForSubordinatePersonnel),
-                IdentityApiUrl: _connectionService.IdentityApiUrl);
+                identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;

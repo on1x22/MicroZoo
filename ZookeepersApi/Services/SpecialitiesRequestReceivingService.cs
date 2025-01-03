@@ -41,13 +41,16 @@ namespace MicroZoo.ZookeepersApi.Services
             return await _specialitiesService.CheckZokeepersWithSpecialityAreExistAsync(checkType, personId);
         }
 
-        public async Task<GetSpecialityResponse> AddSpecialityAsync(SpecialityDto specialityDto)
+        public async Task<GetSpecialityResponse> AddSpecialityAsync(SpecialityDto specialityDto, 
+                                                                    string accessToken)
         {
-            var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
-                new GetPersonRequest(specialityDto.ZookeeperId), _connectionService.PersonsApiUrl);
+            var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest, 
+                GetPersonResponse>(new GetPersonRequest(specialityDto.ZookeeperId, accessToken), 
+                _connectionService.PersonsApiUrl);
 
             var animalTypeResponse = await _receiver.GetResponseFromRabbitTask<GetAnimalTypeRequest,
-                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId), _connectionService.AnimalsApiUrl);
+                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId), 
+                _connectionService.AnimalsApiUrl);
 
             string errorMessage = string.Empty;
 
@@ -63,11 +66,12 @@ namespace MicroZoo.ZookeepersApi.Services
             return await _specialitiesService.AddSpecialityAsync(specialityDto);
         }
 
-        public async Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId, 
-            SpecialityDto specialityDto)
+        public async Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpecialityAsync(
+            int relationId, SpecialityDto specialityDto, string accessToken)
         {
-            var person = await _receiver.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
-                new GetPersonRequest(specialityDto.ZookeeperId), _connectionService.PersonsApiUrl);
+            var person = await _receiver.GetResponseFromRabbitTask<GetPersonRequest, 
+                GetPersonResponse>(new GetPersonRequest(specialityDto.ZookeeperId, accessToken), 
+                _connectionService.PersonsApiUrl);
 
             var animalType = await _receiver.GetResponseFromRabbitTask<GetAnimalTypeRequest,
                 GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId), 

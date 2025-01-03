@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using MicroZoo.AuthService.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
@@ -7,6 +8,7 @@ using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Specialities.Dto;
+using MicroZoo.JwtConfiguration;
 using MicroZoo.ZookeepersApi.Services;
 
 namespace MicroZoo.ZookeepersApi.Controllers
@@ -15,20 +17,16 @@ namespace MicroZoo.ZookeepersApi.Controllers
     [ApiController]
     public class SpecialitiesController : ControllerBase
     {
-        //private readonly IServiceProvider _provider;
         private readonly ISpecialitiesRequestReceivingService _receivingService;
-        //private readonly Uri _animalsApiUrl;
-        //private readonly Uri _personsApiUrl;
-        //private readonly Uri _zookeepersApiUrl;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IConnectionService _connectionService;
 
-        public SpecialitiesController(/*IServiceProvider provider, IConfiguration configuration,*/
-            ISpecialitiesRequestReceivingService receivingService)
+        public SpecialitiesController(ISpecialitiesRequestReceivingService receivingService,
+            IAuthorizationService authorizationService, IConnectionService connectionService)
         {
-            //_provider = provider;
             _receivingService = receivingService;
-            //_animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
-            //_personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
-            //_zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
+            _authorizationService = authorizationService;
+            _connectionService = connectionService;
         }
 
         /// <summary>
@@ -80,7 +78,17 @@ namespace MicroZoo.ZookeepersApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddSpeciality([FromBody] SpecialityDto specialityDto)
         {
-            var response = await _receivingService.AddSpecialityAsync(specialityDto);
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                accessToken: accessToken,
+                type: typeof(SpecialitiesController),
+                methodName: nameof(AddSpeciality),
+                identityApiUrl: _connectionService.IdentityApiUrl);
+
+            if (!accessResult.IsAccessAllowed)
+                return accessResult.Result;
+
+            var response = await _receivingService.AddSpecialityAsync(specialityDto, accessToken);
 
             return response.Speciality != null
                 ? Ok(response.Speciality)
@@ -97,8 +105,18 @@ namespace MicroZoo.ZookeepersApi.Controllers
         public async Task<IActionResult> ChangeRelationBetweenZookeeperAndSpeciality(int relationId,
             [FromBody] SpecialityDto specialityDto)
         {
-            var response = await _receivingService.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, 
-                specialityDto);
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                accessToken: accessToken,
+                type: typeof(SpecialitiesController),
+                methodName: nameof(ChangeRelationBetweenZookeeperAndSpeciality),
+                identityApiUrl: _connectionService.IdentityApiUrl);
+
+            if (!accessResult.IsAccessAllowed)
+                return accessResult.Result;
+
+            var response = await _receivingService.ChangeRelationBetweenZookeeperAndSpecialityAsync(
+                relationId, specialityDto, accessToken);
 
             return response.Speciality != null
                 ? Ok(response.Speciality)

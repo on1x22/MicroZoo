@@ -12,8 +12,8 @@ namespace MicroZoo.ZookeepersApi.Services
         Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZokeepersWithSpecialityAreExistAsync(CheckType checkType, 
             int animalTypeId);
         Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZookeeperIsExistAsync(CheckType checkType, int personId);
-        Task<GetSpecialityResponse> AddSpecialityAsync(SpecialityDto specialityDto);
-        Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId, SpecialityDto specialityDto);
+        Task<GetSpecialityResponse> AddSpecialityAsync(SpecialityDto specialityDto, string accessToken);
+        Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId, SpecialityDto specialityDto, string accessToken);
         Task<GetAnimalTypesResponse> DeleteSpecialityAsync(SpecialityDto specialityDto);
     }
 }
