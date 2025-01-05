@@ -1,13 +1,11 @@
 ﻿using MassTransit;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MicroZoo.AnimalsApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
-using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
-using System.Runtime.CompilerServices;
 
 namespace MicroZoo.AnimalsApi.Controllers
 {
@@ -16,13 +14,17 @@ namespace MicroZoo.AnimalsApi.Controllers
     public class AnimalTypesController : ControllerBase
     {
         private readonly IServiceProvider _provider;
+        private readonly IAnimalTypesRequestReceivingService _receivingService;
+
         //private readonly Uri _rabbitMqUrl = new Uri("rabbitmq://localhost/animals-queue");
         private readonly Uri _animalsApiUrl;
         private readonly Uri _zookeepersApiUrl;
 
-        public AnimalTypesController(IServiceProvider provider, IConfiguration configuration)
+        public AnimalTypesController(IServiceProvider provider, IConfiguration configuration,
+            IAnimalTypesRequestReceivingService receivingService)
         {
             _provider = provider;
+            _receivingService = receivingService;
             _animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
             _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
@@ -34,8 +36,9 @@ namespace MicroZoo.AnimalsApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAnimalTypes()
         {
-            var response = await GetResponseFromRabbitTask<GetAllAnimalTypesRequest,
-                GetAnimalTypesResponse>(new GetAllAnimalTypesRequest(), _animalsApiUrl);
+            //var response = await GetResponseFromRabbitTask<GetAllAnimalTypesRequest,
+            //    GetAnimalTypesResponse>(new GetAllAnimalTypesRequest(), _animalsApiUrl);
+            var response = await _receivingService.GetAllAnimalTypesAsync();
 
             return response.AnimalTypes != null
                 ? Ok(response.AnimalTypes)
@@ -50,8 +53,9 @@ namespace MicroZoo.AnimalsApi.Controllers
         [HttpGet("{animalTypeId}")]
         public async Task<IActionResult> GetAnimalType(int animalTypeId)
         {
-            var response = await GetResponseFromRabbitTask<GetAnimalTypeRequest, 
-                GetAnimalTypeResponse>(new GetAnimalTypeRequest(animalTypeId), _animalsApiUrl);
+            //var response = await GetResponseFromRabbitTask<GetAnimalTypeRequest, 
+            //    GetAnimalTypeResponse>(new GetAnimalTypeRequest(animalTypeId), _animalsApiUrl);
+            var response = await _receivingService.GetAnimalTypeAsync(animalTypeId);
 
             return response.AnimalType != null
                 ? Ok(response.AnimalType)
@@ -66,8 +70,10 @@ namespace MicroZoo.AnimalsApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAnimalType([FromBody] AnimalTypeDto animalTypeDto)
         {
-            var response = await GetResponseFromRabbitTask<AddAnimalTypeRequest, 
-                GetAnimalTypeResponse>(new AddAnimalTypeRequest(animalTypeDto), _animalsApiUrl);
+            //var response = await GetResponseFromRabbitTask<AddAnimalTypeRequest, 
+            //    GetAnimalTypeResponse>(new AddAnimalTypeRequest(animalTypeDto), _animalsApiUrl);
+            var response = await _receivingService.AddAnimalTypeAsync(animalTypeDto);
+            
             return response.AnimalType != null
                 ? Ok(response.AnimalType)
                 : BadRequest(response.ErrorMessage);
@@ -83,9 +89,11 @@ namespace MicroZoo.AnimalsApi.Controllers
         public async Task<IActionResult> UpdateAnimalType(int animalTypeId, 
             [FromBody] AnimalTypeDto animalTypeDto)
         {
-            var response = await GetResponseFromRabbitTask<UpdateAnimalTypeRequest,
-                GetAnimalTypeResponse>(new UpdateAnimalTypeRequest(animalTypeId, animalTypeDto), 
-                                                                   _animalsApiUrl);
+            //var response = await GetResponseFromRabbitTask<UpdateAnimalTypeRequest,
+            //    GetAnimalTypeResponse>(new UpdateAnimalTypeRequest(animalTypeId, animalTypeDto), 
+            //                                                       _animalsApiUrl);
+            var response = await _receivingService.UpdateAnimalTypeAsync(animalTypeId, animalTypeDto);
+            
             return response.AnimalType != null
                 ? Ok(response.AnimalType)
                 : BadRequest(response.ErrorMessage);
@@ -112,8 +120,10 @@ namespace MicroZoo.AnimalsApi.Controllers
                     "Before deleting a specialty, you must remove the zookeepers " +
                     "association with that specialty.");
 
-            var response = await GetResponseFromRabbitTask<DeleteAnimalTypeRequest,
-                GetAnimalTypeResponse>(new DeleteAnimalTypeRequest(animalTypeId), _animalsApiUrl);
+            //var response = await GetResponseFromRabbitTask<DeleteAnimalTypeRequest,
+            //    GetAnimalTypeResponse>(new DeleteAnimalTypeRequest(animalTypeId), _animalsApiUrl);
+            var response = await _receivingService.DeleteAnimalTypeAsync(animalTypeId);
+            
             return response.AnimalType != null
                 ? Ok(response.AnimalType)
                 : NotFound(response.ErrorMessage);
@@ -127,8 +137,10 @@ namespace MicroZoo.AnimalsApi.Controllers
         [HttpGet("byIds")]
         public async Task<IActionResult> GetAnimalTypesByIds([FromQuery] int[] animalTypesIds)
         {
-            var response = await GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest,
-                GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds), _animalsApiUrl);
+            //var response = await GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest,
+            //    GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds), _animalsApiUrl);
+            var response = await _receivingService.GetAnimalTypesByIdsAsync(animalTypesIds);
+            
             return response.AnimalTypes != null
             ? Ok(response.AnimalTypes)
             : BadRequest(response.ErrorMessage); 
