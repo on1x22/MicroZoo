@@ -99,10 +99,12 @@ namespace MicroZoo.AnimalsApi.Controllers
         [HttpDelete("{animalTypeId}")]
         public async Task<IActionResult> DeleteAnimalType(int animalTypeId)
         {
+            // This action is in question. This check should be performed
+            // in the upstream microservice
             var isThereZokeeperWithSpecialty = await
                 GetResponseFromRabbitTask<CheckZokeepersWithSpecialityAreExistRequest, 
                 CheckZokeepersWithSpecialityAreExistResponse>
-                (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.AnimalType, animalTypeId), 
+                (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.AnimalType, animalTypeId, null!), 
                 _zookeepersApiUrl);
 
             if (isThereZokeeperWithSpecialty.IsThereZookeeperWithThisSpeciality)

@@ -40,15 +40,23 @@ namespace MicroZoo.PersonsApi.Services
         public async Task<GetPersonResponse> UpdatePersonAsync(int personId, PersonDto personDto) =>
             await _personsService.UpdatePersonAsync(personId, personDto);
 
-        public async Task<GetPersonResponse> DeletePersonAsync(int personId)
+        public async Task<GetPersonResponse> DeletePersonAsync(int personId, string accessToken)
         {
             var response = new GetPersonResponse();
 
+            // This action is in question. This check should be performed
+            // in the upstream microservice
             var isZookeeperExists = await _receiverFromRabbitMq.
                 GetResponseFromRabbitTask<CheckZokeepersWithSpecialityAreExistRequest,
                 CheckZokeepersWithSpecialityAreExistResponse>
-                (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.Person, personId),
-                _connectionService.ZookeepersApiUrl);
+                (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.Person, personId,
+                accessToken), _connectionService.ZookeepersApiUrl);
+
+            if (isZookeeperExists.ActionResult != null)
+            {
+                response.ActionResult = isZookeeperExists.ActionResult;
+                return response;
+            }
 
             if (isZookeeperExists.IsThereZookeeperWithThisSpeciality)
             {

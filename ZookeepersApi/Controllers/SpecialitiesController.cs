@@ -1,18 +1,16 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using MicroZoo.AuthService.Policies;
 using MicroZoo.AuthService.Services;
-using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
-using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Specialities.Dto;
 using MicroZoo.JwtConfiguration;
 using MicroZoo.ZookeepersApi.Services;
 
 namespace MicroZoo.ZookeepersApi.Controllers
 {
+    /// <summary>
+    /// Controller for handling specialities requests
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     public class SpecialitiesController : ControllerBase
@@ -21,6 +19,12 @@ namespace MicroZoo.ZookeepersApi.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="SpecialitiesController"/> class
+        /// </summary>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
         public SpecialitiesController(ISpecialitiesRequestReceivingService receivingService,
             IAuthorizationService authorizationService, IConnectionService connectionService)
         {
@@ -34,9 +38,20 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// </summary>
         /// <returns>List of animal types</returns>
         [HttpGet]
+        [PolicyValidation(Policy = "ZookeepersApi.Read")]
         public async Task<IActionResult> GetAllSpecialities()
         {
-            var response = await _receivingService.GetAllSpecialitiesAsync();
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                accessToken: accessToken,
+                type: typeof(SpecialitiesController),
+                methodName: nameof(GetAllSpecialities),
+                identityApiUrl: _connectionService.IdentityApiUrl);
+
+            if (!accessResult.IsAccessAllowed)
+                return accessResult.Result;
+
+            var response = await _receivingService.GetAllSpecialitiesAsync(accessToken);
 
             return response.AnimalTypes != null
                 ? Ok(response.AnimalTypes)
@@ -49,8 +64,19 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <param name="animalTypeId"></param>
         /// <returns>True or false</returns>
         [HttpGet("animalTypes/{animalTypeId}")]
+        [PolicyValidation(Policy = "ZookeepersApi.Read")]
         public async Task<IActionResult> CheckZokeepersWithSpecialityAreExist(int animalTypeId)
         {
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                accessToken: accessToken,
+                type: typeof(SpecialitiesController),
+                methodName: nameof(CheckZokeepersWithSpecialityAreExist),
+                identityApiUrl: _connectionService.IdentityApiUrl);
+
+            if (!accessResult.IsAccessAllowed)
+                return accessResult.Result;
+
             var response = await _receivingService.CheckZokeepersWithSpecialityAreExistAsync(CheckType.AnimalType, 
                 animalTypeId);
 
@@ -63,8 +89,19 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <param name="personId"></param>
         /// <returns>True or false</returns>
         [HttpGet("zookeepers/{personId}")]
+        [PolicyValidation(Policy = "ZookeepersApi.Read")]
         public async Task<IActionResult> CheckZookeeperIsExist(int personId)
         {
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                accessToken: accessToken,
+                type: typeof(SpecialitiesController),
+                methodName: nameof(CheckZookeeperIsExist),
+                identityApiUrl: _connectionService.IdentityApiUrl);
+
+            if (!accessResult.IsAccessAllowed)
+                return accessResult.Result;
+
             var response = await _receivingService.CheckZookeeperIsExistAsync(CheckType.Person, personId);
 
             return Ok(response.IsThereZookeeperWithThisSpeciality);
@@ -76,6 +113,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <param name="specialityDto"></param>
         /// <returns>Speciality</returns>
         [HttpPost]
+        [PolicyValidation(Policy = "ZookeepersApi.Create")]
         public async Task<IActionResult> AddSpeciality([FromBody] SpecialityDto specialityDto)
         {
             var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
@@ -102,6 +140,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <param name="specialityDto"></param>
         /// <returns>Speciality</returns>
         [HttpPut("{relationId}")]
+        [PolicyValidation(Policy = "ZookeepersApi.Update")]
         public async Task<IActionResult> ChangeRelationBetweenZookeeperAndSpeciality(int relationId,
             [FromBody] SpecialityDto specialityDto)
         {
@@ -129,9 +168,20 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <param name="specialityDto"></param>
         /// <returns>List of zookeeper specialities</returns>
         [HttpDelete]
+        [PolicyValidation(Policy = "ZookeepersApi.Delete")]
         public async Task<IActionResult> DeleteSpeciality([FromBody] SpecialityDto specialityDto)
         {
-            var response = await _receivingService.DeleteSpecialityAsync(specialityDto);
+            var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                accessToken: accessToken,
+                type: typeof(SpecialitiesController),
+                methodName: nameof(DeleteSpeciality),
+                identityApiUrl: _connectionService.IdentityApiUrl);
+
+            if (!accessResult.IsAccessAllowed)
+                return accessResult.Result;
+
+            var response = await _receivingService.DeleteSpecialityAsync(specialityDto, accessToken);
 
             return response.AnimalTypes != null
             ? Ok(response.AnimalTypes)

@@ -141,8 +141,11 @@ namespace MicroZoo.PersonsApi.Controllers
             if (!accessResult.IsAccessAllowed)
                 return accessResult.Result;
                        
-            var response = await _receivingService.DeletePersonAsync(personId);
+            var response = await _receivingService.DeletePersonAsync(personId, accessToken);
             
+            if (response.ActionResult != null)
+                return response.ActionResult;
+
             return response.Person != null
                 ? Ok(response.Person)
                 : NotFound(response.ErrorMessage);

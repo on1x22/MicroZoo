@@ -50,7 +50,13 @@ namespace MicroZoo.PersonsApi.Consumers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return /*accessResult.Result*/;
+            {
+                await context.RespondAsync(new GetPersonResponse
+                {
+                    ActionResult = accessResult.Result
+                });
+                return;
+            }
 
             var response = await _receivingService.GetPersonAsync(context.Message.Id);
             response.OperationId = context.Message.OperationId;

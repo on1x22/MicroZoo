@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi
 {
@@ -10,6 +6,9 @@ namespace MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi
     {
         public Guid OperationId { get; set; }
         public bool IsThereZookeeperWithThisSpeciality { get; set; }
+
+        [Obsolete("Sould be moved to ActionResult")]
         public string ErrorMessage { get; set; }
+        public IActionResult ActionResult { get; set; }
     }
 }

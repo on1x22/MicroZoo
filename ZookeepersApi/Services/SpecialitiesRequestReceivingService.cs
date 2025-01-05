@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using MicroZoo.Infrastructure.MassTransit;
+﻿using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
@@ -24,10 +23,11 @@ namespace MicroZoo.ZookeepersApi.Services
             _connectionService = connectionService;
         }
 
-        public async Task<GetAnimalTypesResponse> GetAllSpecialitiesAsync()
+        public async Task<GetAnimalTypesResponse> GetAllSpecialitiesAsync(string accessToken)
         {
             return await _receiver.GetResponseFromRabbitTask<GetAllAnimalTypesRequest,
-                GetAnimalTypesResponse>(new GetAllAnimalTypesRequest(), _connectionService.AnimalsApiUrl);
+                GetAnimalTypesResponse>(new GetAllAnimalTypesRequest(accessToken), 
+                _connectionService.AnimalsApiUrl);
         }
 
         public async Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZokeepersWithSpecialityAreExistAsync( 
@@ -49,8 +49,8 @@ namespace MicroZoo.ZookeepersApi.Services
                 _connectionService.PersonsApiUrl);
 
             var animalTypeResponse = await _receiver.GetResponseFromRabbitTask<GetAnimalTypeRequest,
-                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId), 
-                _connectionService.AnimalsApiUrl);
+                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId,
+                accessToken), _connectionService.AnimalsApiUrl);
 
             string errorMessage = string.Empty;
 
@@ -74,8 +74,8 @@ namespace MicroZoo.ZookeepersApi.Services
                 _connectionService.PersonsApiUrl);
 
             var animalType = await _receiver.GetResponseFromRabbitTask<GetAnimalTypeRequest,
-                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId), 
-                _connectionService.AnimalsApiUrl);
+                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId, 
+                accessToken), _connectionService.AnimalsApiUrl);
 
             string errorMessage = string.Empty;
 
@@ -92,7 +92,8 @@ namespace MicroZoo.ZookeepersApi.Services
                 specialityDto);
         }
 
-        public async Task<GetAnimalTypesResponse> DeleteSpecialityAsync(SpecialityDto specialityDto)
+        public async Task<GetAnimalTypesResponse> DeleteSpecialityAsync(SpecialityDto specialityDto,
+                                                                        string accessToken)
         {
             var specialitiesResponse = await _specialitiesService.DeleteSpecialityAsync(specialityDto);
 
@@ -102,7 +103,8 @@ namespace MicroZoo.ZookeepersApi.Services
             var animalTypesIds = specialitiesResponse.Specialities.Select(x => x.AnimalTypeId).ToArray();
 
             return await _receiver.GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest,
-                GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds), _connectionService.AnimalsApiUrl);
+                GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds, accessToken),
+                _connectionService.AnimalsApiUrl);
         }
     }
 }
