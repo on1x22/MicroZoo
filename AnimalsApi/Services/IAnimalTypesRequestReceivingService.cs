@@ -10,7 +10,7 @@ namespace MicroZoo.AnimalsApi.Services
         Task<GetAnimalTypeResponse> GetAnimalTypeAsync(int animalTypeId);
         Task<GetAnimalTypeResponse> AddAnimalTypeAsync(AnimalTypeDto animalTypeDto);
         Task<GetAnimalTypeResponse> UpdateAnimalTypeAsync(int animalTypeId, AnimalTypeDto animalTypeDto);
-        Task<GetAnimalTypeResponse> DeleteAnimalTypeAsync(int animalTypeId);
+        Task<GetAnimalTypeResponse> DeleteAnimalTypeAsync(int animalTypeId, string accessToken);
         Task<GetAnimalTypesResponse> GetAnimalTypesByIdsAsync([FromQuery] int[] animalTypesIds);
     }
 }

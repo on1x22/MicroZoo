@@ -34,7 +34,8 @@ namespace MicroZoo.AnimalsApi.Services
             AnimalTypeDto animalTypeDto) =>
             await _animalsService.UpdateAnimalTypeAsync(animalTypeId, animalTypeDto);
 
-        public async Task<GetAnimalTypeResponse> DeleteAnimalTypeAsync(int animalTypeId)
+        public async Task<GetAnimalTypeResponse> DeleteAnimalTypeAsync(int animalTypeId,
+                                                                       string accessToken)
         {
             var response = new GetAnimalTypeResponse();
 
@@ -44,7 +45,7 @@ namespace MicroZoo.AnimalsApi.Services
                 GetResponseFromRabbitTask<CheckZokeepersWithSpecialityAreExistRequest,
                 CheckZokeepersWithSpecialityAreExistResponse>
                 (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.AnimalType, 
-                animalTypeId, null!), _connectionService.ZookeepersApiUrl);
+                animalTypeId, accessToken), _connectionService.ZookeepersApiUrl);
 
             if (isThereZokeeperWithSpecialty.IsThereZookeeperWithThisSpeciality)
             {
