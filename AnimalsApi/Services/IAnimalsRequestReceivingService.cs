@@ -1,7 +1,7 @@
 ﻿using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 
-namespace AnimalsApi.Services
+namespace MicroZoo.AnimalsApi.Services
 {
     public interface IAnimalsRequestReceivingService
     {

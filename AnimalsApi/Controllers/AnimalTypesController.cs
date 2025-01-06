@@ -1,10 +1,5 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MicroZoo.AnimalsApi.Services;
-using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
-using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 
 namespace MicroZoo.AnimalsApi.Controllers
@@ -13,20 +8,20 @@ namespace MicroZoo.AnimalsApi.Controllers
     [ApiController]
     public class AnimalTypesController : ControllerBase
     {
-        private readonly IServiceProvider _provider;
+        //private readonly IServiceProvider _provider;
         private readonly IAnimalTypesRequestReceivingService _receivingService;
 
         //private readonly Uri _rabbitMqUrl = new Uri("rabbitmq://localhost/animals-queue");
-        private readonly Uri _animalsApiUrl;
-        private readonly Uri _zookeepersApiUrl;
+        //private readonly Uri _animalsApiUrl;
+        //private readonly Uri _zookeepersApiUrl;
 
-        public AnimalTypesController(IServiceProvider provider, IConfiguration configuration,
+        public AnimalTypesController(/*IServiceProvider provider, IConfiguration configuration,*/
             IAnimalTypesRequestReceivingService receivingService)
         {
-            _provider = provider;
+            //_provider = provider;
             _receivingService = receivingService;
-            _animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
-            _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
+            //_animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
+            //_zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
 
         /// <summary>
@@ -107,7 +102,7 @@ namespace MicroZoo.AnimalsApi.Controllers
         [HttpDelete("{animalTypeId}")]
         public async Task<IActionResult> DeleteAnimalType(int animalTypeId)
         {
-            // This action is in question. This check should be performed
+            /*// This action is in question. This check should be performed
             // in the upstream microservice
             var isThereZokeeperWithSpecialty = await
                 GetResponseFromRabbitTask<CheckZokeepersWithSpecialityAreExistRequest, 
@@ -118,7 +113,7 @@ namespace MicroZoo.AnimalsApi.Controllers
             if (isThereZokeeperWithSpecialty.IsThereZookeeperWithThisSpeciality)
                 return BadRequest($"There are zookeepers with specialization {animalTypeId}. " +
                     "Before deleting a specialty, you must remove the zookeepers " +
-                    "association with that specialty.");
+                    "association with that specialty.");*/
 
             //var response = await GetResponseFromRabbitTask<DeleteAnimalTypeRequest,
             //    GetAnimalTypeResponse>(new DeleteAnimalTypeRequest(animalTypeId), _animalsApiUrl);
@@ -146,7 +141,7 @@ namespace MicroZoo.AnimalsApi.Controllers
             : BadRequest(response.ErrorMessage); 
         }
 
-        private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
+        /*private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
             where TIn : class
             where TOut : class
         {
@@ -155,6 +150,6 @@ namespace MicroZoo.AnimalsApi.Controllers
             var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
             var response = await client.GetResponse<TOut>(request);
             return response.Message;
-        }
+        }*/
     }
 }

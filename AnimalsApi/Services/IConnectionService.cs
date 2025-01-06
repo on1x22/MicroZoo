@@ -2,6 +2,7 @@
 {
     public interface IConnectionService
     {        
-        Uri IdentityApiUrl { get; }        
+        Uri IdentityApiUrl { get; }   
+        Uri ZookeepersApiUrl { get; }
     }
 }

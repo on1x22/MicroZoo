@@ -1,3 +1,4 @@
+using AnimalsApi.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.AnimalsApi.Apis;
@@ -5,6 +6,7 @@ using MicroZoo.AnimalsApi.Consumers;
 using MicroZoo.AnimalsApi.DbContexts;
 using MicroZoo.AnimalsApi.Repository;
 using MicroZoo.AnimalsApi.Services;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests;
 using System.Reflection;
 using System.Xml.Linq;
@@ -47,6 +49,10 @@ void RegisterServices(IServiceCollection services)
 
     services.AddScoped<IAnimalRepository, AnimalRepository>();
     services.AddScoped<IAnimalsApiService, AnimalsApiService>();
+    services.AddScoped<IResponsesReceiverFromRabbitMq, ResponsesReceiverFromRabbitMq>();
+    services.AddScoped<IAnimalsRequestReceivingService, AnimalsRequestReceivingService>();
+    services.AddScoped<IAnimalTypesRequestReceivingService, AnimalTypesRequestReceivingService>();
+    services.AddScoped<IConnectionService, ConnectionService>();
     services.AddTransient<IApi, MicroZoo.AnimalsApi.Apis.AnimalsApi>();
 
     services.AddMassTransit(x =>
