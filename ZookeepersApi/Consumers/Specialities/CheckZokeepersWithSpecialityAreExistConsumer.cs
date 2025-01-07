@@ -10,14 +10,17 @@ namespace MicroZoo.ZookeepersApi.Consumers.Specialities
     public class CheckZokeepersWithSpecialityAreExistConsumer :
         IConsumer<CheckZokeepersWithSpecialityAreExistRequest>
     {
-        private readonly ISpecialitiesService _service;
+        private readonly ISpecialitiesService _specialitiesService;
+        private readonly ISpecialitiesRequestReceivingService _receivingService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
-        public CheckZokeepersWithSpecialityAreExistConsumer(ISpecialitiesService service,
+        public CheckZokeepersWithSpecialityAreExistConsumer(ISpecialitiesService specialitiesSrvice,
+            ISpecialitiesRequestReceivingService receivingService,
             IAuthorizationService authorizationService, IConnectionService connectionService)
         {
-            _service = service;
+            _specialitiesService = specialitiesSrvice;
+            _receivingService = receivingService;
             _authorizationService = authorizationService;
             _connectionService = connectionService;
         }
@@ -35,17 +38,17 @@ namespace MicroZoo.ZookeepersApi.Consumers.Specialities
             {
                 await context.RespondAsync(new CheckZokeepersWithSpecialityAreExistResponse
                 {
-                    ActionResult = accessResult.Result
+                    //ActionResult = accessResult.Result
                 });
                 return;
             }
 
-            var response = await _service.CheckZokeepersWithSpecialityAreExistAsync(
+            var response = await _receivingService.CheckZokeepersWithSpecialityAreExistAsync(
                 context.Message.CheckType, context.Message.ObjectId);
 
             response.OperationId = context.Message.OperationId;
 
-            await context.RespondAsync(response);
+            await context.RespondAsync<CheckZokeepersWithSpecialityAreExistResponse>(response);
         }
     }
 }

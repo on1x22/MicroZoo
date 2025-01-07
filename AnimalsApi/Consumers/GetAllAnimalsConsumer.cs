@@ -1,4 +1,4 @@
-﻿using AnimalsApi.Services;
+﻿using MicroZoo.AnimalsApi.Services;
 using MassTransit;
 using MicroZoo.AnimalsApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;

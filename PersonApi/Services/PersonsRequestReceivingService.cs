@@ -52,11 +52,11 @@ namespace MicroZoo.PersonsApi.Services
                 (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.Person, personId,
                 accessToken), _connectionService.ZookeepersApiUrl);
 
-            if (isZookeeperExists.ActionResult != null)
+            /*if (isZookeeperExists.ActionResult != null)
             {
                 response.ActionResult = isZookeeperExists.ActionResult;
                 return response;
-            }
+            }*/
 
             if (isZookeeperExists.IsThereZookeeperWithThisSpeciality)
             {

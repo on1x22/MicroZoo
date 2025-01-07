@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
@@ -11,14 +12,17 @@ namespace MicroZoo.AnimalsApi.Services
         private readonly IAnimalsApiService _animalsService;
         private readonly IServiceProvider _provider;
         private readonly IConnectionService _connectionService;
+        private readonly IResponsesReceiverFromRabbitMq _receiverFromRabbitMq;
 
         public AnimalTypesRequestReceivingService(IAnimalsApiService animalsService,
             IServiceProvider provider,
-            IConnectionService connectionService)
+            IConnectionService connectionService,
+            IResponsesReceiverFromRabbitMq receiverFromRabbitMq)
         {
             _animalsService = animalsService;
             _provider = provider;
             _connectionService = connectionService;
+            _receiverFromRabbitMq = receiverFromRabbitMq;
         }
 
         public async Task<GetAnimalTypesResponse> GetAllAnimalTypesAsync() =>
@@ -41,7 +45,7 @@ namespace MicroZoo.AnimalsApi.Services
 
             // This action is in question. This check should be performed
             // in the upstream microservice
-            var isThereZokeeperWithSpecialty = await
+            var isThereZokeeperWithSpecialty = await _receiverFromRabbitMq.
                 GetResponseFromRabbitTask<CheckZokeepersWithSpecialityAreExistRequest,
                 CheckZokeepersWithSpecialityAreExistResponse>
                 (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.AnimalType, 
