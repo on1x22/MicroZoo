@@ -78,6 +78,7 @@ void RegisterServices(IServiceCollection services)
     services.AddScoped<IAuthorizationService, AuthorizationService>();
     services.AddScoped<IResponsesReceiverFromRabbitMq, ResponsesReceiverFromRabbitMq>();
     services.AddScoped<IConnectionService, ConnectionService>();
+    services.AddScoped<IRabbitMqResponseErrorsHandler, RabbitMqResponseErrorsHandler>();
     services.AddTransient<IApi, PersonsApi>();
 
     services.AddMassTransit(x =>

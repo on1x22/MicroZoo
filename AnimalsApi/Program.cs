@@ -55,6 +55,7 @@ void RegisterServices(IServiceCollection services)
     services.AddScoped<IAnimalTypesRequestReceivingService, AnimalTypesRequestReceivingService>();
     services.AddScoped<IAuthorizationService, AuthorizationService>();
     services.AddScoped<IConnectionService, ConnectionService>();
+    services.AddScoped<IRabbitMqResponseErrorsHandler, RabbitMqResponseErrorsHandler>();
     services.AddTransient<IApi, MicroZoo.AnimalsApi.Apis.AnimalsApi>();
 
     services.AddMassTransit(x =>

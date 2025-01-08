@@ -2,6 +2,7 @@
 using MicroZoo.AnimalsApi.Services;
 using MicroZoo.AuthService.Policies;
 using MicroZoo.AuthService.Services;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 using MicroZoo.JwtConfiguration;
 
@@ -15,6 +16,7 @@ namespace MicroZoo.AnimalsApi.Controllers
         private readonly IAnimalTypesRequestReceivingService _receivingService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
+        private readonly IRabbitMqResponseErrorsHandler _errorsHandler;
 
         //private readonly Uri _rabbitMqUrl = new Uri("rabbitmq://localhost/animals-queue");
         //private readonly Uri _animalsApiUrl;
@@ -23,12 +25,14 @@ namespace MicroZoo.AnimalsApi.Controllers
         public AnimalTypesController(/*IServiceProvider provider, IConfiguration configuration,*/
             IAnimalTypesRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
-            IConnectionService connectionService)
+            IConnectionService connectionService,
+            IRabbitMqResponseErrorsHandler errorsHandler)
         {
             //_provider = provider;
             _receivingService = receivingService;
             _authorizationService = authorizationService;
             _connectionService = connectionService;
+            _errorsHandler = errorsHandler;
             //_animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
             //_zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
         }
@@ -48,8 +52,9 @@ namespace MicroZoo.AnimalsApi.Controllers
                 methodName: nameof(GetAllAnimalTypes),
                 _connectionService.IdentityApiUrl);
 
-            if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+            if (!accessResult.IsAccessAllowed)                
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             //var response = await GetResponseFromRabbitTask<GetAllAnimalTypesRequest,
             //    GetAnimalTypesResponse>(new GetAllAnimalTypesRequest(), _animalsApiUrl);
@@ -77,7 +82,8 @@ namespace MicroZoo.AnimalsApi.Controllers
                 _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             //var response = await GetResponseFromRabbitTask<GetAnimalTypeRequest, 
             //    GetAnimalTypeResponse>(new GetAnimalTypeRequest(animalTypeId), _animalsApiUrl);
@@ -105,7 +111,8 @@ namespace MicroZoo.AnimalsApi.Controllers
                 _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             //var response = await GetResponseFromRabbitTask<AddAnimalTypeRequest, 
             //    GetAnimalTypeResponse>(new AddAnimalTypeRequest(animalTypeDto), _animalsApiUrl);
@@ -135,7 +142,8 @@ namespace MicroZoo.AnimalsApi.Controllers
                 _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             //var response = await GetResponseFromRabbitTask<UpdateAnimalTypeRequest,
             //    GetAnimalTypeResponse>(new UpdateAnimalTypeRequest(animalTypeId, animalTypeDto), 
@@ -164,7 +172,8 @@ namespace MicroZoo.AnimalsApi.Controllers
                 _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             /*// This action is in question. This check should be performed
             // in the upstream microservice
@@ -205,7 +214,8 @@ namespace MicroZoo.AnimalsApi.Controllers
                 _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             //var response = await GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest,
             //    GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds), _animalsApiUrl);

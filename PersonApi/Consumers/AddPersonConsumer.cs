@@ -39,7 +39,9 @@ namespace MicroZoo.PersonsApi.Consumers
             {
                 await context.RespondAsync(new GetPersonResponse
                 {
-                    ActionResult = accessResult.Result
+                    //ActionResult = accessResult.Result
+                    ErrorCode = accessResult.ErrorCode,
+                    ErrorMessage = accessResult.ErrorMessage
                 });
                 return;
             }

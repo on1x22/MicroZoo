@@ -37,8 +37,10 @@ namespace MicroZoo.ZookeepersApi.Consumers.Specialities
             if (!accessResult.IsAccessAllowed)
             {
                 await context.RespondAsync(new CheckZokeepersWithSpecialityAreExistResponse
-                {
-                    //ActionResult = accessResult.Result
+                {                    //ActionResult = accessResult.Result,
+                    //ResponseError = accessResult.ResponseError
+                    ErrorCode = accessResult.ErrorCode,
+                    ErrorMessage = accessResult.ErrorMessage!
                 });
                 return;
             }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MicroZoo.Infrastructure.MassTransit;
+using MicroZoo.Infrastructure.MassTransit.Responses;
 
 namespace MicroZoo.AuthService.Models
 {
@@ -7,5 +9,11 @@ namespace MicroZoo.AuthService.Models
     /// </summary>
     /// <param name="IsAccessAllowed"></param>
     /// <param name="Result"></param>
-    public record AccessResult(bool IsAccessAllowed, IActionResult Result);
+    /// <param name="ErrorCode"></param>
+    /// <param name="ErrorMessage"></param>
+    public record AccessResult(bool IsAccessAllowed,
+        IActionResult Result,
+        ErrorCodes? ErrorCode,
+        string? ErrorMessage = null/*,
+        ResponseError ResponseError*/) : IResponseWithError;   
 }

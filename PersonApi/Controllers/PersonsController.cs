@@ -20,6 +20,7 @@ namespace MicroZoo.PersonsApi.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IResponsesReceiverFromRabbitMq _receiver;
         private readonly IConnectionService _connectionService;
+        private readonly IRabbitMqResponseErrorsHandler _errorsHandler;
 
         /// <summary>
         /// Initialize a new instance of <see cref="PersonsController"/> class 
@@ -30,17 +31,20 @@ namespace MicroZoo.PersonsApi.Controllers
         /// <param name="authorizationService"></param>
         /// <param name="receiver"></param>
         /// <param name="connectionService"></param>
+        /// <param name="errorsHandler"></param>
         public PersonsController(IServiceProvider provider, IConfiguration configuration,
             IPersonsRequestReceivingService receivingService, 
             IAuthorizationService authorizationService,
             IResponsesReceiverFromRabbitMq receiver,
-            IConnectionService connectionService)
+            IConnectionService connectionService,
+            IRabbitMqResponseErrorsHandler errorsHandler)
         {
             _provider = provider;
             _receivingService = receivingService;
             _authorizationService = authorizationService;
             _receiver = receiver;
             _connectionService = connectionService;
+            _errorsHandler = errorsHandler;
         }
 
         /// <summary>
@@ -143,8 +147,11 @@ namespace MicroZoo.PersonsApi.Controllers
                        
             var response = await _receivingService.DeletePersonAsync(personId, accessToken);
             
-            if (response.ActionResult != null)
-                return response.ActionResult;
+            //if (response.ActionResult != null)
+            //    return response.ActionResult;
+
+            if (response.ErrorCode != null)
+                return _errorsHandler.GetActionResult(response);
 
             return response.Person != null
                 ? Ok(response.Person)

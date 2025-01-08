@@ -2,6 +2,8 @@
 {
     public interface IResponseWithError
     {
-        ResponseError ResponseError { get; }
+        //ResponseError ResponseError { get; }
+        public string? ErrorMessage { get; }
+        public ErrorCodes? ErrorCode { get; }
     }
 }

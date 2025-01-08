@@ -15,6 +15,7 @@ namespace MicroZoo.PersonsApi.Services
         private readonly IPersonsApiService _personsService;
         private readonly IResponsesReceiverFromRabbitMq _receiverFromRabbitMq;
         private readonly IConnectionService _connectionService;
+        private readonly IRabbitMqResponseErrorsHandler _errorsHandler;
 
         /// <summary>
         /// Initializes a new instance of <see cref="PersonsRequestReceivingService"/> class 
@@ -22,13 +23,16 @@ namespace MicroZoo.PersonsApi.Services
         /// <param name="personsService"></param>
         /// <param name="receiverFromRabbitMq"></param>
         /// <param name="connectionService"></param>
+        /// <param name="errorsHandler"></param>
         public PersonsRequestReceivingService(IPersonsApiService personsService,
             IResponsesReceiverFromRabbitMq receiverFromRabbitMq,
-            IConnectionService connectionService)
+            IConnectionService connectionService,
+            IRabbitMqResponseErrorsHandler errorsHandler)
         {
             _personsService = personsService;
             _receiverFromRabbitMq = receiverFromRabbitMq;
             _connectionService = connectionService;
+            _errorsHandler = errorsHandler;
         }
 
         public async Task<GetPersonResponse> GetPersonAsync(int personId) =>
@@ -57,6 +61,14 @@ namespace MicroZoo.PersonsApi.Services
                 response.ActionResult = isZookeeperExists.ActionResult;
                 return response;
             }*/
+
+            if (isZookeeperExists./*ResponseError*/ErrorCode != null)
+            {
+                //response.ResponseError = isZookeeperExists.ResponseError;
+                response.ErrorCode = isZookeeperExists.ErrorCode;
+                response.ErrorMessage = isZookeeperExists.ErrorMessage;
+                return response;
+            }
 
             if (isZookeeperExists.IsThereZookeeperWithThisSpeciality)
             {
