@@ -9,7 +9,6 @@ namespace MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi
         public string ErrorMessage { get; set; }
         //public IActionResult ActionResult { get; set; }
         //public ResponseError ResponseError { get; set; }
-
         public ErrorCodes? ErrorCode {  get; set; }
     }
 }

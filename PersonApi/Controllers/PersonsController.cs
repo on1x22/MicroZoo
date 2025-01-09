@@ -63,8 +63,9 @@ namespace MicroZoo.PersonsApi.Controllers
                 methodName: nameof(GetPerson),
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
-            if (!accessResult.IsAccessAllowed) 
-                return accessResult.Result;
+            if (!accessResult.IsAccessAllowed)
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.GetPersonAsync(personId);
 
@@ -90,7 +91,8 @@ namespace MicroZoo.PersonsApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.AddPersonAsync(personDto);
 
@@ -117,7 +119,8 @@ namespace MicroZoo.PersonsApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.UpdatePersonAsync(personId, personDto); 
 
@@ -143,8 +146,9 @@ namespace MicroZoo.PersonsApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
-                       
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
+
             var response = await _receivingService.DeletePersonAsync(personId, accessToken);
             
             //if (response.ActionResult != null)
@@ -175,7 +179,8 @@ namespace MicroZoo.PersonsApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.GetSubordinatePersonnelAsync(personId);
             
@@ -203,7 +208,8 @@ namespace MicroZoo.PersonsApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.ChangeManagerForSubordinatePersonnel(currentId,
                 newId);

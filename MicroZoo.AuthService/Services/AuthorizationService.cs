@@ -73,7 +73,7 @@ namespace MicroZoo.AuthService.Services
         {
             var endpointPolicies = PoliciesValidator.GetPoliciesFromEndpoint(type, methodName);
             if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))
-                return new AccessResult(IsAccessAllowed: false, Result: new UnauthorizedResult(),
+                return new AccessResult(IsAccessAllowed: false, //Result: new UnauthorizedResult(),
                     ErrorCode: ErrorCodes.Unauthorized401);
 
             var accessResponse = await IsResourceAccessConfirmedAsync(IdentityApiUrl,
@@ -81,18 +81,18 @@ namespace MicroZoo.AuthService.Services
                                                                  endpointPolicies);
             if (accessResponse.ErrorMessage != null)
                 return new AccessResult(IsAccessAllowed: false,
-                    Result: new BadRequestObjectResult(accessResponse.ErrorMessage),
+                    //Result: new BadRequestObjectResult(accessResponse.ErrorMessage),
                     ErrorCode: ErrorCodes.BadRequest400, ErrorMessage: accessResponse.ErrorMessage);
 
             if (!accessResponse.IsAuthenticated)
-                return new AccessResult(IsAccessAllowed: false, Result: new UnauthorizedResult(),
+                return new AccessResult(IsAccessAllowed: false, //Result: new UnauthorizedResult(),
                     ErrorCode: ErrorCodes.Unauthorized401);
 
             if (!accessResponse.IsAccessConfirmed)
-                return new AccessResult(IsAccessAllowed: false, Result: new ForbidResult(),
+                return new AccessResult(IsAccessAllowed: false, //Result: new ForbidResult(),
                     ErrorCode: ErrorCodes.Forbiden403);
 
-            return new AccessResult(IsAccessAllowed: true, Result: new OkResult(), 
+            return new AccessResult(IsAccessAllowed: true, //Result: new OkResult(), 
                 ErrorCode: ErrorCodes.Ok200);
         }
 

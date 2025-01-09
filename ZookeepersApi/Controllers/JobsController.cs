@@ -2,6 +2,7 @@
 using MicroZoo.AuthService.Policies;
 using MicroZoo.AuthService.Services;
 using MicroZoo.Infrastructure.Generals;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.Models.Jobs.Dto;
 using MicroZoo.JwtConfiguration;
 using MicroZoo.ZookeepersApi.Services;
@@ -19,17 +20,20 @@ namespace MicroZoo.ZookeepersApi.Controllers
         private readonly IJobsRequestReceivingService _receivingService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
+        private readonly IRabbitMqResponseErrorsHandler _errorsHandler;
 
         /// <summary>
         /// Controller for handling jobs requests
         /// </summary>
         public JobsController(IJobsRequestReceivingService receivingService,
                               IAuthorizationService authorizationService,
-                              IConnectionService connectionService)
+                              IConnectionService connectionService,
+                              IRabbitMqResponseErrorsHandler errorsHandler)
         {
             _receivingService = receivingService;
             _authorizationService = authorizationService;
             _connectionService = connectionService;
+            _errorsHandler = errorsHandler;
         }
 
         /// <summary>
@@ -65,7 +69,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.GetCurrentJobsOfZookeeperAsync(zookeeperId);
 
@@ -101,7 +106,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var dateTimeRange = new DateTimeRange(startDateTime, finishDateTime);
             var orderingOptions = new OrderingOptions(propertyName, orderDescending);
@@ -132,7 +138,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.AddJobAsync(jobDto, accessToken);
 
@@ -159,7 +166,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.UpdateJobAsync(jobId, jobDto, accessToken);
 
@@ -186,7 +194,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.FinishJobAsync(jobId, jobReport);
 

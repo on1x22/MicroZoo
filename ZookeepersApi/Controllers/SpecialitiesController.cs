@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MicroZoo.AuthService.Policies;
 using MicroZoo.AuthService.Services;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.Models.Specialities.Dto;
 using MicroZoo.JwtConfiguration;
@@ -18,6 +19,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         private readonly ISpecialitiesRequestReceivingService _receivingService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
+        private readonly IRabbitMqResponseErrorsHandler _errorsHandler;
 
         /// <summary>
         /// Initialize a new instance of <see cref="SpecialitiesController"/> class
@@ -25,12 +27,16 @@ namespace MicroZoo.ZookeepersApi.Controllers
         /// <param name="receivingService"></param>
         /// <param name="authorizationService"></param>
         /// <param name="connectionService"></param>
+        /// <param name="errorsHandler"></param>
         public SpecialitiesController(ISpecialitiesRequestReceivingService receivingService,
-            IAuthorizationService authorizationService, IConnectionService connectionService)
+            IAuthorizationService authorizationService, 
+            IConnectionService connectionService,
+            IRabbitMqResponseErrorsHandler errorsHandler)
         {
             _receivingService = receivingService;
             _authorizationService = authorizationService;
             _connectionService = connectionService;
+            _errorsHandler = errorsHandler;
         }
 
         /// <summary>
@@ -49,7 +55,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.GetAllSpecialitiesAsync(accessToken);
 
@@ -75,7 +82,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.CheckZokeepersWithSpecialityAreExistAsync(CheckType.AnimalType, 
                 animalTypeId);
@@ -100,7 +108,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.CheckZookeeperIsExistAsync(CheckType.Person, personId);
 
@@ -124,7 +133,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.AddSpecialityAsync(specialityDto, accessToken);
 
@@ -152,7 +162,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.ChangeRelationBetweenZookeeperAndSpecialityAsync(
                 relationId, specialityDto, accessToken);
@@ -179,7 +190,8 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.DeleteSpecialityAsync(specialityDto, accessToken);
 

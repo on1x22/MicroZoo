@@ -3,8 +3,8 @@ using MicroZoo.Infrastructure.Exceptions;
 using MicroZoo.AnimalsApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
-using MicroZoo.Infrastructure.Models.Animals;
-using MicroZoo.AnimalsApi.Services;
+using MicroZoo.AuthService.Services;
+using MicroZoo.AuthService.Policies;
 
 namespace MicroZoo.AnimalsApi.Consumers
 {
@@ -12,16 +12,39 @@ namespace MicroZoo.AnimalsApi.Consumers
     {
         private readonly IAnimalsApiService _service;
         private readonly IAnimalsRequestReceivingService _receivingService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IConnectionService _connectionService;
 
         public AddAnimalConsumer(IAnimalsApiService service,
-            IAnimalsRequestReceivingService receivingService)
+            IAnimalsRequestReceivingService receivingService,
+            IAuthorizationService authorizationService,
+            IConnectionService connectionService)
         {
             _service = service;
             _receivingService = receivingService;
+            _authorizationService = authorizationService;
+            _connectionService = connectionService;
         }
 
+        [PolicyValidation(Policy = "AnimalsApi.Create")]
         public async Task Consume(ConsumeContext<AddAnimalRequest> context)
         {
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                accessToken: context.Message.AccessToken,
+                type: typeof(AddAnimalConsumer),
+                methodName: nameof(Consume),
+                identityApiUrl: _connectionService.IdentityApiUrl);
+
+            if (!accessResult.IsAccessAllowed)
+            {
+                await context.RespondAsync(new GetAnimalResponse
+                {
+                    ErrorCode = accessResult.ErrorCode,
+                    ErrorMessage = accessResult.ErrorMessage!
+                });
+                return;
+            }
+
             var animalDto = context.Message.AnimalDto;
 
             if (animalDto == null)

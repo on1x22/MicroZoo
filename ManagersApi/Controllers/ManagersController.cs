@@ -2,6 +2,7 @@
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using MicroZoo.AuthService.Services;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
@@ -20,17 +21,20 @@ namespace MicroZoo.ManagersApi.Controllers
         private readonly IServiceProvider _provider;
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
+        private readonly IRabbitMqResponseErrorsHandler _errorsHandler;
         private readonly Uri _animalsApiUrl;
         private readonly Uri _personsApiUrl;
         private readonly Uri _zookeepersApiUrl;
 
         public ManagersController(IServiceProvider provider, IConfiguration configuration,
             IAuthorizationService authorizationService,
-            IConnectionService connectionService)
+            IConnectionService connectionService,
+            IRabbitMqResponseErrorsHandler errorsHandler)
         {
             _provider = provider;
             _authorizationService = authorizationService;
             _connectionService = connectionService;
+            _errorsHandler = errorsHandler;
             _animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
             _personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
             _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
@@ -57,7 +61,8 @@ namespace MicroZoo.ManagersApi.Controllers
                 identityApiUrl: _connectionService.IdentityApi);
 
             if (!accessResult.IsAccessAllowed)
-                return accessResult.Result;
+                //return accessResult.Result;
+                return _errorsHandler.GetActionResult(accessResult);
 
             var response = await GetResponseFromRabbitTask<AddJobRequest, GetJobsResponse>(
                 new AddJobRequest(jobDto, accessToken), _zookeepersApiUrl);

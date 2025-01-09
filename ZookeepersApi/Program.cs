@@ -84,9 +84,10 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
     services.AddScoped<IJobsService, JobsService>();
     services.AddScoped<ISpecialitiesService, SpecialitiesService>();
     services.AddScoped<IAuthorizationService, AuthorizationService>();
+    services.AddScoped<IRabbitMqResponseErrorsHandler, RabbitMqResponseErrorsHandler>();
     services.AddTransient<IJobsRequestReceivingService,JobsRequestReceivingService>();    
     services.AddTransient<ISpecialitiesRequestReceivingService, SpecialitiesRequestReceivingService>();
-    services.AddTransient<IResponsesReceiverFromRabbitMq, ResponsesReceiverFromRabbitMq>();
+    services.AddTransient<IResponsesReceiverFromRabbitMq, ResponsesReceiverFromRabbitMq>();    
     services.AddTransient<IApi, MicroZoo.ZookeepersApi.Apis.ZookeepersApi>();
     services.AddTransient<RequestHelper>();
 
