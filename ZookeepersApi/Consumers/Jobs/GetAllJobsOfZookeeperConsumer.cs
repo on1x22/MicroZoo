@@ -1,5 +1,6 @@
 ﻿using MassTransit;
-using MassTransit.JobService;
+using MicroZoo.AuthService.Policies;
+using MicroZoo.AuthService.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
 using MicroZoo.ZookeepersApi.Services;
@@ -8,16 +9,40 @@ namespace MicroZoo.ZookeepersApi.Consumers.Jobs
 {
     public class GetAllJobsOfZookeeperConsumer : IConsumer<GetAllJobsOfZookeeperRequest>
     {
-        private readonly IJobsRequestReceivingService _service;
+        private readonly IJobsRequestReceivingService _receivingService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IConnectionService _connectionService;
 
-        public GetAllJobsOfZookeeperConsumer(IJobsRequestReceivingService servise)
+        public GetAllJobsOfZookeeperConsumer(IJobsRequestReceivingService receivingService,
+            IAuthorizationService authorizationService,
+            IConnectionService connectionService)
         {
-            _service = servise;
+            _receivingService = receivingService;
+            _authorizationService = authorizationService;
+            _connectionService = connectionService;
         }
 
+        [PolicyValidation(Policy = "ZookeepersApi.Read")]
         public async Task Consume(ConsumeContext<GetAllJobsOfZookeeperRequest> context)
         {
-            var response = await _service.GetAllJobsOfZookeeperAsync(context.Message.ZookeeperId);
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+                accessToken: context.Message.AccessToken,
+                type: typeof(GetAllJobsOfZookeeperConsumer),
+                methodName: nameof(Consume),
+                identityApiUrl: _connectionService.IdentityApiUrl);
+
+            if (!accessResult.IsAccessAllowed)
+            {
+                await context.RespondAsync(new GetJobsResponse
+                {
+                    ErrorCode = accessResult.ErrorCode,
+                    ErrorMessage = accessResult.ErrorMessage!
+                });
+                return;
+            }
+
+            var response = await _receivingService.GetAllJobsOfZookeeperAsync(
+                context.Message.ZookeeperId);
 
             if (response.Jobs == null)
                 response.ErrorMessage = "Unknown error";

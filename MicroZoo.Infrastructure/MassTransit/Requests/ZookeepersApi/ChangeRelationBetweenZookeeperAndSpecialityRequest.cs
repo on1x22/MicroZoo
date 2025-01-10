@@ -1,10 +1,4 @@
 ﻿using MicroZoo.Infrastructure.Models.Specialities.Dto;
-using MicroZoo.Infrastructure.Models.Persons.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi
 {
@@ -13,13 +7,15 @@ namespace MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi
         public Guid OperationId { get; set; }
         public int RelationId { get; set; }
         public SpecialityDto SpecialityDto { get; set; }
+        public string AccessToken { get; }
 
         public ChangeRelationBetweenZookeeperAndSpecialityRequest(int relationId, 
-            SpecialityDto specialityDto)
+            SpecialityDto specialityDto, string accessToken)
         {
             OperationId = Guid.NewGuid();
             RelationId = relationId;
             SpecialityDto = specialityDto;
+            AccessToken = accessToken;
         }
     }
 }

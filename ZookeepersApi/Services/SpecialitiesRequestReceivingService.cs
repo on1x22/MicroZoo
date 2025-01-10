@@ -30,15 +30,17 @@ namespace MicroZoo.ZookeepersApi.Services
                 _connectionService.AnimalsApiUrl);
         }
 
-        public async Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZokeepersWithSpecialityAreExistAsync( 
-            CheckType checkType, int animalTypeId)
+        public async Task<CheckZokeepersWithSpecialityAreExistResponse> 
+            CheckZokeepersWithSpecialityAreExistAsync(CheckType checkType, int animalTypeId)
         {
             return await _specialitiesService.CheckZokeepersWithSpecialityAreExistAsync(checkType, animalTypeId);
         }
 
-        public async Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZookeeperIsExistAsync(CheckType checkType, int personId)
+        public async Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZookeeperIsExistAsync(
+            CheckType checkType, int personId)
         {
-            return await _specialitiesService.CheckZokeepersWithSpecialityAreExistAsync(checkType, personId);
+            return await _specialitiesService.CheckZokeepersWithSpecialityAreExistAsync(checkType, 
+                personId);
         }
 
         public async Task<GetSpecialityResponse> AddSpecialityAsync(SpecialityDto specialityDto, 
@@ -88,19 +90,21 @@ namespace MicroZoo.ZookeepersApi.Services
             if (errorMessage != string.Empty)
                 return new GetSpecialityResponse() { ErrorMessage = errorMessage };
 
-            return await _specialitiesService.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, 
-                specialityDto);
+            return await _specialitiesService.ChangeRelationBetweenZookeeperAndSpecialityAsync(
+                relationId, specialityDto);
         }
 
         public async Task<GetAnimalTypesResponse> DeleteSpecialityAsync(SpecialityDto specialityDto,
                                                                         string accessToken)
         {
-            var specialitiesResponse = await _specialitiesService.DeleteSpecialityAsync(specialityDto);
+            var specialitiesResponse = await _specialitiesService.DeleteSpecialityAsync(
+                specialityDto);
 
             if (specialitiesResponse.Specialities == null)
                 return new GetAnimalTypesResponse() { ErrorMessage = specialitiesResponse.ErrorMessage };
 
-            var animalTypesIds = specialitiesResponse.Specialities.Select(x => x.AnimalTypeId).ToArray();
+            var animalTypesIds = specialitiesResponse.Specialities.Select(x => x.AnimalTypeId)
+                .ToArray();
 
             return await _receiver.GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest,
                 GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds, accessToken),

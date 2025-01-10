@@ -23,7 +23,8 @@ namespace MicroZoo.ZookeepersApi.Services
         /// <param name="jobService"></param>
         /// <param name="receiver"></param>
         /// <param name="connectionService"></param>
-        public JobsRequestReceivingService(IJobsService jobService, IResponsesReceiverFromRabbitMq receiver,
+        public JobsRequestReceivingService(IJobsService jobService, 
+            IResponsesReceiverFromRabbitMq receiver,
             IConnectionService connectionService)
         {
             _jobService = jobService;

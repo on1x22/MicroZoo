@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi
 {
-    public record GetSpecialitiesResponse
+    public record GetSpecialitiesResponse : IResponseWithError
     {
         public Guid OperationId { get; set; }
         public List<Speciality> Specialities { get; set; }
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
+        public ErrorCodes? ErrorCode { get; set; }
     }
 }

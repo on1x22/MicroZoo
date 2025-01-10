@@ -1,9 +1,9 @@
-﻿using MicroZoo.AnimalsApi.Services;
-using MassTransit;
-using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
-using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
+﻿using MassTransit;
+using MicroZoo.AnimalsApi.Services;
 using MicroZoo.AuthService.Services;
 using MicroZoo.AuthService.Policies;
+using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
+using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 
 namespace MicroZoo.AnimalsApi.Consumers
 {
