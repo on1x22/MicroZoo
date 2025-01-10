@@ -44,7 +44,7 @@ namespace MicroZoo.ManagersApi.Controllers
         public async Task<IActionResult> GetAllAnimals()
         {
             var response = await GetResponseFromRabbitTask<GetAllAnimalsRequest,
-                GetAnimalsResponse>(new GetAllAnimalsRequest(), _animalsApiUrl);
+                GetAnimalsResponse>(new GetAllAnimalsRequest(null), _animalsApiUrl);
             return response.Animals is List<Animal> animals
                 ? Ok(animals)
                 : NoContent();
