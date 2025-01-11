@@ -1,8 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using MicroZoo.Infrastructure.Models.Specialities;
-using Newtonsoft.Json;
-using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Http.Json;
 using System.Reflection;
 using MassTransit;
 using MicroZoo.ZookeepersApi.Services;
@@ -13,6 +9,8 @@ using MicroZoo.ZookeepersApi.Models;
 using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.ZookeepersApi.Consumers.Jobs;
 using MicroZoo.ZookeepersApi.Consumers.Specialities;
+using Microsoft.OpenApi.Models;
+using MicroZoo.AuthService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,25 +32,44 @@ app.Run();
 
 void RegisterServices(IServiceCollection services, IConfiguration configuration)
 {
-    /*var animalsApiUrl = new Uri(configuration["ConnectionStrings:AnimalsApiRmq"]);
-    var personsApiUrl = new Uri(configuration["ConnectionStrings:PersonsApiRmq"]);
-    var zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]);
-
-    services.AddScoped<IConnectionService>(s => new ConnectionService(animalsApiUrl,
-                                                                          personsApiUrl, 
-                                                                          zookeepersApiUrl));*/
     services.AddScoped<IConnectionService, ConnectionService>();
 
     services.AddHttpClient();
     services.AddLogging(builder => builder.AddConsole());
+    services.AddAuthentication("Bearer").AddJwtBearer();
     services.AddControllers();
     services.AddEndpointsApiExplorer();
-    services.AddSwaggerGen(c =>
+    services.AddSwaggerGen(opt =>
     {
         // Set the comments path for the Swagger JSON and UI.
         var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-        c.IncludeXmlComments(xmlPath);
+        opt.IncludeXmlComments(xmlPath);
+
+        opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter token",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = "bearer"
+        });
+
+        opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] { }
+            }
+        });
     });
 
     services.AddDbContext<ZookeeperDBContext>(options =>
@@ -66,9 +83,11 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
     services.AddScoped<__IZookeeperApiService, __ZookeeperApiService>();
     services.AddScoped<IJobsService, JobsService>();
     services.AddScoped<ISpecialitiesService, SpecialitiesService>();
-    services.AddTransient<IJobsRequestReceivingService,JobsRequestReceivingService>();
+    services.AddScoped<IAuthorizationService, AuthorizationService>();
+    services.AddScoped<IRabbitMqResponseErrorsHandler, RabbitMqResponseErrorsHandler>();
+    services.AddTransient<IJobsRequestReceivingService,JobsRequestReceivingService>();    
     services.AddTransient<ISpecialitiesRequestReceivingService, SpecialitiesRequestReceivingService>();
-    services.AddTransient<IResponsesReceiverFromRabbitMq, ResponsesReceiverFromRabbitMq>();
+    services.AddTransient<IResponsesReceiverFromRabbitMq, ResponsesReceiverFromRabbitMq>();    
     services.AddTransient<IApi, MicroZoo.ZookeepersApi.Apis.ZookeepersApi>();
     services.AddTransient<RequestHelper>();
 
@@ -122,5 +141,8 @@ void Configure(WebApplication app)
     }
 
     app.UseHttpsRedirection();
+
+    app.UseAuthentication();
+
     app.MapControllers();
 }

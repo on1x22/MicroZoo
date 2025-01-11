@@ -4,7 +4,13 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "personsapi": "StartDebugging"
+        "personsapi": "StartDebugging",
+        "animalsapi": "StartDebugging",
+        "gateway": "StartDebugging",
+        "identityapi": "StartDebugging",
+        "managersapi": "StartDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "zookeepersapi": "StartDebugging"
       }
     }
   }

@@ -10,11 +10,13 @@ namespace MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi
     {
         public Guid OperationId { get; set; }
         public int Id { get; set; }
+        public string AccessToken { get; }
 
-        public DeleteAnimalTypeRequest(int id)
+        public DeleteAnimalTypeRequest(int id, string accessToken)
         {
             OperationId = Guid.NewGuid();
             Id = id;
+            AccessToken = accessToken;
         }
     }
 }

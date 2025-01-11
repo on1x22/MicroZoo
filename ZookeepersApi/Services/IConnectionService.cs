@@ -2,8 +2,9 @@
 {
     public interface IConnectionService
     {
-        Uri AnimalsApiUrl { get; /*set;*/ }
-        Uri PersonsApiUrl { get; /*set;*/ }
-        Uri ZookeepersApiUrl { get; /*set;*/ }
+        Uri AnimalsApiUrl { get; }
+        Uri IdentityApiUrl { get; }
+        Uri PersonsApiUrl { get; }
+        Uri ZookeepersApiUrl { get; }
     }
 }

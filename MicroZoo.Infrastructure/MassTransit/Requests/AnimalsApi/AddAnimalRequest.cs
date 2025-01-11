@@ -1,10 +1,4 @@
-﻿using MicroZoo.Infrastructure.Models.Animals;
-using MicroZoo.Infrastructure.Models.Animals.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MicroZoo.Infrastructure.Models.Animals.Dto;
 
 namespace MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi
 {
@@ -12,11 +6,13 @@ namespace MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi
     {
         public Guid OperationId { get; set; }
         public AnimalDto AnimalDto { get; set; }
+        public string AccessToken { get; }
 
-        public AddAnimalRequest(AnimalDto animalDto)
+        public AddAnimalRequest(AnimalDto animalDto, string accessToken)
         {
             OperationId = Guid.NewGuid();
             AnimalDto = animalDto;
+            AccessToken = accessToken;
         }
     }
 }

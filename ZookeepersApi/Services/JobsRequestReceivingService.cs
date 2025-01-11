@@ -7,13 +7,24 @@ using MicroZoo.Infrastructure.Models.Jobs.Dto;
 
 namespace MicroZoo.ZookeepersApi.Services
 {
+    /// <summary>
+    /// Procceses request from controllers and RabbitMq consumers. Interconnections with other 
+    /// microservices doing here 
+    /// </summary>
     public class JobsRequestReceivingService : IJobsRequestReceivingService
     {
         private readonly IJobsService _jobService;
         private readonly IResponsesReceiverFromRabbitMq _receiver;
         private readonly IConnectionService _connectionService;
 
-        public JobsRequestReceivingService(IJobsService jobService, IResponsesReceiverFromRabbitMq receiver,
+        /// <summary>
+        /// Initializes a new instance of <see cref="JobsRequestReceivingService"/> class 
+        /// </summary>
+        /// <param name="jobService"></param>
+        /// <param name="receiver"></param>
+        /// <param name="connectionService"></param>
+        public JobsRequestReceivingService(IJobsService jobService, 
+            IResponsesReceiverFromRabbitMq receiver,
             IConnectionService connectionService)
         {
             _jobService = jobService;
@@ -32,7 +43,8 @@ namespace MicroZoo.ZookeepersApi.Services
         }
 
         public async Task<GetJobsResponse> GetJobsForDateTimeRangeAsync(int zookeeperId,
-            DateTimeRange dateTimeRange, OrderingOptions orderingOptions, PageOptions pageOptions)
+            DateTimeRange dateTimeRange, OrderingOptions orderingOptions, PageOptions pageOptions, 
+            string accessToken)
         {
             var response = new GetJobsResponse();
 
@@ -44,7 +56,7 @@ namespace MicroZoo.ZookeepersApi.Services
                 if (dateTimeRange.StartDateTime >= dateTimeRange.FinishDateTime)                
                     throw new InvalidDataException("Start time more or equals finish time");
                                    
-                if (!await IsZookeeperExist(zookeeperId)) 
+                if (!await IsZookeeperExist(zookeeperId, accessToken)) 
                     throw new InvalidDataException($"Zookeeper with id={zookeeperId} doesn't exist");                   
             }
             catch (InvalidDataException ex)
@@ -62,7 +74,7 @@ namespace MicroZoo.ZookeepersApi.Services
             return response;
         }
 
-        public async Task<GetJobsResponse> AddJobAsync(JobDto jobDto)
+        public async Task<GetJobsResponse> AddJobAsync(JobDto jobDto, string accessToken)
         {
             var response = new GetJobsResponse();
 
@@ -83,7 +95,7 @@ namespace MicroZoo.ZookeepersApi.Services
                 if (jobDto.Priority <= 0)
                     throw new InvalidDataException("Priority must be more than 0");
 
-                if (!await IsZookeeperExist(jobDto.ZookeeperId))                
+                if (!await IsZookeeperExist(jobDto.ZookeeperId, accessToken))                
                     throw new InvalidDataException($"Zookeeper with id={jobDto.ZookeeperId} " +
                         $"doesn't exist");                  
             }
@@ -109,7 +121,8 @@ namespace MicroZoo.ZookeepersApi.Services
             return response;
         }
 
-        public async Task<GetJobsResponse> UpdateJobAsync(int jobId, JobWithoutStartTimeDto jobDto)
+        public async Task<GetJobsResponse> UpdateJobAsync(int jobId, JobWithoutStartTimeDto jobDto, 
+                                                          string accessToken)
         {
             var response = new GetJobsResponse();
 
@@ -132,7 +145,7 @@ namespace MicroZoo.ZookeepersApi.Services
                 if (jobDto.Priority <= 0)
                     throw new InvalidDataException("Priority must be more than 0");
 
-                if (!await IsZookeeperExist(jobDto.ZookeeperId))
+                if (!await IsZookeeperExist(jobDto.ZookeeperId, accessToken))
                     throw new InvalidDataException($"Zookeeper with id={jobDto.ZookeeperId} " +
                         $"doesn't exist");
                   
@@ -172,12 +185,6 @@ namespace MicroZoo.ZookeepersApi.Services
                 return response;
             }
 
-            /*if (jobId <= 0)
-            {
-                response.ErrorMessage = "Task with negative or zero id doesn't exist";
-                return response;
-            }*/
-
             var jobResponse = await _jobService.FinishJobAsync(jobId, jobReport);
             if (jobResponse.Job == null)
             {
@@ -190,10 +197,11 @@ namespace MicroZoo.ZookeepersApi.Services
             return response;
         }
 
-        internal async Task<bool> IsZookeeperExist(int zookeeperId)
+        private async Task<bool> IsZookeeperExist(int zookeeperId, string accessToken)
         {
             var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest,
-                    GetPersonResponse>(new GetPersonRequest(zookeeperId), _connectionService.PersonsApiUrl);
+                    GetPersonResponse>(new GetPersonRequest(zookeeperId, accessToken), 
+                    _connectionService.PersonsApiUrl);
 
             if (personResponse.Person == null)
                 return false;

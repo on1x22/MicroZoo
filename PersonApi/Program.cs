@@ -1,6 +1,8 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using MicroZoo.Infrastructure.MassTransit.Requests;
+using Microsoft.OpenApi.Models;
+using MicroZoo.AuthService.Services;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.PersonsApi.Apis;
 using MicroZoo.PersonsApi.Consumers;
 using MicroZoo.PersonsApi.DbContexts;
@@ -29,14 +31,40 @@ app.Run();
 void RegisterServices(IServiceCollection services)
 {
     services.AddLogging(builder => builder.AddConsole());
+    services.AddAuthentication("Bearer").AddJwtBearer();
     services.AddControllers();
     services.AddEndpointsApiExplorer();
-    services.AddSwaggerGen(c =>
+    services.AddSwaggerGen(opt =>
     {
         // Set the comments path for the Swagger JSON and UI.
         var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-        c.IncludeXmlComments(xmlPath);
+        opt.IncludeXmlComments(xmlPath);
+
+        opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter token",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = "bearer"
+        });
+
+        opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] {}
+            }
+        });
     });
 
     services.AddDbContext<PersonDbContext>(options =>
@@ -46,6 +74,11 @@ void RegisterServices(IServiceCollection services)
 
     services.AddScoped<IPersonRepository, PersonRepository>();
     services.AddScoped<IPersonsApiService, PersonsApiService>();
+    services.AddScoped<IPersonsRequestReceivingService, PersonsRequestReceivingService>();
+    services.AddScoped<IAuthorizationService, AuthorizationService>();
+    services.AddScoped<IResponsesReceiverFromRabbitMq, ResponsesReceiverFromRabbitMq>();
+    services.AddScoped<IConnectionService, ConnectionService>();
+    services.AddScoped<IRabbitMqResponseErrorsHandler, RabbitMqResponseErrorsHandler>();
     services.AddTransient<IApi, PersonsApi>();
 
     services.AddMassTransit(x =>
@@ -92,5 +125,8 @@ void Configure(WebApplication app)
     }
 
     app.UseHttpsRedirection();
+
+    app.UseAuthentication();
+
     app.MapControllers();
 }
