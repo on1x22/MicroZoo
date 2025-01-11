@@ -7,11 +7,13 @@ namespace MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi
     {
         public Guid OperationId { get; set; }
         public JobDto JobDto { get; set; }
+        public string AccessToken { get; }
 
-        public AddJobRequest(JobDto jobDto)
+        public AddJobRequest(JobDto jobDto, string accessToken)
         {
             OperationId = Guid.NewGuid();
             JobDto = jobDto;
+            AccessToken = accessToken;
         }
     }
 }

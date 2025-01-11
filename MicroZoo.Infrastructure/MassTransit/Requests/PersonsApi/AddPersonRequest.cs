@@ -6,11 +6,13 @@ namespace MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi
     {
         public Guid OperationId { get; set; }
         public PersonDto PersonDto { get; set; }
+        public string AccessToken { get; }
 
-        public AddPersonRequest(PersonDto personDto)
+        public AddPersonRequest(PersonDto personDto, string accessToken)
         {
             OperationId = Guid.NewGuid();
             PersonDto = personDto;
+            AccessToken = accessToken;
         }
     }
 }

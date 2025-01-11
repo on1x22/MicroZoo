@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using MicroZoo.Infrastructure.MassTransit;
+﻿using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.PersonsApi;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
@@ -24,30 +23,36 @@ namespace MicroZoo.ZookeepersApi.Services
             _connectionService = connectionService;
         }
 
-        public async Task<GetAnimalTypesResponse> GetAllSpecialitiesAsync()
+        public async Task<GetAnimalTypesResponse> GetAllSpecialitiesAsync(string accessToken)
         {
             return await _receiver.GetResponseFromRabbitTask<GetAllAnimalTypesRequest,
-                GetAnimalTypesResponse>(new GetAllAnimalTypesRequest(), _connectionService.AnimalsApiUrl);
+                GetAnimalTypesResponse>(new GetAllAnimalTypesRequest(accessToken), 
+                _connectionService.AnimalsApiUrl);
         }
 
-        public async Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZokeepersWithSpecialityAreExistAsync( 
-            CheckType checkType, int animalTypeId)
+        public async Task<CheckZokeepersWithSpecialityAreExistResponse> 
+            CheckZokeepersWithSpecialityAreExistAsync(CheckType checkType, int animalTypeId)
         {
             return await _specialitiesService.CheckZokeepersWithSpecialityAreExistAsync(checkType, animalTypeId);
         }
 
-        public async Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZookeeperIsExistAsync(CheckType checkType, int personId)
+        public async Task<CheckZokeepersWithSpecialityAreExistResponse> CheckZookeeperIsExistAsync(
+            CheckType checkType, int personId)
         {
-            return await _specialitiesService.CheckZokeepersWithSpecialityAreExistAsync(checkType, personId);
+            return await _specialitiesService.CheckZokeepersWithSpecialityAreExistAsync(checkType, 
+                personId);
         }
 
-        public async Task<GetSpecialityResponse> AddSpecialityAsync(SpecialityDto specialityDto)
+        public async Task<GetSpecialityResponse> AddSpecialityAsync(SpecialityDto specialityDto, 
+                                                                    string accessToken)
         {
-            var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
-                new GetPersonRequest(specialityDto.ZookeeperId), _connectionService.PersonsApiUrl);
+            var personResponse = await _receiver.GetResponseFromRabbitTask<GetPersonRequest, 
+                GetPersonResponse>(new GetPersonRequest(specialityDto.ZookeeperId, accessToken), 
+                _connectionService.PersonsApiUrl);
 
             var animalTypeResponse = await _receiver.GetResponseFromRabbitTask<GetAnimalTypeRequest,
-                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId), _connectionService.AnimalsApiUrl);
+                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId,
+                accessToken), _connectionService.AnimalsApiUrl);
 
             string errorMessage = string.Empty;
 
@@ -63,15 +68,16 @@ namespace MicroZoo.ZookeepersApi.Services
             return await _specialitiesService.AddSpecialityAsync(specialityDto);
         }
 
-        public async Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpecialityAsync(int relationId, 
-            SpecialityDto specialityDto)
+        public async Task<GetSpecialityResponse> ChangeRelationBetweenZookeeperAndSpecialityAsync(
+            int relationId, SpecialityDto specialityDto, string accessToken)
         {
-            var person = await _receiver.GetResponseFromRabbitTask<GetPersonRequest, GetPersonResponse>(
-                new GetPersonRequest(specialityDto.ZookeeperId), _connectionService.PersonsApiUrl);
+            var person = await _receiver.GetResponseFromRabbitTask<GetPersonRequest, 
+                GetPersonResponse>(new GetPersonRequest(specialityDto.ZookeeperId, accessToken), 
+                _connectionService.PersonsApiUrl);
 
             var animalType = await _receiver.GetResponseFromRabbitTask<GetAnimalTypeRequest,
-                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId), 
-                _connectionService.AnimalsApiUrl);
+                GetAnimalTypeResponse>(new GetAnimalTypeRequest(specialityDto.AnimalTypeId, 
+                accessToken), _connectionService.AnimalsApiUrl);
 
             string errorMessage = string.Empty;
 
@@ -84,21 +90,25 @@ namespace MicroZoo.ZookeepersApi.Services
             if (errorMessage != string.Empty)
                 return new GetSpecialityResponse() { ErrorMessage = errorMessage };
 
-            return await _specialitiesService.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, 
-                specialityDto);
+            return await _specialitiesService.ChangeRelationBetweenZookeeperAndSpecialityAsync(
+                relationId, specialityDto);
         }
 
-        public async Task<GetAnimalTypesResponse> DeleteSpecialityAsync(SpecialityDto specialityDto)
+        public async Task<GetAnimalTypesResponse> DeleteSpecialityAsync(SpecialityDto specialityDto,
+                                                                        string accessToken)
         {
-            var specialitiesResponse = await _specialitiesService.DeleteSpecialityAsync(specialityDto);
+            var specialitiesResponse = await _specialitiesService.DeleteSpecialityAsync(
+                specialityDto);
 
             if (specialitiesResponse.Specialities == null)
                 return new GetAnimalTypesResponse() { ErrorMessage = specialitiesResponse.ErrorMessage };
 
-            var animalTypesIds = specialitiesResponse.Specialities.Select(x => x.AnimalTypeId).ToArray();
+            var animalTypesIds = specialitiesResponse.Specialities.Select(x => x.AnimalTypeId)
+                .ToArray();
 
             return await _receiver.GetResponseFromRabbitTask<GetAnimalTypesByIdsRequest,
-                GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds), _connectionService.AnimalsApiUrl);
+                GetAnimalTypesResponse>(new GetAnimalTypesByIdsRequest(animalTypesIds, accessToken),
+                _connectionService.AnimalsApiUrl);
         }
     }
 }

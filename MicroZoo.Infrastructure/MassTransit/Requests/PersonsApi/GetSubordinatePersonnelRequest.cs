@@ -4,11 +4,13 @@
     {
         public Guid OperationId { get; set; }
         public int PersonId { get; set; }
+        public string AccessToken { get; }
 
-        public GetSubordinatePersonnelRequest(int personId)
+        public GetSubordinatePersonnelRequest(int personId, string accessToken)
         {
             OperationId = Guid.NewGuid();
             PersonId = personId;
+            AccessToken = accessToken;
         }
     }
 }
