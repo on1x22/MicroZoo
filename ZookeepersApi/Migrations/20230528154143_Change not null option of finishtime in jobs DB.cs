@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace MicroZoo.ZookeepersApi.Migrations
+namespace MicroZoo.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class ChangenotnulloptionoffinishtimeinjobsDB : Migration

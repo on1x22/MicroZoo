@@ -1,4 +1,3 @@
-using AnimalsApi.Consumers;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.AnimalsApi.Apis;
@@ -6,6 +5,8 @@ using MicroZoo.AnimalsApi.Consumers;
 using MicroZoo.AnimalsApi.DbContexts;
 using MicroZoo.AnimalsApi.Repository;
 using MicroZoo.AnimalsApi.Services;
+using MicroZoo.AuthService.Services;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests;
 using System.Reflection;
 using System.Xml.Linq;
@@ -31,6 +32,7 @@ app.Run();
 void RegisterServices(IServiceCollection services)
 {
     services.AddLogging(builder => builder.AddConsole());
+    services.AddAuthentication("Bearer").AddJwtBearer();
     services.AddControllers();
     services.AddEndpointsApiExplorer();
     services.AddSwaggerGen(c =>
@@ -48,7 +50,13 @@ void RegisterServices(IServiceCollection services)
 
     services.AddScoped<IAnimalRepository, AnimalRepository>();
     services.AddScoped<IAnimalsApiService, AnimalsApiService>();
-    services.AddTransient<IApi, AnimalApi>();
+    services.AddScoped<IResponsesReceiverFromRabbitMq, ResponsesReceiverFromRabbitMq>();
+    services.AddScoped<IAnimalsRequestReceivingService, AnimalsRequestReceivingService>();
+    services.AddScoped<IAnimalTypesRequestReceivingService, AnimalTypesRequestReceivingService>();
+    services.AddScoped<IAuthorizationService, AuthorizationService>();
+    services.AddScoped<IConnectionService, ConnectionService>();
+    services.AddScoped<IRabbitMqResponseErrorsHandler, RabbitMqResponseErrorsHandler>();
+    services.AddTransient<IApi, MicroZoo.AnimalsApi.Apis.AnimalsApi>();
 
     services.AddMassTransit(x =>
     {
@@ -106,5 +114,8 @@ void Configure(WebApplication app)
     }
 
     app.UseHttpsRedirection();
+
+    app.UseAuthentication();
+
     app.MapControllers();
 }

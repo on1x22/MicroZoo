@@ -26,7 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MicroZoo.Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\MicroZoo.AuthService\MicroZoo.AuthService.csproj" />
+    <ProjectReference Include="..\MicroZoo.Infrastructure\MicroZoo.Infrastructure.csproj" />
+    <ProjectReference Include="..\MicroZoo.JwtConfiguration\MicroZoo.JwtConfiguration.csproj" />
 	<InternalsVisibleTo Include="PersonsApi.Tests" />
   </ItemGroup>
 

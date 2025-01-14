@@ -11,11 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimalsApi", "AnimalsApi\An
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonsApi", "PersonApi\PersonsApi.csproj", "{D637C01D-442F-47AC-A851-5E6D20520965}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "MicroZoo.Infrastructure\Infrastructure.csproj", "{F399BB20-CE31-491B-AAC7-9874647BB26D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.Infrastructure", "MicroZoo.Infrastructure\MicroZoo.Infrastructure.csproj", "{F399BB20-CE31-491B-AAC7-9874647BB26D}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2950EADF-3337-45ED-A1E7-A91C7E55F305}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gateway", "Gateway\Gateway.csproj", "{F1658E8F-B44A-4E47-90EB-02C34086A6A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.Gateway", "Gateway\MicroZoo.Gateway.csproj", "{F1658E8F-B44A-4E47-90EB-02C34086A6A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{2BAB8DED-A389-4E0C-BC8B-AF3690A638EF}"
 	ProjectSection(SolutionItems) = preProject
@@ -24,13 +24,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B9217663-80EA-4EBB-A202-10944A3C3B56}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonsApi.Tests", "Tests\PersonsApi.Tests\PersonsApi.Tests.csproj", "{5AAB1456-2A83-4F4B-98E7-28DB473BF335}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.PersonsApi.Tests", "Tests\PersonsApi.Tests\MicroZoo.PersonsApi.Tests.csproj", "{5AAB1456-2A83-4F4B-98E7-28DB473BF335}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimalsApi.Tests", "Tests\AnimalsApi.Tests\AnimalsApi.Tests.csproj", "{3D5D9803-3BE2-4EF1-9FCB-162234631DB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.AnimalsApi.Tests", "Tests\AnimalsApi.Tests\MicroZoo.AnimalsApi.Tests.csproj", "{3D5D9803-3BE2-4EF1-9FCB-162234631DB6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZookeepersApi.Tests", "Tests\ZookeepersApi.Tests\ZookeepersApi.Tests.csproj", "{50F81E8A-2DCB-47C8-BA33-2046EA0658A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.ZookeepersApi.Tests", "Tests\ZookeepersApi.Tests\MicroZoo.ZookeepersApi.Tests.csproj", "{50F81E8A-2DCB-47C8-BA33-2046EA0658A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagersApi", "ManagersApi\ManagersApi.csproj", "{FA9F0DA8-5A5C-41D8-B086-B5AB263B85AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManagersApi", "ManagersApi\ManagersApi.csproj", "{FA9F0DA8-5A5C-41D8-B086-B5AB263B85AF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.IdentityApi", "IdentityApi\MicroZoo.IdentityApi.csproj", "{705833FA-07E4-4902-8581-5F2E53248FED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroZoo.EmailService", "MicroZoo.EmailService\MicroZoo.EmailService.csproj", "{B34C5FE1-A510-42B7-A56B-1004655E472D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroZoo.JwtConfiguration", "MicroZoo.JwtConfiguration\MicroZoo.JwtConfiguration.csproj", "{48608BA3-8AD0-46F9-A359-B48C50E731AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroZoo.AuthService", "MicroZoo.AuthService\MicroZoo.AuthService.csproj", "{43A83277-CE83-4D4D-B6C3-112BBA9EDBFD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,6 +86,22 @@ Global
 		{FA9F0DA8-5A5C-41D8-B086-B5AB263B85AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA9F0DA8-5A5C-41D8-B086-B5AB263B85AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA9F0DA8-5A5C-41D8-B086-B5AB263B85AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{705833FA-07E4-4902-8581-5F2E53248FED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{705833FA-07E4-4902-8581-5F2E53248FED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{705833FA-07E4-4902-8581-5F2E53248FED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{705833FA-07E4-4902-8581-5F2E53248FED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B34C5FE1-A510-42B7-A56B-1004655E472D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B34C5FE1-A510-42B7-A56B-1004655E472D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B34C5FE1-A510-42B7-A56B-1004655E472D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B34C5FE1-A510-42B7-A56B-1004655E472D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48608BA3-8AD0-46F9-A359-B48C50E731AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48608BA3-8AD0-46F9-A359-B48C50E731AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48608BA3-8AD0-46F9-A359-B48C50E731AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48608BA3-8AD0-46F9-A359-B48C50E731AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43A83277-CE83-4D4D-B6C3-112BBA9EDBFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43A83277-CE83-4D4D-B6C3-112BBA9EDBFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43A83277-CE83-4D4D-B6C3-112BBA9EDBFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43A83277-CE83-4D4D-B6C3-112BBA9EDBFD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,10 +110,12 @@ Global
 		{3C3E5B6C-D48D-402C-9E58-B1440EDA945E} = {1631D592-C458-4647-8E36-4C6257E86A96}
 		{E5770E9C-FE51-4EEA-85C4-30DD887FE08B} = {1631D592-C458-4647-8E36-4C6257E86A96}
 		{D637C01D-442F-47AC-A851-5E6D20520965} = {1631D592-C458-4647-8E36-4C6257E86A96}
+		{F1658E8F-B44A-4E47-90EB-02C34086A6A1} = {1631D592-C458-4647-8E36-4C6257E86A96}
 		{5AAB1456-2A83-4F4B-98E7-28DB473BF335} = {B9217663-80EA-4EBB-A202-10944A3C3B56}
 		{3D5D9803-3BE2-4EF1-9FCB-162234631DB6} = {B9217663-80EA-4EBB-A202-10944A3C3B56}
 		{50F81E8A-2DCB-47C8-BA33-2046EA0658A1} = {B9217663-80EA-4EBB-A202-10944A3C3B56}
 		{FA9F0DA8-5A5C-41D8-B086-B5AB263B85AF} = {1631D592-C458-4647-8E36-4C6257E86A96}
+		{705833FA-07E4-4902-8581-5F2E53248FED} = {1631D592-C458-4647-8E36-4C6257E86A96}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {96C26459-1177-4AD4-BCC5-C0A6538E2DEB}
