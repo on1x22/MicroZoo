@@ -44,7 +44,7 @@ namespace MicroZoo.PersonsApi.Services
         public async Task<GetPersonResponse> UpdatePersonAsync(int personId, PersonDto personDto) =>
             await _personsService.UpdatePersonAsync(personId, personDto);
 
-        public async Task<GetPersonResponse> DeletePersonAsync(int personId, string accessToken)
+        public async Task<GetPersonResponse> SoftDeletePersonAsync(int personId, string accessToken)
         {
             var response = new GetPersonResponse();
 
@@ -79,7 +79,7 @@ namespace MicroZoo.PersonsApi.Services
                 return response;
             }
 
-            response = await _personsService.DeletePersonAsync(personId);
+            response = await _personsService.SoftDeletePersonAsync(personId);
 
             return response;
         }

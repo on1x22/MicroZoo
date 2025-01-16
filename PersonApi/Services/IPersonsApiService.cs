@@ -8,7 +8,7 @@ namespace MicroZoo.PersonsApi.Services
         Task<GetPersonResponse> GetPersonAsync(int personId);
         Task<GetPersonResponse> AddPersonAsync(PersonDto personDto);
         Task<GetPersonResponse> UpdatePersonAsync(int personId, PersonDto personDto);
-        Task<GetPersonResponse> DeletePersonAsync(int personId);
+        Task<GetPersonResponse> SoftDeletePersonAsync(int personId);
         
 
         Task<GetPersonsResponse> GetSubordinatePersonnelAsync(int personId);

@@ -3,6 +3,7 @@ using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Persons.Dto;
+using MicroZoo.Infrastructure.Models.Roles;
 using MicroZoo.PersonsApi.Repository;
 
 namespace MicroZoo.PersonsApi.Services
@@ -57,15 +58,25 @@ namespace MicroZoo.PersonsApi.Services
             return response;
         }
 
-        public async Task<GetPersonResponse> DeletePersonAsync(int personId)
+        public async Task<GetPersonResponse> SoftDeletePersonAsync(int personId)
         {
-            var response = new GetPersonResponse
+            /*var response = new GetPersonResponse
             {
-                Person = await _repository.DeletePersonAsync(personId)
+                Person = await _repository.SoftDeletePersonAsync(personId)
             };
 
             if (response.Person == null)
-                response.ErrorMessage = $"Person with id = {personId} not found";
+                response.ErrorMessage = $" with id = {personId} not found";*/
+            var response = new GetPersonResponse();
+
+            var personForDelete = await _repository.GetPersonAsync(personId);
+            if (personForDelete == null)
+            {
+                response.ErrorMessage = $"Person with Id {personId} not found";
+                return response;
+            }
+
+            response.Person = await _repository.SoftDeletePersonAsync(personForDelete);            
 
             return response;
         }

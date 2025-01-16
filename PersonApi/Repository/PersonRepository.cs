@@ -54,13 +54,16 @@ namespace MicroZoo.PersonsApi.Repository
             return person;
         }
 
-        public async Task<Person> DeletePersonAsync(int personId)
+        public async Task<Person> SoftDeletePersonAsync(/*int personId*/Person person)
         {
-            var person = await _dbContext.Persons.FirstOrDefaultAsync(p => p.Id == personId);
+            /*var person = await _dbContext.Persons.FirstOrDefaultAsync(p => p.Id == personId);
             if (person == null)
                 return default;
 
-            _dbContext.Persons.Remove(person);
+            _dbContext.Persons.Remove(person);*/
+            person.Deleted = true;
+            _dbContext.Update(person);
+
             await SaveChangesAsync();
 
             return person;
