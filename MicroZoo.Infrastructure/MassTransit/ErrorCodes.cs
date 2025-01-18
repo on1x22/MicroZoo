@@ -5,6 +5,7 @@
         Ok200,
         BadRequest400,
         Unauthorized401,
-        Forbiden403
+        Forbiden403,
+        NotFound404
     }
 }

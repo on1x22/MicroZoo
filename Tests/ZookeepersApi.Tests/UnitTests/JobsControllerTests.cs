@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MicroZoo.AuthService.Services;
 using MicroZoo.Infrastructure.Generals;
 using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
@@ -15,12 +16,16 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         private Mock<IResponsesReceiverFromRabbitMq> _mockReceiver;
         private Mock<IConnectionService> _mockConnnection;
         private Mock<IJobsRequestReceivingService> _mockReceivingService;
+        private Mock<IRabbitMqResponseErrorsHandler> _mockErrorsHandler;
+        private Mock<IAuthorizationService> _mockAuthorizationService;
 
         public JobsControllerTests()
         {
             _mockReceiver = new Mock<IResponsesReceiverFromRabbitMq>();
             _mockConnnection = new Mock<IConnectionService>();
             _mockReceivingService = new Mock<IJobsRequestReceivingService>();
+            _mockErrorsHandler = new Mock<IRabbitMqResponseErrorsHandler>();
+            _mockAuthorizationService = new Mock<IAuthorizationService>();
         }
 
         [Fact]
@@ -38,8 +43,10 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             _mockReceivingService.Setup(rs => rs.GetAllJobsOfZookeeperAsync(It.IsAny<int>()))
                 .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
             var actionResult = await jobsController.GetAllJobsOfZookeeper(zookeeperId);
 
@@ -69,8 +76,10 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             _mockReceivingService.Setup(rs => rs.GetAllJobsOfZookeeperAsync(It.IsAny<int>()))
                 .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
             var actionResult = await jobsController.GetAllJobsOfZookeeper(zookeeperId);
 
@@ -99,8 +108,10 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             _mockReceivingService.Setup(rs => rs.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>()))
                 .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
             var actionResult = await jobsController.GetCurrentJobsOfZookeeper(zookeeperId);
 
@@ -135,8 +146,10 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             _mockReceivingService.Setup(rs => rs.GetCurrentJobsOfZookeeperAsync(It.IsAny<int>()))
                 .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
             var actionResult = await jobsController.GetCurrentJobsOfZookeeper(zookeeperId);
 
@@ -165,14 +178,17 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 .ReturnsAsync(jobsResponse);*/
 
             _mockReceivingService.Setup(rs => rs.GetJobsForDateTimeRangeAsync(It.IsAny<int>(),
-                It.IsAny<DateTimeRange>(), It.IsAny<OrderingOptions>(), It.IsAny<PageOptions>()))
+                It.IsAny<DateTimeRange>(), It.IsAny<OrderingOptions>(), It.IsAny<PageOptions>(),
+                It.IsAny<string>()))
                 .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
-            var actionResult = await jobsController.GetJobsForTimeRange(zookeeperId, 
-                startDateTime, endDateTime, propertyName, orderDescending, pageNumber, itemsOnPage);
+            var actionResult = await jobsController.GetJobsForTimeRange(startDateTime, endDateTime, 
+                zookeeperId, propertyName, orderDescending, pageNumber, itemsOnPage);
 
             var result = actionResult.ReturnActionResultValue<BadRequestObjectResult, string>();
             Assert.Equal(expectedMessage, result);
@@ -208,14 +224,17 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 .ReturnsAsync(jobsResponse);*/
 
             _mockReceivingService.Setup(rs => rs.GetJobsForDateTimeRangeAsync(It.IsAny<int>(),
-                It.IsAny<DateTimeRange>(), It.IsAny<OrderingOptions>(), It.IsAny<PageOptions>()))
+                It.IsAny<DateTimeRange>(), It.IsAny<OrderingOptions>(), It.IsAny<PageOptions>(),
+                It.IsAny<string>()))
                 .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
-            var actionResult = await jobsController.GetJobsForTimeRange(zookeeperId,
-                startDateTime, endDateTime, propertyName, orderDescending, pageNumber, itemsOnPage);
+            var actionResult = await jobsController.GetJobsForTimeRange(startDateTime, endDateTime, 
+                zookeeperId, propertyName, orderDescending, pageNumber, itemsOnPage);
 
             var result = actionResult.ReturnActionResultValue<OkObjectResult, List<Job>>();
             Assert.Equal(jobs, result);
@@ -253,14 +272,17 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 .ReturnsAsync(jobsResponse);*/
 
             _mockReceivingService.Setup(rs => rs.GetJobsForDateTimeRangeAsync(It.IsAny<int>(),
-                It.IsAny<DateTimeRange>(), It.IsAny<OrderingOptions>(), It.IsAny<PageOptions>()))
+                It.IsAny<DateTimeRange>(), It.IsAny<OrderingOptions>(), It.IsAny<PageOptions>(),
+                It.IsAny<string>()))
                 .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
-            var actionResult = await jobsController.GetJobsForTimeRange(zookeeperId,
-                startDateTime, endDateTime, propertyName, orderDescending, pageNumber, itemsOnPage);
+            var actionResult = await jobsController.GetJobsForTimeRange(startDateTime, endDateTime, 
+                zookeeperId, propertyName, orderDescending, pageNumber, itemsOnPage);
 
             var result = actionResult.ReturnActionResultValue<OkObjectResult, List<Job>>();
             Assert.Equal(jobs, result);
@@ -371,10 +393,13 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 GetJobsResponse>(It.IsAny<AddJobRequest>(), It.IsAny<Uri>()))
                 .ReturnsAsync(jobsResponse);*/
 
-            _mockReceivingService.Setup(rs => rs.AddJobAsync(jobDto)).ReturnsAsync(jobsResponse);
+            _mockReceivingService.Setup(rs => rs.AddJobAsync(jobDto, It.IsAny<string>()))
+                .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
             var actionResult = await jobsController.AddJob(jobDto);
 
@@ -410,10 +435,13 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 GetJobsResponse>(It.IsAny<AddJobRequest>(), It.IsAny<Uri>()))
                 .ReturnsAsync(jobsResponse);*/
 
-            _mockReceivingService.Setup(rs => rs.AddJobAsync(jobDto)).ReturnsAsync(jobsResponse);
+            _mockReceivingService.Setup(rs => rs.AddJobAsync(jobDto, It.IsAny<string>()))
+                .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
             var actionResult = await jobsController.AddJob(jobDto);
 
@@ -433,10 +461,13 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                 .With(r => r.ErrorMessage, expectedMessage)
                 .Create();
                
-            _mockReceivingService.Setup(rs => rs.UpdateJobAsync(jobId, jobDto)).ReturnsAsync(jobsResponse);
+            _mockReceivingService.Setup(rs => rs.UpdateJobAsync(jobId, jobDto, It.IsAny<string>()))
+                .ReturnsAsync(jobsResponse);
             
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
             var actionResult = await jobsController.UpdateJob(jobId, jobDto);
 
@@ -467,10 +498,13 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var jobsResponse = new GetJobsResponse() { Jobs = jobs };
 
-            _mockReceivingService.Setup(rs => rs.UpdateJobAsync(jobId, jobDto)).ReturnsAsync(jobsResponse);
+            _mockReceivingService.Setup(rs => rs.UpdateJobAsync(jobId, jobDto, It.IsAny<string>()))
+                .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
             var actionResult = await jobsController.UpdateJob(jobId, jobDto);
 
@@ -494,8 +528,10 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             _mockReceivingService.Setup(rs => rs.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
             var actionResult = await jobsController.FinishJob(jobId, jobReport);
 
@@ -530,8 +566,10 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             _mockReceivingService.Setup(rs => rs.FinishJobAsync(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(jobsResponse);
 
-            var jobsController = new JobsController(_mockReceiver.Object, _mockConnnection.Object,
-                _mockReceivingService.Object);
+            var jobsController = new JobsController(_mockReceivingService.Object,
+                                                    _mockAuthorizationService.Object,
+                                                    _mockConnnection.Object,
+                                                    _mockErrorsHandler.Object);
 
             var actionResult = await jobsController.FinishJob(jobId, jobReport);
 

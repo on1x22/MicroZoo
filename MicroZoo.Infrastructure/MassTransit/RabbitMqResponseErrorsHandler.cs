@@ -35,6 +35,8 @@ namespace MicroZoo.Infrastructure.MassTransit
                             return new UnauthorizedResult();
                         case ErrorCodes.Forbiden403:
                             return new ForbidResult(response.ErrorMessage!);
+                        case ErrorCodes.NotFound404:
+                            return new NotFoundObjectResult(response.ErrorMessage);
                     }
                     return new BadRequestResult();
                 }

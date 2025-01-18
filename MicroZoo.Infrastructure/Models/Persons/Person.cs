@@ -19,5 +19,7 @@ namespace MicroZoo.Infrastructure.Models.Persons
         public bool IsManager { get; set; }
         [Column("managerid")]
         public int ManagerId { get; set; }
+        [Column("deleted")]
+        public bool Deleted { get; set; }
     }
 }

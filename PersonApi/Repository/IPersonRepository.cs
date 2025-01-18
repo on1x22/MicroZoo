@@ -1,14 +1,13 @@
 ﻿using MicroZoo.Infrastructure.Models.Persons;
-using MicroZoo.Infrastructure.Models.Persons.Dto;
 
 namespace MicroZoo.PersonsApi.Repository
 {
     public interface IPersonRepository
     {
         Task<Person> GetPersonAsync(int personId);        
-        Task<Person> AddPersonAsync(PersonDto person);
-        Task<Person> UpdatePersonAsync(int personId, PersonDto personDto);
-        Task<Person> DeletePersonAsync(int personId);
+        Task<Person> AddPersonAsync(Person person);
+        Task<Person> UpdatePersonAsync(int personId, Person personDto);
+        Task<Person> SoftDeletePersonAsync(/*int personId*/Person person);
         Task<bool> CheckPersonIsManager(int personId);
 
         Task<List<Person>> GetSubordinatePersonnelAsync(int personId);
