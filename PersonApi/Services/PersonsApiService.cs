@@ -1,9 +1,6 @@
-﻿using MicroZoo.Infrastructure.MassTransit.Requests;
+﻿using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Responses.PersonsApi;
-using MicroZoo.Infrastructure.Models.Animals;
-using MicroZoo.Infrastructure.Models.Persons;
 using MicroZoo.Infrastructure.Models.Persons.Dto;
-using MicroZoo.Infrastructure.Models.Roles;
 using MicroZoo.PersonsApi.Repository;
 
 namespace MicroZoo.PersonsApi.Services
@@ -23,7 +20,10 @@ namespace MicroZoo.PersonsApi.Services
             };
 
             if (response.Person == null)
+            {
                 response.ErrorMessage = $"Person with id = {personId} not found";
+                response.ErrorCode = ErrorCodes.NotFound404;
+            }
 
             return response;
         }
@@ -33,10 +33,16 @@ namespace MicroZoo.PersonsApi.Services
             var response = new GetPersonResponse();
 
             if (!await _repository.CheckPersonIsManager(personDto.ManagerId))
+            {
                 response.ErrorMessage = $"Manager with id={personDto.ManagerId} is not exist";
-            else
-                response.Person = await _repository.AddPersonAsync(personDto);
+                response.ErrorCode = ErrorCodes.BadRequest400;
+                return response;
+            }
+            
+            var addedPerson = personDto.ToPerson();
 
+            response.Person = await _repository.AddPersonAsync(addedPerson);
+            
             return response;
         }
 
@@ -47,14 +53,19 @@ namespace MicroZoo.PersonsApi.Services
             if (!await _repository.CheckPersonIsManager(personDto.ManagerId))
             {
                 response.ErrorMessage = $"Manager with id={personDto.ManagerId} is not exist";
+                response.ErrorCode = ErrorCodes.BadRequest400;
                 return response;
             }
-            
-            response.Person = await _repository.UpdatePersonAsync(personId, personDto);
+
+            var personWithChanges = personDto.ToPerson();
+
+            response.Person = await _repository.UpdatePersonAsync(personId, personWithChanges);
 
             if (response.Person == null)
+            {
                 response.ErrorMessage = $"Person with id = {personId} not found";
-
+                response.ErrorCode = ErrorCodes.NotFound404;
+            }
             return response;
         }
 
@@ -92,6 +103,7 @@ namespace MicroZoo.PersonsApi.Services
             {
                 response.Persons = null;
                 response.ErrorMessage = $"Employee with id={personId} has no subordinate personnel";
+                response.ErrorCode = ErrorCodes.BadRequest400;
             }
 
             return response;
@@ -105,12 +117,14 @@ namespace MicroZoo.PersonsApi.Services
             if (!await _repository.CheckPersonIsManager(currentManagerId))
             {
                 response.ErrorMessage = $"Manager with id={currentManagerId} is not exist";
+                response.ErrorCode = ErrorCodes.BadRequest400;
                 return response;
             }
 
             if (!await _repository.CheckPersonIsManager(newManagerId))
             {
                 response.ErrorMessage = $"Manager with id={newManagerId} is not exist";
+                response.ErrorCode = ErrorCodes.BadRequest400;
                 return response;
             }
 
@@ -122,6 +136,7 @@ namespace MicroZoo.PersonsApi.Services
                 response.Persons = null;
                 response.ErrorMessage = $"Manager with id={currentManagerId} has no subordinate " +
                     $"personnel, therefore thera are no changes";
+                response.ErrorCode = ErrorCodes.BadRequest400;
             }
 
             return response;

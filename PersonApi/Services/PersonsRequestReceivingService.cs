@@ -15,7 +15,7 @@ namespace MicroZoo.PersonsApi.Services
         private readonly IPersonsApiService _personsService;
         private readonly IResponsesReceiverFromRabbitMq _receiverFromRabbitMq;
         private readonly IConnectionService _connectionService;
-        private readonly IRabbitMqResponseErrorsHandler _errorsHandler;
+        //private readonly IRabbitMqResponseErrorsHandler _errorsHandler;
 
         /// <summary>
         /// Initializes a new instance of <see cref="PersonsRequestReceivingService"/> class 
@@ -26,13 +26,13 @@ namespace MicroZoo.PersonsApi.Services
         /// <param name="errorsHandler"></param>
         public PersonsRequestReceivingService(IPersonsApiService personsService,
             IResponsesReceiverFromRabbitMq receiverFromRabbitMq,
-            IConnectionService connectionService,
-            IRabbitMqResponseErrorsHandler errorsHandler)
+            IConnectionService connectionService/*,
+            IRabbitMqResponseErrorsHandler errorsHandler*/)
         {
             _personsService = personsService;
             _receiverFromRabbitMq = receiverFromRabbitMq;
             _connectionService = connectionService;
-            _errorsHandler = errorsHandler;
+            //_errorsHandler = errorsHandler;
         }
 
         public async Task<GetPersonResponse> GetPersonAsync(int personId) =>
