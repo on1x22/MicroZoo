@@ -136,20 +136,20 @@ namespace MicroZoo.PersonsApi.Controllers
         /// <returns>Deleted person</returns>
         [HttpDelete("{personId}")]
         [PolicyValidation(Policy = "PersonsApi.Delete")]
-        public async Task<IActionResult> DeletePerson(int personId)
+        public async Task<IActionResult> SoftDeletePerson(int personId)
         {
             var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 accessToken: accessToken,
                 type: typeof(PersonsController),
-                methodName: nameof(DeletePerson),
+                methodName: nameof(SoftDeletePerson),
                 identityApiUrl: _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
                 //return accessResult.Result;
                 return _errorsHandler.GetActionResult(accessResult);
 
-            var response = await _receivingService.DeletePersonAsync(personId, accessToken);
+            var response = await _receivingService.SoftDeletePersonAsync(personId, accessToken);
             
             //if (response.ActionResult != null)
             //    return response.ActionResult;

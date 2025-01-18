@@ -40,24 +40,7 @@ namespace MicroZoo.AuthService.Services
                                                                   Uri IdentityApiUrl)
         {
             var accessToken = JwtExtensions.GetAccessTokenFromRequest(httpRequest);
-            /*var endpointPolicies = PoliciesValidator.GetPoliciesFromEndpoint(type, methodName);
-            if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))
-                return new AccessResult(IsAccessAllowed: false, Result: new UnauthorizedResult());
-
-            var accessResponse = await IsResourceAccessConfirmedAsync(IdentityApiUrl,
-                                                                 accessToken,
-                                                                 endpointPolicies);
-            if (accessResponse.ErrorMessage != null)
-                return new AccessResult(IsAccessAllowed: false,
-                    Result: new BadRequestObjectResult(accessResponse.ErrorMessage));
-
-            if (!accessResponse.IsAuthenticated)
-                return new AccessResult(IsAccessAllowed: false, Result: new UnauthorizedResult());
-
-            if (!accessResponse.IsAccessConfirmed)
-                return new AccessResult(IsAccessAllowed: false, Result: new ForbidResult());
-
-            return new AccessResult(IsAccessAllowed: true, Result: new OkResult());*/
+            
             return await CheckAccessInIdentityApiAsync(accessToken, type, methodName, IdentityApiUrl);
         }
 

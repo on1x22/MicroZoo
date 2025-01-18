@@ -19,6 +19,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         private Mock<ISpecialitiesService> _mockSpecialitiesService;
         private Mock<IConnectionService> _mockConnection;
 
+        private string accessToken = new Fixture().Create<string>();
+
         public SpecialitiesRequestReceivingServiceTests()
         {
             _mockReceiver = new Mock<IResponsesReceiverFromRabbitMq>();
@@ -42,7 +44,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.GetAllSpecialitiesAsync();
+            var result = await service.GetAllSpecialitiesAsync(accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -67,7 +69,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.GetAllSpecialitiesAsync();
+            var result = await service.GetAllSpecialitiesAsync(accessToken);
 
             Assert.Equal(allAnimalTypes, result.AnimalTypes);
         }
@@ -103,7 +105,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.AddSpecialityAsync(specialityDto);
+            var result = await service.AddSpecialityAsync(specialityDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -131,7 +133,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.AddSpecialityAsync(specialityDto);
+            var result = await service.AddSpecialityAsync(specialityDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -164,7 +166,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.AddSpecialityAsync(specialityDto);
+            var result = await service.AddSpecialityAsync(specialityDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -197,7 +199,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.AddSpecialityAsync(specialityDto);
+            var result = await service.AddSpecialityAsync(specialityDto, accessToken);
 
             Assert.Equal(specialityResponse.Speciality, result.Speciality);
         }
@@ -235,7 +237,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, specialityDto);
+            var result = await service.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, 
+                specialityDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -265,7 +268,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, specialityDto);
+            var result = await service.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, 
+                specialityDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -300,7 +304,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, specialityDto);
+            var result = await service.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, 
+                specialityDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -335,7 +340,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, specialityDto);
+            var result = await service.ChangeRelationBetweenZookeeperAndSpecialityAsync(relationId, 
+                specialityDto, accessToken);
 
             Assert.Equal(specialityResponse.Speciality, result.Speciality);
         }
@@ -360,7 +366,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.DeleteSpecialityAsync(specialityDto);
+            var result = await service.DeleteSpecialityAsync(specialityDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -392,7 +398,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             var service = new SpecialitiesRequestReceivingService(_mockSpecialitiesService.Object, _mockReceiver.Object,
                 _mockConnection.Object);
 
-            var result = await service.DeleteSpecialityAsync(specialityDto);
+            var result = await service.DeleteSpecialityAsync(specialityDto, accessToken);
 
             Assert.Equal(animalTypes, result.AnimalTypes);
         }

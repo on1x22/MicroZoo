@@ -47,7 +47,7 @@ namespace MicroZoo.PersonsApi.Consumers
                 
             var personId = context.Message.PersonId;
 
-            var response = await _receivingService.DeletePersonAsync(personId, 
+            var response = await _receivingService.SoftDeletePersonAsync(personId, 
                 context.Message.AccessToken);
             
             response.OperationId = context.Message.OperationId;
