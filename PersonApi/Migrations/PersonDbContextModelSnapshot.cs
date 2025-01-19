@@ -21,7 +21,7 @@ namespace MicroZoo.PersonsApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MicroZoo.PersonApi.Models.Person", b =>
+            modelBuilder.Entity("MicroZoo.Infrastructure.Models.Persons.Person", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,26 +30,30 @@ namespace MicroZoo.PersonsApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("email")
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("deleted");
+
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("email");
 
-                    b.Property<string>("firstName")
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("firstname");
 
-                    b.Property<bool>("isManager")
+                    b.Property<bool>("IsManager")
                         .HasColumnType("boolean")
                         .HasColumnName("ismanager");
 
-                    b.Property<string>("lastName")
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("lastname");
 
-                    b.Property<int>("managerId")
+                    b.Property<int>("ManagerId")
                         .HasColumnType("integer")
                         .HasColumnName("managerid");
 

@@ -1,0 +1,64 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/gateway/jobs/{zookeeperId}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/jobs/{zookeeperId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]      
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/jobs/{zookeeperId}/current",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/jobs/{zookeeperId}/current",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/jobs",
+      "UpstreamHttpMethod": [ "GET", "POST" ],
+      "DownstreamPathTemplate": "/jobs",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/jobs/{jobId}",
+      "UpstreamHttpMethod": [ "PUT" ],
+      "DownstreamPathTemplate": "/jobs/{jobId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/jobs/{jobId}/finish",
+      "UpstreamHttpMethod": [ "PUT" ],
+      "DownstreamPathTemplate": "/jobs/{jobId}/finish",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "zookeepersapi",
+          "Port": 80
+        }
+      ]
+    }
+  ]
+}

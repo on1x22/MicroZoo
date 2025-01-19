@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace MicroZoo.ZookeepersApi.Migrations
+namespace MicroZoo.Infrastructure.Migrations
 {
     [DbContext(typeof(ZookeeperDBContext))]
     partial class ZookeeperDBContextModelSnapshot : ModelSnapshot
@@ -23,7 +23,7 @@ namespace MicroZoo.ZookeepersApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MicroZoo.ZookeepersApi.Models.Job", b =>
+            modelBuilder.Entity("MicroZoo.Infrastructure.Models.Jobs.Job", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,6 +32,14 @@ namespace MicroZoo.ZookeepersApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
                     NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<int>("Id"), 1L, null, null, null, null, null);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdat");
+
+                    b.Property<DateTime>("DeadlineTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deadlinetime");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -42,6 +50,15 @@ namespace MicroZoo.ZookeepersApi.Migrations
                     b.Property<DateTime?>("FinishTime")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("finishtime");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer")
+                        .HasColumnName("priority");
+
+                    b.Property<string>("Report")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("report");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("timestamp with time zone")
@@ -56,7 +73,7 @@ namespace MicroZoo.ZookeepersApi.Migrations
                     b.ToTable("jobs");
                 });
 
-            modelBuilder.Entity("MicroZoo.ZookeepersApi.Models.Speciality", b =>
+            modelBuilder.Entity("MicroZoo.Infrastructure.Models.Specialities.Speciality", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
