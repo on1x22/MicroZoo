@@ -1,6 +1,6 @@
 ﻿using MicroZoo.AnimalsApi.Repository;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
-using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 
 namespace MicroZoo.AnimalsApi.Services
@@ -21,7 +21,10 @@ namespace MicroZoo.AnimalsApi.Services
             };
 
             if (response.Animals == null)
+            {
                 response.ErrorMessage = $"Database contains no entries";
+                response.ErrorCode = ErrorCodes.NotFound404;
+            }
 
             return response;
         }
@@ -34,7 +37,10 @@ namespace MicroZoo.AnimalsApi.Services
             };
 
             if (response.Animal == null)
+            {
                 response.ErrorMessage = $"Animal with id = {animalId} not found";
+                response.ErrorCode = ErrorCodes.NotFound404;
+            }
 
             return response;
         }
@@ -43,9 +49,14 @@ namespace MicroZoo.AnimalsApi.Services
         {
             var response = new GetAnimalResponse();
             if (!await _repository.IsAnimalTypeExist(animalDto.AnimalTypeId))
+            {
                 response.ErrorMessage = "The specified animal type is not in the database";
-            else
-                response.Animal = await _repository.AddAnimalAsync(animalDto);
+                response.ErrorCode = ErrorCodes.BadRequest400;
+                return response;
+            }
+
+            var addedAnimal = AnimalDto.DtoToAnimal(animalDto);
+            response.Animal = await _repository.AddAnimalAsync(addedAnimal);
             
             return response;
         }
@@ -59,16 +70,24 @@ namespace MicroZoo.AnimalsApi.Services
             if (animalFromDb == null)
             {
                 response.ErrorMessage = $"Animal with id = {animalId} not found";
+                response.ErrorCode = ErrorCodes.NotFound404;
                 return response;
             }
 
             if (!await _repository.IsAnimalTypeExist(animalDto.AnimalTypeId))
             {
                 response.ErrorMessage = "The specified animal type is not in the database";
+                response.ErrorCode = ErrorCodes.BadRequest400;
                 return response;
             }
 
             response.Animal = await _repository.UpdateAnimalAsync(animalId, animalDto);
+            if (response.Animal == null)
+            {
+                response.ErrorMessage = $"Animal with id = {animalId} not found";
+                response.ErrorCode = ErrorCodes.NotFound404;
+            }
+
             return response;
         }
 
@@ -95,9 +114,12 @@ namespace MicroZoo.AnimalsApi.Services
                 Animals = await _repository.GetAnimalsByTypesAsync(animalTypeIds)
             };
 
-            if (response.Animals == null)            
+            if (response.Animals == null)
+            {
                 response.ErrorMessage = "Not all animal type Ids exist in database";
-            
+                response.ErrorCode = ErrorCodes.BadRequest400;
+            }
+
             return response;
         }
 

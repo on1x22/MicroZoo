@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MicroZoo.Infrastructure.Exceptions;
 using MicroZoo.AnimalsApi.DbContexts;
-using MicroZoo.AnimalsApi.Models;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 
@@ -18,12 +16,13 @@ namespace MicroZoo.AnimalsApi.Repository
 
         public async Task<List<Animal>> GetAllAnimalsAsync()
         {
-            return await _dbContext.Animals.ToListAsync();
+            return await _dbContext.Animals.Where(a => a.Deleted == false).ToListAsync();
         }
 
         public async Task<Animal> GetAnimalAsync(int animalId)
         {
-            var animal = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == animalId);
+            var animal = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == animalId
+                                                                      && a.Deleted == false);
 
             if (animal == null)
                 return default;
@@ -48,12 +47,12 @@ namespace MicroZoo.AnimalsApi.Repository
         
         
 
-        public async Task<Animal> AddAnimalAsync(AnimalDto animalDto)
+        public async Task<Animal> AddAnimalAsync(Animal animal)
         {
             //if (!await IsAnimalTypeExist(animalDto!.AnimalTypeId))
             //    return default;
 
-            var animal = AnimalDto.DtoToAnimal(animalDto);
+            //var animal = AnimalDto.DtoToAnimal(animalDto);
 
             await _dbContext.Animals.AddAsync(animal);
             await SaveChangesAsync();
@@ -63,15 +62,18 @@ namespace MicroZoo.AnimalsApi.Repository
         public async Task<Animal> UpdateAnimalAsync(int animalId, AnimalDto animalDto)
         {
             if (animalDto == null)
-                await Task.CompletedTask;
+                //await Task.CompletedTask;
+                return default;
 
-            var animalInDb = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == animalId);
+            var animalInDb = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == animalId
+                                                                          && a.Deleted == false);
 
             if (animalInDb == null)
-                await Task.CompletedTask;
-                                    
-            if (!await IsAnimalTypeExist(animalDto!.AnimalTypeId))
+                //await Task.CompletedTask;
                 return default;
+                                    
+            //if (!await IsAnimalTypeExist(animalDto!.AnimalTypeId))
+            //    return default;
 
             animalInDb!.Name = animalDto!.Name;
             animalInDb!.Link = animalDto!.Link;
@@ -97,20 +99,23 @@ namespace MicroZoo.AnimalsApi.Repository
 
         public async Task<List<Animal>> GetAnimalsByTypesAsync(int[] animalTypeIds)
         {
-            var typesFromDb = _dbContext.AnimalTypes.Select(at => at.Id);
+            var typesFromDb = _dbContext.AnimalTypes.Select(at => at.Id /*&& at.Deleted == false*/);
             var allTypesExistInDb = typesFromDb.All(x => animalTypeIds.Contains(x));
 
             if (allTypesExistInDb) return null;
 
-            return await _dbContext.Animals.Where(a => animalTypeIds.Contains(a.AnimalTypeId)).ToListAsync(); ;
+            return await _dbContext.Animals.Where(a => animalTypeIds.Contains(a.AnimalTypeId)
+                                                  && a.Deleted == false)
+                                           .ToListAsync(); ;
         }
 
         public async Task<bool> IsAnimalTypeExist(int animalTypeId) =>
-            await _dbContext.AnimalTypes.AnyAsync(t => t.Id == animalTypeId);
+            await _dbContext.AnimalTypes.AnyAsync(t => t.Id == animalTypeId /*&& t.Deleted == false*/);
 
         public async Task<AnimalType> GetAnimalTypeAsync(int animalTypeId)
         {
-            var animalType = await _dbContext.AnimalTypes.FirstOrDefaultAsync(t => t.Id == animalTypeId);
+            var animalType = await _dbContext.AnimalTypes.FirstOrDefaultAsync(t => 
+                t.Id == animalTypeId /*&& t.Deleted == false*/);
             if (animalType == null)
                 return default;
 

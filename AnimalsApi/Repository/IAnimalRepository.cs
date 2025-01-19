@@ -12,7 +12,7 @@ namespace MicroZoo.AnimalsApi.Repository
         Task<List<Animal>> GetAnimalsByTypes(List<int> animalTypeIds);      // ??????
                
         
-        Task<Animal> AddAnimalAsync(AnimalDto animalDto);
+        Task<Animal> AddAnimalAsync(Animal animal);
         Task<Animal> UpdateAnimalAsync(int animalId, AnimalDto animalDto);
         Task<Animal> DeleteAnimalAsync(int animalId);
         Task<bool> IsAnimalTypeExist(int animalTypeId);
