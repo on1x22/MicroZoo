@@ -80,7 +80,10 @@ namespace MicroZoo.AnimalsApi.Services
             };
 
             if (response.Animal == null)
+            {
                 response.ErrorMessage = $"Animal with id = {animalId} not found";
+                response.ErrorCode = Infrastructure.MassTransit.ErrorCodes.NotFound404;
+            }
 
             return response;
         }

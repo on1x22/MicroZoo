@@ -88,7 +88,8 @@ namespace MicroZoo.AnimalsApi.Repository
             if (animal == null)
                 return default;
 
-            _dbContext.Animals.Remove(animal);
+            //_dbContext.Animals.Remove(animal);
+            animal.Deleted = true;
             await SaveChangesAsync();
 
             return animal;

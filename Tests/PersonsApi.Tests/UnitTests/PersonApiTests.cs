@@ -43,9 +43,9 @@ namespace MicroZoo.PersonsApi.Tests.UnitTests
         {            
             // Arrange            
             int id = 1;
-            var updatedPersonDto = new Fixture().Build<PersonDto>().Create();
+            var updatedPerson = new Fixture().Build<Person>().Create();
             var mock = new Mock<IPersonRepository>();
-            mock.Setup(l => l.UpdatePersonAsync(id, It.IsAny<PersonDto>()));
+            mock.Setup(l => l.UpdatePersonAsync(id, It.IsAny<Person>()));
             //var mockRepository = mock.Object;
             string expected = _persons[id].FirstName + " " + _persons[id].LastName;
 
