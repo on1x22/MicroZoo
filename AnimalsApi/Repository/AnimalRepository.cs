@@ -150,11 +150,13 @@ namespace MicroZoo.AnimalsApi.Repository
 
         public async Task<AnimalType> DeleteAnimalTypeAsync(int animalTypeId)
         {
-            var animalType = await _dbContext.AnimalTypes.FirstOrDefaultAsync(a => a.Id == animalTypeId);
+            var animalType = await _dbContext.AnimalTypes.FirstOrDefaultAsync(a => 
+                                                                              a.Id == animalTypeId);
             if (animalType == null)
                 return default;
 
-            _dbContext.AnimalTypes.Remove(animalType);
+            //_dbContext.AnimalTypes.Remove(animalType);
+            animalType.Deleted = true;
             await SaveChangesAsync();
 
             return animalType;

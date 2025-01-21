@@ -172,24 +172,8 @@ namespace MicroZoo.AnimalsApi.Controllers
                 _connectionService.IdentityApiUrl);
 
             if (!accessResult.IsAccessAllowed)
-                //return accessResult.Result;
                 return _errorsHandler.GetActionResult(accessResult);
 
-            /*// This action is in question. This check should be performed
-            // in the upstream microservice
-            var isThereZokeeperWithSpecialty = await
-                GetResponseFromRabbitTask<CheckZokeepersWithSpecialityAreExistRequest, 
-                CheckZokeepersWithSpecialityAreExistResponse>
-                (new CheckZokeepersWithSpecialityAreExistRequest(CheckType.AnimalType, animalTypeId, null!), 
-                _zookeepersApiUrl);
-
-            if (isThereZokeeperWithSpecialty.IsThereZookeeperWithThisSpeciality)
-                return BadRequest($"There are zookeepers with specialization {animalTypeId}. " +
-                    "Before deleting a specialty, you must remove the zookeepers " +
-                    "association with that specialty.");*/
-
-            //var response = await GetResponseFromRabbitTask<DeleteAnimalTypeRequest,
-            //    GetAnimalTypeResponse>(new DeleteAnimalTypeRequest(animalTypeId), _animalsApiUrl);
             var response = await _receivingService.DeleteAnimalTypeAsync(animalTypeId, accessToken);
             
             return response.AnimalType != null
@@ -225,16 +209,5 @@ namespace MicroZoo.AnimalsApi.Controllers
             ? Ok(response.AnimalTypes)
             : BadRequest(response.ErrorMessage); 
         }
-
-        /*private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
-            where TIn : class
-            where TOut : class
-        {
-            var clientFactory = _provider.GetRequiredService<IClientFactory>();
-
-            var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
-            var response = await client.GetResponse<TOut>(request);
-            return response.Message;
-        }*/
     }
 }

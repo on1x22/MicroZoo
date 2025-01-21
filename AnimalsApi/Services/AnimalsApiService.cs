@@ -188,8 +188,10 @@ namespace MicroZoo.AnimalsApi.Services
             };
 
             if (response.AnimalType == null)
+            {
                 response.ErrorMessage = $"Animal type with id = {animalTypeId} not found";
-
+                response.ErrorCode = ErrorCodes.NotFound404;
+            }
             return response;
         }
 

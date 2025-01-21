@@ -56,6 +56,7 @@ namespace MicroZoo.AnimalsApi.Services
                 response.ErrorMessage = $"There are zookeepers with specialization {animalTypeId}. " +
                     "Before deleting a specialty, you must remove the zookeepers " +
                     "association with that specialty.";
+                response.ErrorCode = ErrorCodes.BadRequest400;
                 return response;
             }
 
@@ -65,7 +66,7 @@ namespace MicroZoo.AnimalsApi.Services
         public async Task<GetAnimalTypesResponse> GetAnimalTypesByIdsAsync(int[] animalTypesIds) =>
             await _animalsService.GetAnimalTypesByIdsAsync(animalTypesIds);
 
-        private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
+        /*private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
             where TIn : class
             where TOut : class
         {
@@ -74,6 +75,6 @@ namespace MicroZoo.AnimalsApi.Services
             var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
             var response = await client.GetResponse<TOut>(request);
             return response.Message;
-        }
+        }*/
     }
 }
