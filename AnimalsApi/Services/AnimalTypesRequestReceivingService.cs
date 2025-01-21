@@ -10,7 +10,7 @@ namespace MicroZoo.AnimalsApi.Services
     public class AnimalTypesRequestReceivingService : IAnimalTypesRequestReceivingService
     {
         private readonly IAnimalsApiService _animalsService;
-        private readonly IServiceProvider _provider;
+        //private readonly IServiceProvider _provider;
         private readonly IConnectionService _connectionService;
         private readonly IResponsesReceiverFromRabbitMq _receiverFromRabbitMq;
 
@@ -20,7 +20,7 @@ namespace MicroZoo.AnimalsApi.Services
             IResponsesReceiverFromRabbitMq receiverFromRabbitMq)
         {
             _animalsService = animalsService;
-            _provider = provider;
+            //_provider = provider;
             _connectionService = connectionService;
             _receiverFromRabbitMq = receiverFromRabbitMq;
         }

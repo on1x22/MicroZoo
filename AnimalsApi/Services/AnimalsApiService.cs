@@ -131,7 +131,10 @@ namespace MicroZoo.AnimalsApi.Services
             };
 
             if (response.AnimalTypes == null)
+            {
                 response.ErrorMessage = $"Database contains no entries";
+                response.ErrorCode = ErrorCodes.NotFound404;
+            }
 
             return response;
         }
@@ -144,7 +147,10 @@ namespace MicroZoo.AnimalsApi.Services
             };
 
             if (response.AnimalType == null)
+            {
                 response.ErrorMessage = $"Animal type with id = {animalTypeId} not found";
+                response.ErrorCode = ErrorCodes.NotFound404;
+            }
 
             return response;
         }
@@ -154,13 +160,20 @@ namespace MicroZoo.AnimalsApi.Services
             var response = new GetAnimalTypeResponse();
 
             if (animalTypeDto == null)
+            {
                 response.ErrorMessage = "Invalid data entered";
-            else
-                response.AnimalType = await _repository.AddAnimalTypeAsync(animalTypeDto);
+                response.ErrorCode = ErrorCodes.BadRequest400;
+                return response;
+            }
+            
+            var addedAnimalType = AnimalTypeDto.DtoToAnimalType(animalTypeDto);
+            response.AnimalType = await _repository.AddAnimalTypeAsync(addedAnimalType);
 
             if (response.AnimalType == null)
+            {
                 response.ErrorMessage = "Error when creating object in database";
-
+                response.ErrorCode = ErrorCodes.InternalServerError500;
+            }
             return response;
         }
 
@@ -173,6 +186,7 @@ namespace MicroZoo.AnimalsApi.Services
             if (animalTypeFromDb == null)
             {
                 response.ErrorMessage = $"Animal type with id = {animalTypeId} not found";
+                response.ErrorCode = ErrorCodes.BadRequest400;
                 return response;
             }
 
@@ -205,12 +219,11 @@ namespace MicroZoo.AnimalsApi.Services
             if (response.AnimalTypes == null || response.AnimalTypes.Count != animalTypesIds.Length)
             {
                 response.ErrorMessage = $"Not all animal types are found in database";
+                response.ErrorCode = ErrorCodes.NotFound404;
                 response.AnimalTypes = null;
             }
 
             return response;
         }
-
-        
     }
 }
