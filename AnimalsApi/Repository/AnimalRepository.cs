@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MicroZoo.Infrastructure.Exceptions;
 using MicroZoo.AnimalsApi.DbContexts;
-using MicroZoo.AnimalsApi.Models;
 using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 
@@ -18,12 +16,13 @@ namespace MicroZoo.AnimalsApi.Repository
 
         public async Task<List<Animal>> GetAllAnimalsAsync()
         {
-            return await _dbContext.Animals.ToListAsync();
+            return await _dbContext.Animals.Where(a => a.Deleted == false).ToListAsync();
         }
 
         public async Task<Animal> GetAnimalAsync(int animalId)
         {
-            var animal = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == animalId);
+            var animal = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == animalId
+                                                                      && a.Deleted == false);
 
             if (animal == null)
                 return default;
@@ -41,19 +40,15 @@ namespace MicroZoo.AnimalsApi.Repository
             return await _dbContext.Animals.Where(a => animalTypeIds.Contains(a.AnimalTypeId)).ToListAsync();                                                                    ;
         }
 
-        
-
         public async Task<List<AnimalType>> GetAllAnimalTypesAsync() =>
-            await _dbContext.AnimalTypes.ToListAsync();
+            await _dbContext.AnimalTypes.Where(at => at.Deleted == false).ToListAsync();
         
-        
-
-        public async Task<Animal> AddAnimalAsync(AnimalDto animalDto)
+        public async Task<Animal> AddAnimalAsync(Animal animal)
         {
             //if (!await IsAnimalTypeExist(animalDto!.AnimalTypeId))
             //    return default;
 
-            var animal = AnimalDto.DtoToAnimal(animalDto);
+            //var animal = AnimalDto.DtoToAnimal(animalDto);
 
             await _dbContext.Animals.AddAsync(animal);
             await SaveChangesAsync();
@@ -63,15 +58,18 @@ namespace MicroZoo.AnimalsApi.Repository
         public async Task<Animal> UpdateAnimalAsync(int animalId, AnimalDto animalDto)
         {
             if (animalDto == null)
-                await Task.CompletedTask;
+                //await Task.CompletedTask;
+                return default;
 
-            var animalInDb = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == animalId);
+            var animalInDb = await _dbContext.Animals.FirstOrDefaultAsync(a => a.Id == animalId
+                                                                          && a.Deleted == false);
 
             if (animalInDb == null)
-                await Task.CompletedTask;
-                                    
-            if (!await IsAnimalTypeExist(animalDto!.AnimalTypeId))
+                //await Task.CompletedTask;
                 return default;
+                                    
+            //if (!await IsAnimalTypeExist(animalDto!.AnimalTypeId))
+            //    return default;
 
             animalInDb!.Name = animalDto!.Name;
             animalInDb!.Link = animalDto!.Link;
@@ -88,7 +86,8 @@ namespace MicroZoo.AnimalsApi.Repository
             if (animal == null)
                 return default;
 
-            _dbContext.Animals.Remove(animal);
+            //_dbContext.Animals.Remove(animal);
+            animal.Deleted = true;
             await SaveChangesAsync();
 
             return animal;
@@ -96,29 +95,33 @@ namespace MicroZoo.AnimalsApi.Repository
 
         public async Task<List<Animal>> GetAnimalsByTypesAsync(int[] animalTypeIds)
         {
-            var typesFromDb = _dbContext.AnimalTypes.Select(at => at.Id);
+            var typesFromDb = _dbContext.AnimalTypes.Where(at => at.Deleted == false)
+                                                    .Select(at => at.Id);
             var allTypesExistInDb = typesFromDb.All(x => animalTypeIds.Contains(x));
 
             if (allTypesExistInDb) return null;
 
-            return await _dbContext.Animals.Where(a => animalTypeIds.Contains(a.AnimalTypeId)).ToListAsync(); ;
+            return await _dbContext.Animals.Where(a => animalTypeIds.Contains(a.AnimalTypeId)
+                                                  && a.Deleted == false)
+                                           .ToListAsync(); ;
         }
 
         public async Task<bool> IsAnimalTypeExist(int animalTypeId) =>
-            await _dbContext.AnimalTypes.AnyAsync(t => t.Id == animalTypeId);
+            await _dbContext.AnimalTypes.AnyAsync(t => t.Id == animalTypeId && t.Deleted == false);
 
         public async Task<AnimalType> GetAnimalTypeAsync(int animalTypeId)
         {
-            var animalType = await _dbContext.AnimalTypes.FirstOrDefaultAsync(t => t.Id == animalTypeId);
+            var animalType = await _dbContext.AnimalTypes.FirstOrDefaultAsync(t => 
+                t.Id == animalTypeId && t.Deleted == false);
             if (animalType == null)
                 return default;
 
             return animalType;
         }
 
-        public async Task<AnimalType> AddAnimalTypeAsync(AnimalTypeDto animalTypeDto)
+        public async Task<AnimalType> AddAnimalTypeAsync(AnimalType animalType)
         {
-            var animalType = AnimalTypeDto.DtoToAnimalType(animalTypeDto);
+            //var animalType = AnimalTypeDto.DtoToAnimalType(animalType);
 
             await _dbContext.AnimalTypes.AddAsync(animalType);
             await SaveChangesAsync();
@@ -128,12 +131,15 @@ namespace MicroZoo.AnimalsApi.Repository
         public async Task<AnimalType> UpdateAnimalTypeAsync(int animaltypeId, AnimalTypeDto animalTypeDto)
         {
             if (animalTypeDto == null)
-                await Task.CompletedTask;
+                //await Task.CompletedTask;
+                return default!;
             
-            var animalTypeInDb = await _dbContext.AnimalTypes.FirstOrDefaultAsync(a => a.Id == animaltypeId);
+            var animalTypeInDb = await _dbContext.AnimalTypes.FirstOrDefaultAsync(a => 
+            a.Id == animaltypeId && a.Deleted == false);
 
             if (animalTypeInDb == null)
-                await Task.CompletedTask;            
+                //await Task.CompletedTask;            
+                return default!;
 
             animalTypeInDb!.Description = animalTypeDto!.Description;
 
@@ -144,21 +150,22 @@ namespace MicroZoo.AnimalsApi.Repository
 
         public async Task<AnimalType> DeleteAnimalTypeAsync(int animalTypeId)
         {
-            var animalType = await _dbContext.AnimalTypes.FirstOrDefaultAsync(a => a.Id == animalTypeId);
+            var animalType = await _dbContext.AnimalTypes.FirstOrDefaultAsync(a => 
+                                                                              a.Id == animalTypeId);
             if (animalType == null)
                 return default;
 
-            _dbContext.AnimalTypes.Remove(animalType);
+            //_dbContext.AnimalTypes.Remove(animalType);
+            animalType.Deleted = true;
             await SaveChangesAsync();
 
             return animalType;
         }
-/// <inheritdoc/>
 
         public async Task<List<AnimalType>> GetAnimalTypesByIdsAsync(int[] animalTypesIds)
         {
             return await _dbContext.AnimalTypes
-                .Where(t => animalTypesIds.Contains(t.Id)).ToListAsync();
+                .Where(t => animalTypesIds.Contains(t.Id) && t.Deleted == false).ToListAsync();
         }
 
         private async Task SaveChangesAsync() =>
