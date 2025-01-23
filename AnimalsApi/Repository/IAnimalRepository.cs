@@ -1,5 +1,4 @@
-﻿using MicroZoo.AnimalsApi.Models;
-using MicroZoo.Infrastructure.Models.Animals;
+﻿using MicroZoo.Infrastructure.Models.Animals;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 
 namespace MicroZoo.AnimalsApi.Repository
