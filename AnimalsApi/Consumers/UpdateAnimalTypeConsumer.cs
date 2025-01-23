@@ -49,7 +49,6 @@ namespace MicroZoo.AnimalsApi.Consumers
 
             var animalTypeDto = context.Message.AnimalTypeDto ?? throw new BadRequestException("Request does not contain data");
 
-            //var response = await _service.UpdateAnimalTypeAsync(id, animalTypeDto);
             var response = await _receivingService.UpdateAnimalTypeAsync(id, animalTypeDto);
 
             response.OperationId = context.Message.OperationId;

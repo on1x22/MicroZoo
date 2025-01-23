@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using MicroZoo.Infrastructure.MassTransit;
+﻿using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.ZookeepersApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.ZokeepersApi;
@@ -10,7 +9,6 @@ namespace MicroZoo.AnimalsApi.Services
     public class AnimalTypesRequestReceivingService : IAnimalTypesRequestReceivingService
     {
         private readonly IAnimalsApiService _animalsService;
-        //private readonly IServiceProvider _provider;
         private readonly IConnectionService _connectionService;
         private readonly IResponsesReceiverFromRabbitMq _receiverFromRabbitMq;
 
@@ -20,7 +18,6 @@ namespace MicroZoo.AnimalsApi.Services
             IResponsesReceiverFromRabbitMq receiverFromRabbitMq)
         {
             _animalsService = animalsService;
-            //_provider = provider;
             _connectionService = connectionService;
             _receiverFromRabbitMq = receiverFromRabbitMq;
         }
@@ -65,16 +62,5 @@ namespace MicroZoo.AnimalsApi.Services
 
         public async Task<GetAnimalTypesResponse> GetAnimalTypesByIdsAsync(int[] animalTypesIds) =>
             await _animalsService.GetAnimalTypesByIdsAsync(animalTypesIds);
-
-        /*private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl)
-            where TIn : class
-            where TOut : class
-        {
-            var clientFactory = _provider.GetRequiredService<IClientFactory>();
-
-            var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
-            var response = await client.GetResponse<TOut>(request);
-            return response.Message;
-        }*/
     }
 }

@@ -44,7 +44,6 @@ namespace MicroZoo.AnimalsApi.Consumers
                 return;
             }
 
-            //var response = await _service.GetAnimalTypeAsync(context.Message.Id);
             var response = await _receivingService.GetAnimalTypeAsync(context.Message.Id);
 
             response.OperationId = context.Message.OperationId;

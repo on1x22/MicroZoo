@@ -48,7 +48,6 @@ namespace MicroZoo.AnimalsApi.Consumers
 
             var id = context.Message.Id;
 
-            //var response = await _service.DeleteAnimalAsync(id);
             var response = await _receivingService.DeleteAnimalAsync(id);
             response.OperationId = context.Message.OperationId;
 
