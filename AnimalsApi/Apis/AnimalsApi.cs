@@ -89,7 +89,7 @@ namespace MicroZoo.AnimalsApi.Apis
         }
 
         private async Task<IResult> GetAnimalsByTypes([FromBody] List<int> animalTypeIds, IAnimalRepository repository) =>
-            await repository.GetAnimalsByTypes(animalTypeIds) is List<Animal> animals
+            await repository.GetAnimalsByTypesAsync(animalTypeIds) is List<Animal> animals
             ? Results.Ok(animals)
             : Results.NotFound("Not all animal type Ids exist in database");
 
