@@ -12,6 +12,8 @@ namespace MicroZoo.Infrastructure.Models.Animals
         public int Id { get; set; }
         [Column("description"), MaxLength(50), NotNull]
         public string Description { get; set; }
+        [Column("deleted")]
+        public bool Deleted { get; set; }
 
         public List<Animal> Animals { get; set; }
     }

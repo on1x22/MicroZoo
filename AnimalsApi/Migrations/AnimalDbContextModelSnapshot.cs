@@ -21,7 +21,7 @@ namespace AnimalsApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MicroZoo.AnimalsApi.Models.Animal", b =>
+            modelBuilder.Entity("MicroZoo.Infrastructure.Models.Animals.Animal", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,6 +33,10 @@ namespace AnimalsApi.Migrations
                     b.Property<int>("AnimalTypeId")
                         .HasColumnType("integer")
                         .HasColumnName("animaltypeid");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("deleted");
 
                     b.Property<string>("Link")
                         .IsRequired()
@@ -53,7 +57,7 @@ namespace AnimalsApi.Migrations
                     b.ToTable("animals");
                 });
 
-            modelBuilder.Entity("MicroZoo.AnimalsApi.Models.AnimalType", b =>
+            modelBuilder.Entity("MicroZoo.Infrastructure.Models.Animals.AnimalType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,6 +65,10 @@ namespace AnimalsApi.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("deleted");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -73,9 +81,9 @@ namespace AnimalsApi.Migrations
                     b.ToTable("animaltypes");
                 });
 
-            modelBuilder.Entity("MicroZoo.AnimalsApi.Models.Animal", b =>
+            modelBuilder.Entity("MicroZoo.Infrastructure.Models.Animals.Animal", b =>
                 {
-                    b.HasOne("MicroZoo.AnimalsApi.Models.AnimalType", "AnimalType")
+                    b.HasOne("MicroZoo.Infrastructure.Models.Animals.AnimalType", "AnimalType")
                         .WithMany("Animals")
                         .HasForeignKey("AnimalTypeId")
                         .OnDelete(DeleteBehavior.SetNull)
@@ -84,7 +92,7 @@ namespace AnimalsApi.Migrations
                     b.Navigation("AnimalType");
                 });
 
-            modelBuilder.Entity("MicroZoo.AnimalsApi.Models.AnimalType", b =>
+            modelBuilder.Entity("MicroZoo.Infrastructure.Models.Animals.AnimalType", b =>
                 {
                     b.Navigation("Animals");
                 });
