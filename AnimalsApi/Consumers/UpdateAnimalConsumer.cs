@@ -8,6 +8,9 @@ using MicroZoo.AuthService.Policies;
 
 namespace MicroZoo.AnimalsApi.Consumers
 {
+    /// <summary>
+    /// Provides receive requests from RabbitMq to update animal data in database
+    /// </summary>
     public class UpdateAnimalConsumer : IConsumer<UpdateAnimalRequest>
     {
         private readonly IAnimalsApiService _service;
@@ -15,6 +18,13 @@ namespace MicroZoo.AnimalsApi.Consumers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="UpdateAnimalConsumer"/> class
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
         public UpdateAnimalConsumer(IAnimalsApiService service,
             IAnimalsRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
@@ -26,6 +36,12 @@ namespace MicroZoo.AnimalsApi.Consumers
             _connectionService = connectionService;
         }
 
+        /// <summary>
+        /// Asynchronous processes requests from RabbitMq to update animal data in database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="BadRequestException"></exception>
         [PolicyValidation(Policy = "AnimalsApi.Update")]
         public async Task Consume(ConsumeContext<UpdateAnimalRequest> context)
         {

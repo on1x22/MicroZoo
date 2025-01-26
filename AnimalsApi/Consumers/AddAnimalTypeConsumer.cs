@@ -8,6 +8,9 @@ using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 
 namespace MicroZoo.AnimalsApi.Consumers
 {
+    /// <summary>
+    /// Provides receive requests from RabbitMq to add animal type to database
+    /// </summary>
     public class AddAnimalTypeConsumer : IConsumer<AddAnimalTypeRequest>
     {
         private readonly IAnimalsApiService _service;
@@ -15,6 +18,13 @@ namespace MicroZoo.AnimalsApi.Consumers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="AddAnimalTypeConsumer"/> class
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
         public AddAnimalTypeConsumer(IAnimalsApiService service,
             IAnimalTypesRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
@@ -26,6 +36,12 @@ namespace MicroZoo.AnimalsApi.Consumers
             _connectionService = connectionService;
         }
 
+        /// <summary>
+        /// Asynchronous processes requests from RabbitMq to add animal type to database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="BadRequestException"></exception>
         [PolicyValidation(Policy = "AnimalsApi.Create")]
         public async Task Consume(ConsumeContext<AddAnimalTypeRequest> context)
         {

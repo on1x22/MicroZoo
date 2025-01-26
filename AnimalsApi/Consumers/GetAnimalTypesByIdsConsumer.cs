@@ -7,6 +7,10 @@ using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 
 namespace MicroZoo.AnimalsApi.Consumers
 {
+    /// <summary>
+    /// Provides receive requests from RabbitMq to return animal types from database 
+    /// which types matches with specified
+    /// </summary>
     public class GetAnimalTypesByIdsConsumer : IConsumer<GetAnimalTypesByIdsRequest>
     {
         private readonly IAnimalsApiService _service;
@@ -14,6 +18,13 @@ namespace MicroZoo.AnimalsApi.Consumers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="GetAnimalTypesByIdsConsumer"/> class
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
         public GetAnimalTypesByIdsConsumer(IAnimalsApiService service,
             IAnimalTypesRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
@@ -25,6 +36,12 @@ namespace MicroZoo.AnimalsApi.Consumers
             _connectionService = connectionService;
         }
 
+        /// <summary>
+        /// Asynchronous processes requests from RabbitMq to return animal types from database 
+        /// which types matches with specified
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         [PolicyValidation(Policy = "AnimalsApi.Read")]
         public async Task Consume(ConsumeContext<GetAnimalTypesByIdsRequest> context)
         {

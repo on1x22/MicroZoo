@@ -140,7 +140,7 @@ namespace MicroZoo.AnimalsApi.Services
         }
 
         /// <summary>
-        /// Asynchronous returns information about animals which types matchs with specified
+        /// Asynchronous returns information about animals which types matches with specified
         /// </summary>
         /// <param name="animalTypeIds"></param>
         /// <returns>GetAnimalsResponse with animals</returns>

@@ -9,7 +9,7 @@ using MicroZoo.AuthService.Policies;
 namespace MicroZoo.AnimalsApi.Consumers
 {
     /// <summary>
-    /// Provides receive requests to add animals to database
+    /// Provides receive requests from RabbitMq to add animal to database
     /// </summary>
     public class AddAnimalConsumer : IConsumer<AddAnimalRequest>
     {
@@ -37,7 +37,7 @@ namespace MicroZoo.AnimalsApi.Consumers
         }
 
         /// <summary>
-        /// Asynchronous processes requests to add animals to database
+        /// Asynchronous processes requests from RabbitMq to add animal to database
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
