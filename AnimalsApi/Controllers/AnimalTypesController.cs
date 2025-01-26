@@ -8,6 +8,9 @@ using MicroZoo.JwtConfiguration;
 
 namespace MicroZoo.AnimalsApi.Controllers
 {
+    /// <summary>
+    /// Controller for handling animal types requests
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     public class AnimalTypesController : ControllerBase
@@ -17,6 +20,13 @@ namespace MicroZoo.AnimalsApi.Controllers
         private readonly IConnectionService _connectionService;
         private readonly IRabbitMqResponseErrorsHandler _errorsHandler;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="AnimalTypesController"/> class
+        /// </summary>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
+        /// <param name="errorsHandler"></param>
         public AnimalTypesController(IAnimalTypesRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
             IConnectionService connectionService,

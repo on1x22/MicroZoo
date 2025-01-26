@@ -8,6 +8,9 @@ using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 
 namespace MicroZoo.AnimalsApi.Consumers
 {
+    /// <summary>
+    /// Provides receive requests from RabbitMq to update animal type data in database
+    /// </summary>
     public class UpdateAnimalTypeConsumer : IConsumer<UpdateAnimalTypeRequest>
     {
         private readonly IAnimalsApiService _service;
@@ -15,6 +18,13 @@ namespace MicroZoo.AnimalsApi.Consumers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="UpdateAnimalTypeConsumer"/> class
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
         public UpdateAnimalTypeConsumer(IAnimalsApiService service,
             IAnimalTypesRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
@@ -26,6 +36,12 @@ namespace MicroZoo.AnimalsApi.Consumers
             _connectionService = connectionService;
         }
 
+        /// <summary>
+        /// Asynchronous processes requests from RabbitMq to update animal type data in database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="BadRequestException"></exception>
         [PolicyValidation(Policy = "AnimalsApi.Update")]
         public async Task Consume(ConsumeContext<UpdateAnimalTypeRequest> context)
         {
@@ -49,7 +65,6 @@ namespace MicroZoo.AnimalsApi.Consumers
 
             var animalTypeDto = context.Message.AnimalTypeDto ?? throw new BadRequestException("Request does not contain data");
 
-            //var response = await _service.UpdateAnimalTypeAsync(id, animalTypeDto);
             var response = await _receivingService.UpdateAnimalTypeAsync(id, animalTypeDto);
 
             response.OperationId = context.Message.OperationId;

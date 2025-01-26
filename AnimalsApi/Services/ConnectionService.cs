@@ -18,7 +18,14 @@
             _zookeepersApiUrl = new Uri(configuration["ConnectionStrings:ZookeepersApiRmq"]!);
         }
 
+        /// <summary>
+        /// Connection string to IdentityApi
+        /// </summary>
         public Uri IdentityApiUrl { get => _identityApiUrl; }
+        
+        /// <summary>
+        /// Connection string to ZookeepersApi
+        /// </summary>
         public Uri ZookeepersApiUrl { get => _zookeepersApiUrl; }
     }
 }

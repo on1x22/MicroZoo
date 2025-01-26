@@ -7,6 +7,9 @@ using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 
 namespace MicroZoo.AnimalsApi.Consumers
 {
+    /// <summary>
+    /// Provides receive requests from RabbitMq to delete animal type from database
+    /// </summary>
     public class DeleteAnimalTypeConsumer : IConsumer<DeleteAnimalTypeRequest>
     {
         private readonly IAnimalsApiService _service;
@@ -14,6 +17,13 @@ namespace MicroZoo.AnimalsApi.Consumers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="DeleteAnimalTypeConsumer"/> class
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
         public DeleteAnimalTypeConsumer(IAnimalsApiService service,
             IAnimalTypesRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
@@ -25,6 +35,11 @@ namespace MicroZoo.AnimalsApi.Consumers
             _connectionService = connectionService;
         }
 
+        /// <summary>
+        /// Asynchronous processes requests from RabbitMq to delete animal type from database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         [PolicyValidation(Policy = "AnimalsApi.Delete")]
         public async Task Consume(ConsumeContext<DeleteAnimalTypeRequest> context)
         {
@@ -47,7 +62,6 @@ namespace MicroZoo.AnimalsApi.Consumers
             var id = context.Message.Id;
             var accessToken = context.Message.AccessToken;
 
-            //var response = await _service.DeleteAnimalTypeAsync(id);
             var response = await _receivingService.DeleteAnimalTypeAsync(id, accessToken);
 
             response.OperationId = context.Message.OperationId;

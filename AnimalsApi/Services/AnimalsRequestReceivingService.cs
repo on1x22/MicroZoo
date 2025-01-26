@@ -1,58 +1,74 @@
-﻿using MassTransit;
-using MicroZoo.AnimalsApi.Services;
-using MicroZoo.Infrastructure.MassTransit;
+﻿using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi;
 using MicroZoo.Infrastructure.Models.Animals.Dto;
 
 namespace MicroZoo.AnimalsApi.Services
 {
+    /// <summary>
+    /// Provides sending requests to another microservices if it's necessary.
+    /// If sending not required then processing moves on to the next service
+    /// </summary>
     public class AnimalsRequestReceivingService : IAnimalsRequestReceivingService
     {
-        private readonly IServiceProvider _provider;
         private readonly IAnimalsApiService _animalsService;
-        private readonly IConnectionService _connectionService;
-        private readonly IResponsesReceiverFromRabbitMq _receiver;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="AnimalsRequestReceivingService"/> class
+        /// </summary> 
         public AnimalsRequestReceivingService(IServiceProvider provider, 
             IAnimalsApiService animalsService,
             IConnectionService connectionService,
             IResponsesReceiverFromRabbitMq receiver)
         {
-            _provider = provider;
             _animalsService = animalsService;
-            _connectionService = connectionService;
-            _receiver = receiver;
         }
 
+        /// <summary>
+        /// Asynchronous returns information about all animals
+        /// </summary>
+        /// <returns>GetAnimalsResponse</returns>
         public async Task<GetAnimalsResponse> GetAllAnimalsAsync() =>        
              await _animalsService.GetAllAnimalsAsync();
-        
+
+        /// <summary>
+        /// Asynchronous returns information about specified animal
+        /// </summary>
+        /// <param name="animalId"></param>
+        /// <returns>GetAnimalResponse</returns>
         public async Task<GetAnimalResponse> GetAnimalAsync(int animalId) =>        
             await _animalsService.GetAnimalAsync(animalId);
-        
-        public async Task<GetAnimalResponse> AddAnimalAsync(AnimalDto animalDto) =>
-            await _animalsService.AddAnimalAsync(animalDto);        
 
+        /// <summary>
+        /// Asynchronous adds new animal
+        /// </summary>
+        /// <param name="animalDto"></param>
+        /// <returns>GetAnimalResponse with added animal</returns>
+        public async Task<GetAnimalResponse> AddAnimalAsync(AnimalDto animalDto) =>
+            await _animalsService.AddAnimalAsync(animalDto);
+
+        /// <summary>
+        /// Asynchronous updates information about specified animal
+        /// </summary>
+        /// <param name="animalId"></param>
+        /// <param name="animalDto"></param>
+        /// <returns>GetAnimalResponse with updated animal</returns>
         public async Task<GetAnimalResponse> UpdateAnimalAsync(int animalId, AnimalDto animalDto) =>
             await _animalsService.UpdateAnimalAsync(animalId, animalDto);
 
+        /// <summary>
+        /// Asynchronous deletes animal
+        /// </summary>
+        /// <param name="animalId"></param>
+        /// <returns>GetAnimalResponse with deleted animal</returns>
         public async Task<GetAnimalResponse> DeleteAnimalAsync(int animalId) =>
             await _animalsService.DeleteAnimalAsync(animalId);
 
+        /// <summary>
+        /// Asynchronous returns information about animals which types matchs with specified
+        /// </summary>
+        /// <param name="animalTypesIds"></param>
+        /// <returns>GetAnimalsResponse with animals</returns>
         public async Task<GetAnimalsResponse> GetAnimalsByTypesAsync(int[] animalTypesIds) =>
             await _animalsService.GetAnimalsByTypesAsync(animalTypesIds);
-
-        
-
-        /*private async Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request)
-            where TIn : class
-            where TOut : class
-        {
-            var clientFactory = _provider.GetRequiredService<IClientFactory>();
-
-            var client = clientFactory.CreateRequestClient<TIn>(_rabbitMqUrl);
-            var response = await client.GetResponse<TOut>(request);
-            return response.Message;
-        }*/
     }
 }

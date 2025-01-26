@@ -1,11 +1,18 @@
-﻿using MicroZoo.PersonsApi.Models;
-using MicroZoo.PersonsApi.Repository;
+﻿using MicroZoo.PersonsApi.Repository;
 using MicroZoo.Infrastructure.Models.Persons;
 
 namespace MicroZoo.PersonsApi.Apis
 {
+    /// <summary>
+    /// Obsilet class
+    /// </summary>
+    [Obsolete]
     public class PersonsApi : IApi
     {
+        /// <summary>
+        /// Registers all apis
+        /// </summary>
+        /// <param name="app"></param>
         public void Register(WebApplication app)
         {
             //app.MapGet("/", () => "Hello PersonApi!");
@@ -28,7 +35,7 @@ namespace MicroZoo.PersonsApi.Apis
             ? Results.Ok(person)
             : Results.NotFound();
 
-        internal static async Task<IResult> UpdatePersonApi(Person person, IPersonRepository repository)
+        internal static /*async Task<*/IResult/*>*/ UpdatePersonApi(Person person, IPersonRepository repository)
         {
             //await repository.UpdatePersonAsync(person);
             return Results.NoContent();
