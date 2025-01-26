@@ -22,7 +22,7 @@ namespace MicroZoo.AnimalsApi.DbContexts
         public DbSet<Animal> Animals { get; set; }
 
         /// <summary>
-        /// bSet for AnimalTypes table in database
+        /// DSet for AnimalTypes table in database
         /// </summary>
         public DbSet<AnimalType> AnimalTypes { get; set; }
 

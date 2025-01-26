@@ -7,6 +7,10 @@ using MicroZoo.PersonsApi.Services;
 
 namespace MicroZoo.PersonsApi.Consumers
 {
+    /// <summary>
+    /// Provides receive requests from RabbitMq to get information about subordinate personnel 
+    /// of specified person from database
+    /// </summary>
     public class GetSubordinatePersonnelConsumer : IConsumer<GetSubordinatePersonnelRequest>
     {
         private readonly IPersonsApiService _service;
@@ -14,6 +18,13 @@ namespace MicroZoo.PersonsApi.Consumers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="GetSubordinatePersonnelConsumer"/> class
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
         public GetSubordinatePersonnelConsumer(IPersonsApiService service,
             IPersonsRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
@@ -25,6 +36,12 @@ namespace MicroZoo.PersonsApi.Consumers
             _connectionService = connectionService;
         }
 
+        /// <summary>
+        /// Asynchronous processes requests from RabbitMq to get information 
+        /// about subordinate personnel of specified person from database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         [PolicyValidation(Policy = "PersonsApi.Read")]
         public async Task Consume(ConsumeContext<GetSubordinatePersonnelRequest> context)
         {

@@ -7,6 +7,9 @@ using MicroZoo.PersonsApi.Services;
 
 namespace MicroZoo.PersonsApi.Consumers
 {
+    /// <summary>
+    /// Provides receive requests from RabbitMq to change manager id for personnel in database
+    /// </summary>
     public class ChangeManagerForSubordinatePersonnelConsumer : 
         IConsumer<ChangeManagerForSubordinatePersonnelRequest>
     {
@@ -15,6 +18,14 @@ namespace MicroZoo.PersonsApi.Consumers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of 
+        /// <see cref="ChangeManagerForSubordinatePersonnelConsumer"/> class
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
         public ChangeManagerForSubordinatePersonnelConsumer(IPersonsApiService service,
             IPersonsRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
@@ -26,6 +37,12 @@ namespace MicroZoo.PersonsApi.Consumers
             _connectionService = connectionService;
         }
 
+        /// <summary>
+        /// Asynchronous processes requests from RabbitMq to change manager id 
+        /// for personnel in database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         [PolicyValidation(Policy = "PersonsApi.Update")]
         public async Task Consume(ConsumeContext<ChangeManagerForSubordinatePersonnelRequest> context)
         {

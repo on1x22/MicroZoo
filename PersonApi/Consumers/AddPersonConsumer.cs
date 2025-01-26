@@ -8,6 +8,9 @@ using MicroZoo.PersonsApi.Services;
 
 namespace MicroZoo.PersonsApi.Consumers
 {
+    /// <summary>
+    /// Provides receive requests from RabbitMq to add person to database
+    /// </summary>
     public class AddPersonConsumer : IConsumer<AddPersonRequest>
     {
         private readonly IPersonsApiService _service;
@@ -15,6 +18,13 @@ namespace MicroZoo.PersonsApi.Consumers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="AddPersonConsumer"/> class
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
         public AddPersonConsumer(IPersonsApiService service, 
             IPersonsRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
@@ -26,6 +36,12 @@ namespace MicroZoo.PersonsApi.Consumers
             _connectionService = connectionService;
         }
 
+        /// <summary>
+        /// Asynchronous processes requests from RabbitMq to add person to database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="BadRequestException"></exception>
         [PolicyValidation(Policy = "PersonsApi.Create")]
         public async Task Consume(ConsumeContext<AddPersonRequest> context)
         {
