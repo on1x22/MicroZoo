@@ -6,6 +6,7 @@
         BadRequest400,
         Unauthorized401,
         Forbiden403,
-        NotFound404
+        NotFound404,
+        InternalServerError500
     }
 }

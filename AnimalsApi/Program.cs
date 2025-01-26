@@ -7,9 +7,7 @@ using MicroZoo.AnimalsApi.Repository;
 using MicroZoo.AnimalsApi.Services;
 using MicroZoo.AuthService.Services;
 using MicroZoo.Infrastructure.MassTransit;
-using MicroZoo.Infrastructure.MassTransit.Requests;
 using System.Reflection;
-using System.Xml.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 

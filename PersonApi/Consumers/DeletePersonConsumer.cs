@@ -7,6 +7,9 @@ using MicroZoo.PersonsApi.Services;
 
 namespace MicroZoo.PersonsApi.Consumers
 {
+    /// <summary>
+    /// Provides receive requests from RabbitMq to delete person from database
+    /// </summary>
     public class DeletePersonConsumer : IConsumer<DeletePersonRequest>
     {
         //private readonly IPersonsApiService _service;
@@ -14,6 +17,12 @@ namespace MicroZoo.PersonsApi.Consumers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="DeletePersonConsumer"/> class
+        /// </summary>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
         public DeletePersonConsumer(//IPersonsApiService service,
             IPersonsRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
@@ -25,6 +34,11 @@ namespace MicroZoo.PersonsApi.Consumers
             _connectionService = connectionService;
         }
 
+        /// <summary>
+        /// Asynchronous processes requests from RabbitMq to delete person from database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         [PolicyValidation(Policy = "PersonsApi.Delete")]
         public async Task Consume(ConsumeContext<DeletePersonRequest> context)
         {

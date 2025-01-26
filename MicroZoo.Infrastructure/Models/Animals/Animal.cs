@@ -16,6 +16,8 @@ namespace MicroZoo.Infrastructure.Models.Animals
         public string Link { get; set; }
         [Column("animaltypeid"), NotNull]
         public int AnimalTypeId { get; set; } // foreign key
+        [Column("deleted")]
+        public bool Deleted { get; set; }
 
         public AnimalType AnimalType { get; set; }
     }

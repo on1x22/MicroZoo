@@ -32,4 +32,8 @@
 	<InternalsVisibleTo Include="PersonsApi.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

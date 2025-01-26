@@ -37,6 +37,8 @@ namespace MicroZoo.Infrastructure.MassTransit
                             return new ForbidResult(response.ErrorMessage!);
                         case ErrorCodes.NotFound404:
                             return new NotFoundObjectResult(response.ErrorMessage);
+                        case ErrorCodes.InternalServerError500:
+                            return new BadRequestObjectResult(response.ErrorMessage!);
                     }
                     return new BadRequestResult();
                 }

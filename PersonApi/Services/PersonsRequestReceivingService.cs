@@ -15,7 +15,6 @@ namespace MicroZoo.PersonsApi.Services
         private readonly IPersonsApiService _personsService;
         private readonly IResponsesReceiverFromRabbitMq _receiverFromRabbitMq;
         private readonly IConnectionService _connectionService;
-        //private readonly IRabbitMqResponseErrorsHandler _errorsHandler;
 
         /// <summary>
         /// Initializes a new instance of <see cref="PersonsRequestReceivingService"/> class 
@@ -23,27 +22,46 @@ namespace MicroZoo.PersonsApi.Services
         /// <param name="personsService"></param>
         /// <param name="receiverFromRabbitMq"></param>
         /// <param name="connectionService"></param>
-        /// <param name="errorsHandler"></param>
         public PersonsRequestReceivingService(IPersonsApiService personsService,
             IResponsesReceiverFromRabbitMq receiverFromRabbitMq,
-            IConnectionService connectionService/*,
-            IRabbitMqResponseErrorsHandler errorsHandler*/)
+            IConnectionService connectionService)
         {
             _personsService = personsService;
             _receiverFromRabbitMq = receiverFromRabbitMq;
             _connectionService = connectionService;
-            //_errorsHandler = errorsHandler;
         }
 
+        /// <summary>
+        /// Asynchronous returns information about specified person
+        /// </summary>
+        /// <param name="personId"></param>
+        /// <returns></returns>
         public async Task<GetPersonResponse> GetPersonAsync(int personId) =>
             await _personsService.GetPersonAsync(personId);
 
+        /// <summary>
+        /// Asynchronous adds new person
+        /// </summary>
+        /// <param name="personDto"></param>
+        /// <returns></returns>
         public async Task<GetPersonResponse> AddPersonAsync(PersonDto personDto) =>
             await _personsService.AddPersonAsync(personDto);
 
+        /// <summary>
+        /// Asynchronous updates information about specified person
+        /// </summary>
+        /// <param name="personId"></param>
+        /// <param name="personDto"></param>
+        /// <returns></returns>
         public async Task<GetPersonResponse> UpdatePersonAsync(int personId, PersonDto personDto) =>
             await _personsService.UpdatePersonAsync(personId, personDto);
 
+        /// <summary>
+        /// Asynchronous deletes person
+        /// </summary>
+        /// <param name="personId"></param>
+        /// <param name="accessToken"></param>
+        /// <returns></returns>
         public async Task<GetPersonResponse> SoftDeletePersonAsync(int personId, string accessToken)
         {
             var response = new GetPersonResponse();
@@ -84,9 +102,21 @@ namespace MicroZoo.PersonsApi.Services
             return response;
         }
 
+        /// <summary>
+        /// Asynchronous returns information about subordinate personnel 
+        /// of specified person
+        /// </summary>
+        /// <param name="personId"></param>
+        /// <returns></returns>
         public async Task<GetPersonsResponse> GetSubordinatePersonnelAsync(int personId) =>
             await _personsService.GetSubordinatePersonnelAsync(personId);
 
+        /// <summary>
+        /// Asynchronous changes manager id for personnel
+        /// </summary>
+        /// <param name="currentManagerId"></param>
+        /// <param name="newManagerId"></param>
+        /// <returns></returns>
         public async Task<GetPersonsResponse> ChangeManagerForSubordinatePersonnel(int currentManagerId, 
                                                                                    int newManagerId) =>
             await _personsService.ChangeManagerForSubordinatePersonnel(currentManagerId, 
