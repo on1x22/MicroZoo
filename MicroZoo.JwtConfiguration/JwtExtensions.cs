@@ -7,14 +7,17 @@ using System.Text;
 
 namespace MicroZoo.JwtConfiguration
 {
+    /// <summary>
+    /// Provides functionality to process JWT-tokens
+    /// </summary>
     public static class JwtExtensions
     {
+        /// <summary>
+        /// Registers authentication service with JWT Bearer  
+        /// </summary>
+        /// <param name="services"></param>
         public static void AddJwtAuthentication(this IServiceCollection services)
         {
-            /*var path = Directory.GetCurrentDirectory();
-
-            var ddd = AppDomain.CurrentDomain.BaseDirectory;*/
-
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json").Build();
@@ -24,7 +27,7 @@ namespace MicroZoo.JwtConfiguration
             var iss = jwtSettings["validIssuer"];
             var aud = jwtSettings["validAudience"];
             var sk = jwtSettings["securityKey"];
-            //var path = Path.Combine(Directory.GetCurrentDirectory(), "Settings.json");
+
             services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -46,6 +49,11 @@ namespace MicroZoo.JwtConfiguration
                 });
         }
 
+        /// <summary>
+        /// Extract access token from authorization header of http request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public static string GetAccessTokenFromRequest(HttpRequest request)
         {
             var authorizationHeader = request.Headers["Authorization"]!.ToString();
