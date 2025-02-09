@@ -18,7 +18,7 @@ namespace MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi
         public Animal? Animal { get; set; }
 
         /// <summary>
-        /// Message describing erro
+        /// Message describing error
         /// </summary>
         public string? ErrorMessage { get; set; }
 
