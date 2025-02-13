@@ -15,7 +15,7 @@ namespace MicroZoo.Infrastructure.MassTransit.Responses.AnimalsApi
         /// <summary>
         /// Information about animals
         /// </summary>
-        public List<Animal> Animals { get; set; }
+        public List<Animal>? Animals { get; set; }
 
         /// <summary>
         /// Message describing error
