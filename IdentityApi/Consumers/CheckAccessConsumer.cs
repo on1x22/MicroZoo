@@ -14,24 +14,29 @@ namespace MicroZoo.IdentityApi.Consumers
         private readonly JwtHandler _jwtHandler;
         private readonly UserManager<User> _userManager;
         private readonly IdentityApiDbContext _dbContext;
+        private readonly ILogger<CheckAccessConsumer> _logger;
 
         public CheckAccessConsumer(JwtHandler jwtHandler,
                                    UserManager<User> userManager,
-                                   IdentityApiDbContext dbContext)
+                                   IdentityApiDbContext dbContext,
+                                   ILogger<CheckAccessConsumer> logger)
         {
             _jwtHandler = jwtHandler;
             _userManager = userManager;
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         public async Task Consume(ConsumeContext<CheckAccessRequest> context)
-        {
+        {            
             var response = new CheckAccessResponse();
             response.OperationId = context.Message.OperationId;
 
             var claimsPrincipal = _jwtHandler.GetPrincipalFromToken(context.Message.AccessToken!);
+            _logger.LogInformation($"A request for access was made by user {claimsPrincipal.Identity!.Name}");
             if (claimsPrincipal == null)
             {
+                _logger.LogInformation($"User {claimsPrincipal!.Identity!.Name} not found");
                 response.IsAuthenticated = false;
                 await context.RespondAsync(response);
                 return;
@@ -39,6 +44,7 @@ namespace MicroZoo.IdentityApi.Consumers
 
             if (!claimsPrincipal!.Identity!.IsAuthenticated)
             {
+                _logger.LogInformation($"User {claimsPrincipal!.Identity!.Name} is not authenticated");
                 response.IsAuthenticated = false;
                 await context.RespondAsync(response);
                 return;
@@ -46,6 +52,7 @@ namespace MicroZoo.IdentityApi.Consumers
 
             if (context.Message.Policies == null || context.Message.Policies.Count == 0)
             {
+                _logger.LogInformation($"Access for user {claimsPrincipal!.Identity!.Name} is not confirmed");
                 response.IsAccessConfirmed = false;
                 await context.RespondAsync(response);
                 return;
@@ -55,11 +62,17 @@ namespace MicroZoo.IdentityApi.Consumers
             var checkedPolicies = context.Message.Policies;
 
             var user = await _userManager.FindByNameAsync(userName!);
-            if (user == null)            
+            if (user == null)
+            {
+                _logger.LogInformation($"User {user!.UserName} not found");
                 response.IsAuthenticated = false;
-            
+            }
+
             if (user!.Deleted == true)
+            {
+                _logger.LogInformation($"Status of the user {user!.UserName} is \"Deleted\"");
                 response.IsAuthenticated = false;
+            }
 
             var allowedRequirementsOfUser = await GetAllowedRequirementsOfUser(user);
 
@@ -67,11 +80,13 @@ namespace MicroZoo.IdentityApi.Consumers
                 allowedRequirementsOfUser.Contains(req));
             if (!isRequirementsMatch)
             {
+                _logger.LogInformation($"User {user!.UserName} have not necessary requirements");
                 response.IsAuthenticated = true;
                 response.IsAccessConfirmed = false;
             }
             else
             {
+                _logger.LogInformation($"Access confirm for user {user!.UserName}");
                 response.IsAuthenticated = true;
                 response.IsAccessConfirmed = true;
             }
@@ -115,7 +130,7 @@ namespace MicroZoo.IdentityApi.Consumers
                 })
                 .Select(x => x.RequirementName).ToListAsync();
 
-            return allowedRequirementsOfUser;
+            return allowedRequirementsOfUser!;
         }
     }
 }

@@ -1,22 +1,23 @@
 
-using MicroZoo.IdentityApi.DbContexts;
-using Microsoft.EntityFrameworkCore;
-using MicroZoo.IdentityApi.Repositories;
-using MicroZoo.IdentityApi.Services;
-using MicroZoo.IdentityApi.Models.Mappers;
-using MicroZoo.Infrastructure.Models.Users;
-using MicroZoo.Infrastructure.Models.Roles;
-using Microsoft.AspNetCore.Identity;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
-using MicroZoo.IdentityApi.JwtFeatures;
 using MicroZoo.EmailService;
-using MicroZoo.IdentityApi.Policies;
-using Microsoft.AspNetCore.Authorization;
-using MassTransit;
 using MicroZoo.IdentityApi.Consumers;
+using MicroZoo.IdentityApi.DbContexts;
+using MicroZoo.IdentityApi.JwtFeatures;
+using MicroZoo.IdentityApi.Policies;
+using MicroZoo.IdentityApi.Repositories;
+using MicroZoo.IdentityApi.Services;
+using MicroZoo.Infrastructure.Models.Roles;
+using MicroZoo.Infrastructure.Models.Users;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
+using System.Text;
 
 namespace MicroZoo.IdentityApi
 {
@@ -39,6 +40,23 @@ namespace MicroZoo.IdentityApi
 
         static void RegisterServices(IServiceCollection services, WebApplicationBuilder builder)
         {
+            builder.Host.UseSerilog((context, configuration) =>
+            {
+                configuration.Enrich.FromLogContext()
+                    .Enrich.WithMachineName()
+                    .WriteTo.Console()
+                    .WriteTo.Elasticsearch(
+                        new ElasticsearchSinkOptions(new Uri(context.Configuration["ElasticConfiguration:Uri"]!))
+                        {
+                            IndexFormat = $"{context.Configuration["ApplicationName"]}-log-{context.HostingEnvironment.EnvironmentName?.ToLower().Replace(".", "-")}-{DateTime.Now:yyyy-MM}",
+                            AutoRegisterTemplate = true,
+                            NumberOfShards = 2,
+                            NumberOfReplicas = 1
+                        })
+                    .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
+                    .ReadFrom.Configuration(context.Configuration);
+            });
+
             services.AddDbContext<IdentityApiDbContext>(opts =>
                 opts.UseNpgsql(builder.Configuration.GetConnectionString("IdentityApi")));
 

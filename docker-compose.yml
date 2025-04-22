@@ -82,6 +82,7 @@ services:
     - microzoo_net
     depends_on:
     - rabbitmq
+    - kibana
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -99,6 +100,38 @@ services:
     networks: 
     - microzoo_net
 
+  elasticsearch:
+    image: docker.io/library/elasticsearch:7.16.1
+    container_name: elasticsearch
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=es01
+      - bootstrap.memory_lock=true
+      - "ES_JAVAOPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - d:/data/elasticsearch/microzoo:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - microzoo_net
+
+  kibana:
+    image: docker.io/library/kibana:7.16.1
+    container_name: kibana
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    depends_on: 
+      - elasticsearch
+    networks:
+      - microzoo_net
 
 
 networks:
