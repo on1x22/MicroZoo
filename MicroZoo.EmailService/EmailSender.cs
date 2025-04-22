@@ -3,15 +3,26 @@ using MailKit.Net.Smtp;
 
 namespace MicroZoo.EmailService
 {
+    /// <summary>
+    /// Provides sending a message to a mailing list
+    /// </summary>
     public class EmailSender : IEmailSender
     {
         private readonly EmailConfiguration _emailConfiguration;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="EmailSender"/> class
+        /// </summary>
+        /// <param name="emailConfiguration"></param>
         public EmailSender(EmailConfiguration emailConfiguration)
         {
             _emailConfiguration = emailConfiguration;
         }
 
+        /// <summary>
+        /// Sends a message to a mailing list
+        /// </summary>
+        /// <param name="message"></param>
         public void SendEmail(Message message)
         {
             var emailMessage = CreateEmailMessage(message);
@@ -19,6 +30,12 @@ namespace MicroZoo.EmailService
             Send(emailMessage);
         }
 
+
+        /// <summary>
+        /// Asynchronous sends a message to a mailing list
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public async Task SendEmailAsync(Message message) 
         {
             var emailMessage = CreateEmailMessage(message);
