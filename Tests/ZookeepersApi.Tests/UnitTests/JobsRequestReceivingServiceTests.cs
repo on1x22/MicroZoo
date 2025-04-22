@@ -16,6 +16,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         private Mock<IJobsService> _mockJobsService;
         private Mock<IConnectionService> _mockConnection;
 
+        private string accessToken = new Fixture().Create<string>();
+
         public JobsRequestReceivingServiceTests()
         {
             _mockJobsService = new Mock<IJobsService>();
@@ -30,6 +32,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
         {
             var expectedMessage = "Zookeeper Id must be more than 0";
             var negativeZookeeperId = new Fixture().Create<int>() * (-1);
+            //var accessToken = new Fixture().Create<string>();
 
             var personResponse = new GetPersonResponse() { ErrorMessage = expectedMessage };
 
@@ -40,7 +43,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.GetJobsForDateTimeRangeAsync(negativeZookeeperId, dateTimeRange, orderingOptions, pageOptions);
+            var result = await servise.GetJobsForDateTimeRangeAsync(negativeZookeeperId, 
+                dateTimeRange, orderingOptions, pageOptions, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -63,7 +67,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.GetJobsForDateTimeRangeAsync(zookeeperId, dateTimeRange, orderingOptions, pageOptions);
+            var result = await servise.GetJobsForDateTimeRangeAsync(zookeeperId, dateTimeRange, 
+                orderingOptions, pageOptions, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -85,7 +90,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.GetJobsForDateTimeRangeAsync(zookeeperId, dateTimeRange, orderingOptions, pageOptions);
+            var result = await servise.GetJobsForDateTimeRangeAsync(zookeeperId, dateTimeRange, 
+                orderingOptions, pageOptions, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -107,7 +113,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.GetJobsForDateTimeRangeAsync(zookeeperId, dateTimeRange, orderingOptions, pageOptions);
+            var result = await servise.GetJobsForDateTimeRangeAsync(zookeeperId, dateTimeRange, 
+                orderingOptions, pageOptions, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -135,7 +142,8 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.GetJobsForDateTimeRangeAsync(zookeeperId, dateTimeRange, orderingOptions, pageOptions);
+            var result = await servise.GetJobsForDateTimeRangeAsync(zookeeperId, dateTimeRange, 
+                orderingOptions, pageOptions, accessToken);
 
             Assert.Equal(expectedJobs, result.Jobs);
         }
@@ -151,7 +159,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.AddJobAsync(jobDto);
+            var result = await servise.AddJobAsync(jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -167,7 +175,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.AddJobAsync(jobDto);
+            var result = await servise.AddJobAsync(jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -184,7 +192,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.AddJobAsync(jobDto);
+            var result = await servise.AddJobAsync(jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -201,7 +209,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.AddJobAsync(jobDto);
+            var result = await servise.AddJobAsync(jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -219,7 +227,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
                         
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.AddJobAsync(jobDto);
+            var result = await servise.AddJobAsync(jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -245,7 +253,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
             
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.AddJobAsync(jobDto);
+            var result = await servise.AddJobAsync(jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -279,7 +287,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.AddJobAsync(jobDto);
+            var result = await servise.AddJobAsync(jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -317,7 +325,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.AddJobAsync(jobDto);
+            var result = await servise.AddJobAsync(jobDto, accessToken);
 
             Assert.Equal(expectedJobs, result.Jobs);
         }
@@ -337,7 +345,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.UpdateJobAsync(negativeJobId, jobDto);
+            var result = await servise.UpdateJobAsync(negativeJobId, jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -358,7 +366,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.UpdateJobAsync(jobId, jobDto);
+            var result = await servise.UpdateJobAsync(jobId, jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -379,7 +387,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.UpdateJobAsync(jobId, jobDto);
+            var result = await servise.UpdateJobAsync(jobId, jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -401,7 +409,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.UpdateJobAsync(jobId, jobDto);
+            var result = await servise.UpdateJobAsync(jobId, jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -423,7 +431,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.UpdateJobAsync(jobId, jobDto);
+            var result = await servise.UpdateJobAsync(jobId, jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -451,7 +459,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.UpdateJobAsync(jobId, jobDto);
+            var result = await servise.UpdateJobAsync(jobId, jobDto, accessToken);
 
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
@@ -480,7 +488,7 @@ namespace MicroZoo.ZookeepersApi.Tests.UnitTests
 
             var servise = new JobsRequestReceivingService(_mockJobsService.Object, _mockReceiver.Object, _mockConnection.Object);
 
-            var result = await servise.UpdateJobAsync(jobId, jobDto);
+            var result = await servise.UpdateJobAsync(jobId, jobDto, accessToken);
 
             Assert.Equal(expectedJobs, result.Jobs);
         }

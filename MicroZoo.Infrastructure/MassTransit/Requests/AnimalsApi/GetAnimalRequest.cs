@@ -1,23 +1,28 @@
-﻿using MicroZoo.Infrastructure.Models.Animals.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi
+﻿namespace MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi
 {
-    public class GetAnimalRequest
+    /// <summary>
+    /// Allows to get animal by request receiving from RabbitMq
+    /// </summary>
+    public class GetAnimalRequest : BaseRequest
     {
-        public Guid OperationId { get; set; }
-        public int Id { get; set; }
-        public string AccessToken { get; }
+        //public Guid OperationId { get; set; }
 
-        public GetAnimalRequest(int id, string accessToken)
+        /// <summary>
+        /// Animal's Id
+        /// </summary>
+        public int Id { get; set; }
+        //public string AccessToken { get; }
+
+        /// <summary>
+        /// Initialize a new instance of <see cref="GetAnimalRequest"/> class
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="accessToken"></param>
+        public GetAnimalRequest(int id, string accessToken) : base(accessToken)
         {
             OperationId = Guid.NewGuid();
             Id = id;
-            AccessToken = accessToken;
+            //AccessToken = accessToken;
         }
     }
 }

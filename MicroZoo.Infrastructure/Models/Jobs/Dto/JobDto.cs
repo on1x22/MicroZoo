@@ -1,14 +1,22 @@
 ﻿
 namespace MicroZoo.Infrastructure.Models.Jobs.Dto
 {
+    /// <summary>
+    /// DTO obtained from controllers and other microservices and 
+    /// provides information about a job
+    /// </summary>
     public class JobDto : JobWithoutStartTimeDto
     {
-        //public int ZookeeperId { get; set; }
-        //public string Description { get; set; }
+        /// <summary>
+        /// Start time of job
+        /// </summary>
         public DateTime StartTime { get; set; }
-        //public DateTime DeadlineTime { get; set; }
-        //public int Priority { get; set; }
 
+        /// <summary>
+        /// Convert instane of <see cref="JobDto"/> class to the instance 
+        /// of the <see cref="Job"/> class
+        /// </summary>
+        /// <returns></returns>
         public Job ToJob() =>
             new Job()
             {

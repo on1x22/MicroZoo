@@ -30,4 +30,8 @@
 	<InternalsVisibleTo Include="AnimalsApi.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

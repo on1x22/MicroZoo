@@ -8,6 +8,9 @@ using MicroZoo.AuthService.Policies;
 
 namespace MicroZoo.AnimalsApi.Consumers
 {
+    /// <summary>
+    /// Provides receive requests from RabbitMq to add animal to database
+    /// </summary>
     public class AddAnimalConsumer : IConsumer<AddAnimalRequest>
     {
         private readonly IAnimalsApiService _service;
@@ -15,6 +18,13 @@ namespace MicroZoo.AnimalsApi.Consumers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="AddAnimalConsumer"/> class
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="receivingService"></param>
+        /// <param name="authorizationService"></param>
+        /// <param name="connectionService"></param>
         public AddAnimalConsumer(IAnimalsApiService service,
             IAnimalsRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
@@ -26,6 +36,12 @@ namespace MicroZoo.AnimalsApi.Consumers
             _connectionService = connectionService;
         }
 
+        /// <summary>
+        /// Asynchronous processes requests from RabbitMq to add animal to database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="BadRequestException"></exception>
         [PolicyValidation(Policy = "AnimalsApi.Create")]
         public async Task Consume(ConsumeContext<AddAnimalRequest> context)
         {
@@ -50,7 +66,6 @@ namespace MicroZoo.AnimalsApi.Consumers
             if (animalDto == null)
                 throw new BadRequestException("Request does not contain data");
             
-            //var response = await _service.AddAnimalAsync(animalDto);
             var response = await _receivingService.AddAnimalAsync(animalDto);
             response.OperationId = context.Message.OperationId;
             
