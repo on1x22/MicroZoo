@@ -7,13 +7,13 @@ using MicroZoo.ZookeepersApi.Services;
 
 namespace MicroZoo.ZookeepersApi.Consumers.Jobs
 {
-    public class GetCurrentJobsOfZookeeperCustomer : IConsumer<GetCurrentJobsOfZookeeperRequest>
+    public class GetCurrentJobsOfZookeeperConsumer : IConsumer<GetCurrentJobsOfZookeeperRequest>
     {
         private readonly IJobsRequestReceivingService _receivingService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
 
-        public GetCurrentJobsOfZookeeperCustomer(IJobsRequestReceivingService receivingService,
+        public GetCurrentJobsOfZookeeperConsumer(IJobsRequestReceivingService receivingService,
             IAuthorizationService authorizationService,
             IConnectionService connectionService)
         {
@@ -27,7 +27,7 @@ namespace MicroZoo.ZookeepersApi.Consumers.Jobs
         {
             var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
                 accessToken: context.Message.AccessToken,
-                type: typeof(GetCurrentJobsOfZookeeperCustomer),
+                type: typeof(GetCurrentJobsOfZookeeperConsumer),
                 methodName: nameof(Consume),
                 identityApiUrl: _connectionService.IdentityApiUrl);
 

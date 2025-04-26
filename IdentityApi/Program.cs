@@ -54,6 +54,7 @@ namespace MicroZoo.IdentityApi
                             NumberOfReplicas = 1
                         })
                     .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
+                    .Enrich.FromLogContext()
                     .ReadFrom.Configuration(context.Configuration);
             });
 

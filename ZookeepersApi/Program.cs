@@ -94,7 +94,7 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
     services.AddMassTransit(x =>
     {
         x.AddConsumer<GetAllJobsOfZookeeperConsumer>();
-        x.AddConsumer<GetCurrentJobsOfZookeeperCustomer>();
+        x.AddConsumer<GetCurrentJobsOfZookeeperConsumer>();
         x.AddConsumer<GetJobsForTimeRangeConsumer>();
         x.AddConsumer<AddJobConsumer>();
         x.AddConsumer<UpdateJobConsumer>();
@@ -114,7 +114,7 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
                 e.UseMessageRetry(r => r.Interval(2, 100));
 
                 e.ConfigureConsumer<GetAllJobsOfZookeeperConsumer>(context);
-                e.ConfigureConsumer<GetCurrentJobsOfZookeeperCustomer>(context);
+                e.ConfigureConsumer<GetCurrentJobsOfZookeeperConsumer>(context);
                 e.ConfigureConsumer<GetJobsForTimeRangeConsumer>(context);
                 e.ConfigureConsumer<AddJobConsumer>(context);
                 e.ConfigureConsumer<UpdateJobConsumer>(context);
