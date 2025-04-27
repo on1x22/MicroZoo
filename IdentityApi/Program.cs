@@ -13,6 +13,7 @@ using MicroZoo.IdentityApi.JwtFeatures;
 using MicroZoo.IdentityApi.Policies;
 using MicroZoo.IdentityApi.Repositories;
 using MicroZoo.IdentityApi.Services;
+using MicroZoo.Infrastructure.CorrelationIdGenerator;
 using MicroZoo.Infrastructure.Models.Roles;
 using MicroZoo.Infrastructure.Models.Users;
 using Serilog;
@@ -40,6 +41,8 @@ namespace MicroZoo.IdentityApi
 
         static void RegisterServices(IServiceCollection services, WebApplicationBuilder builder)
         {
+            services.AddCorrelationIdGenerator();
+
             builder.Host.UseSerilog((context, configuration) =>
             {
                 configuration.Enrich.FromLogContext()
@@ -54,7 +57,7 @@ namespace MicroZoo.IdentityApi
                             NumberOfReplicas = 1
                         })
                     .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
-                    .Enrich.FromLogContext()
+                    .Enrich.WithCorrelationIdHeader("X-Correlation-Id")
                     .ReadFrom.Configuration(context.Configuration);
             });
 
@@ -188,6 +191,7 @@ namespace MicroZoo.IdentityApi
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCorrelationIdMiddleware();
 
 
             app.MapControllers();

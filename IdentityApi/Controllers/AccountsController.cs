@@ -126,6 +126,8 @@ namespace MicroZoo.IdentityApi.Controllers
 
             await _userManager.UpdateAsync(user);
 
+            _logger.LogInformation($"User with email \"{user.Email}\" is logged in");
+
             return Ok(new AuthResponseDto { IsAuthSuccessful = true, AccessToken = accessToken,
                                                 RefreshToken = refreshToken});
         }
