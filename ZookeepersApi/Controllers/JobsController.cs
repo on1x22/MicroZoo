@@ -62,7 +62,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         public async Task<IActionResult> GetCurrentJobsOfZookeeper(int zookeeperId)
         {
             var accessToken = JwtExtensions.GetAccessTokenFromRequest(Request);
-            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync(
+            var accessResult = await _authorizationService.CheckAccessInIdentityApiAsync_v2(
                 accessToken: accessToken,
                 type: typeof(JobsController),
                 methodName: nameof(GetCurrentJobsOfZookeeper),

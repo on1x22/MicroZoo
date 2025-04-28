@@ -79,6 +79,33 @@ namespace MicroZoo.AuthService.Services
                 ErrorCode: ErrorCodes.Ok200);
         }
 
+        public async Task<AccessResult> CheckAccessInIdentityApiAsync_v2(string accessToken, Type type, string methodName, Uri IdentityApiUrl)
+        {
+            var endpointPolicies = PoliciesValidator.GetPoliciesFromEndpoint(type, methodName);
+            if (accessToken == null || (endpointPolicies == null || endpointPolicies.Count == 0))
+                return new AccessResult(IsAccessAllowed: false, //Result: new UnauthorizedResult(),
+                    ErrorCode: ErrorCodes.Unauthorized401);
+
+            var accessResponse = await IsResourceAccessConfirmedAsync_v2(IdentityApiUrl,
+                                                                 accessToken,
+                                                                 endpointPolicies);
+            if (accessResponse.ErrorMessage != null)
+                return new AccessResult(IsAccessAllowed: false,
+                    //Result: new BadRequestObjectResult(accessResponse.ErrorMessage),
+                    ErrorCode: ErrorCodes.BadRequest400, ErrorMessage: accessResponse.ErrorMessage);
+
+            if (!accessResponse.IsAuthenticated)
+                return new AccessResult(IsAccessAllowed: false, //Result: new UnauthorizedResult(),
+                    ErrorCode: ErrorCodes.Unauthorized401);
+
+            if (!accessResponse.IsAccessConfirmed)
+                return new AccessResult(IsAccessAllowed: false, //Result: new ForbidResult(),
+                    ErrorCode: ErrorCodes.Forbiden403);
+
+            return new AccessResult(IsAccessAllowed: true, //Result: new OkResult(), 
+                ErrorCode: ErrorCodes.Ok200);
+        }
+
         private async Task<CheckAccessResponse> IsResourceAccessConfirmedAsync(Uri identityApiUri,
             string accessToken, List<string> endpointPolicies)
         {
@@ -91,6 +118,24 @@ namespace MicroZoo.AuthService.Services
                 accessResponse = new CheckAccessResponse()
                 { 
                     ErrorMessage = "Internal server error" 
+                };
+            }
+
+            return accessResponse;
+        }
+
+        private async Task<CheckAccessResponse> IsResourceAccessConfirmedAsync_v2(Uri identityApiUri,
+            string accessToken, List<string> endpointPolicies)
+        {
+            var accessResponse = await _receiver.GetResponseFromRabbitTask_v2<CheckAccessRequest,
+                CheckAccessResponse>(new CheckAccessRequest(accessToken, endpointPolicies),
+                identityApiUri);
+
+            if (accessResponse == null)
+            {
+                accessResponse = new CheckAccessResponse()
+                {
+                    ErrorMessage = "Internal server error"
                 };
             }
 

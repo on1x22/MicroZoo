@@ -11,6 +11,8 @@ using MicroZoo.ZookeepersApi.Consumers.Jobs;
 using MicroZoo.ZookeepersApi.Consumers.Specialities;
 using Microsoft.OpenApi.Models;
 using MicroZoo.AuthService.Services;
+using MicroZoo.Infrastructure.CorrelationIdGenerator;
+using MicroZoo.ZookeepersApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +74,9 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
         });
     });
 
+    services.AddCorrelationIdGenerator();
+    services.AddHttpContextAccessor();
+
     services.AddDbContext<ZookeeperDBContext>(options =>
     {
         options.UseNpgsql(builder.Configuration.GetConnectionString("ZookeepersAPI"));
@@ -107,6 +112,12 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
 
         x.UsingRabbitMq((context, cfg) =>
         {
+            cfg.ConfigureSend(sendCfg =>
+            {
+                sendCfg.UseFilter(new CorrelationIdSendFilter<HttpContext>(
+                    context.GetRequiredService<IHttpContextAccessor>()));
+            });
+            //cfg.UseSendFilter(typeof(CorrelationIdSendFilter<>), context);            
             cfg.Host(builder.Configuration.GetConnectionString("RabbitMq"));
             cfg.ReceiveEndpoint("zookeepers-queue", e =>
             {
@@ -125,6 +136,7 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
                 e.ConfigureConsumer<ChangeRelationBetweenZookeeperAndSpecialityConsumer>(context);
                 e.ConfigureConsumer<DeleteSpecialityConsumer>(context);
             });
+
         });
     });
 }
@@ -141,6 +153,8 @@ void Configure(WebApplication app)
     }
 
     app.UseHttpsRedirection();
+
+    app.UseCorrelationIdMiddleware();
 
     app.UseAuthentication();
 

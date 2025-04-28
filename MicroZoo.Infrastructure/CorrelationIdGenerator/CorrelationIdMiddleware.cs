@@ -21,6 +21,9 @@ namespace MicroZoo.Infrastructure.CorrelationIdGenerator
         {
             var correlationId = GetCorrelationId(context, correlationIdGenerator);
             //AddCorrelationIdHeaderToResponse(context, correlationId);
+            AddCorrelationIdHeaderToRequest(context, correlationId);
+
+            _logger.LogInformation($"Request with CorrelationId {correlationId} received");
 
             await _next(context);
         }
@@ -31,14 +34,16 @@ namespace MicroZoo.Infrastructure.CorrelationIdGenerator
             if (context.Request.Headers.TryGetValue(_correlationIdHeader, out var correlationId))
             {
                 correlationIdGenerator.SetCorrelationId(correlationId!);
-                _logger.LogInformation($"Request with CorrelationId {correlationId} received");
+                //AddCorrelationIdHeaderToRequest(context, correlationId);
+                //_logger.LogInformation($"Request with CorrelationId {correlationId} received");
                 return correlationId;
             }
             else
             {
                 var newCorrelationId = correlationIdGenerator.GetCorrelationId();
-                _logger.LogInformation($"The request had no CorrelationId, so it was assigned " +
-                    $"automatically ({newCorrelationId})");
+                //AddCorrelationIdHeaderToRequest(context, correlationId);
+                /*_logger.LogInformation($"The request had no CorrelationId, so it was assigned " +
+                    $"automatically ({newCorrelationId})");*/
                 return newCorrelationId;
             }
         }
@@ -55,6 +60,15 @@ namespace MicroZoo.Infrastructure.CorrelationIdGenerator
                 return Task.CompletedTask;
             });
         }*/
-            
+
+        private void AddCorrelationIdHeaderToRequest(HttpContext context,
+            StringValues correlationId)
+        {
+            //_logger.LogInformation($"The request is assigned an CorrelationId {correlationId}");
+
+            if (context.Request.Headers[_correlationIdHeader].FirstOrDefault() == null)
+                context.Request.Headers.Add(_correlationIdHeader, correlationId.ToString());
+        }
+
     }
 }

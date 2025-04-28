@@ -34,5 +34,10 @@ namespace MicroZoo.AuthService.Services
                                                                   Type type,
                                                                   string methodName,
                                                                   Uri identityApiUrl);
+
+        Task<AccessResult> CheckAccessInIdentityApiAsync_v2(string accessToken,
+                                                                  Type type,
+                                                                  string methodName,
+                                                                  Uri identityApiUrl);
     }
 }

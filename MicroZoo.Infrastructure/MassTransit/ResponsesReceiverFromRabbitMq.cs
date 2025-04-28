@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
+using MicroZoo.Infrastructure.CorrelationIdGenerator;
 
 namespace MicroZoo.Infrastructure.MassTransit
 {
@@ -9,14 +10,21 @@ namespace MicroZoo.Infrastructure.MassTransit
     public class ResponsesReceiverFromRabbitMq : IResponsesReceiverFromRabbitMq
     {
         private readonly IServiceProvider _provider;
+        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly ICorrelationIdGenerator _correlationIdGenerator;
 
         /// <summary>
         /// Initializes a new instance of the ResponsesReceiverFromRabbitMq class 
         /// </summary>
         /// <param name="provider"></param>
-        public ResponsesReceiverFromRabbitMq(IServiceProvider provider)
+        /// <param name="publishEndpoint"></param>
+        public ResponsesReceiverFromRabbitMq(IServiceProvider provider, 
+                                             IPublishEndpoint publishEndpoint,
+                                             ICorrelationIdGenerator correlationIdGenerator)
         {
             _provider = provider;
+            _publishEndpoint = publishEndpoint;
+            _correlationIdGenerator = correlationIdGenerator;
         }
         
         /// <summary>
@@ -33,8 +41,23 @@ namespace MicroZoo.Infrastructure.MassTransit
         {
             var clientFactory = _provider.GetRequiredService<IClientFactory>();
 
-            var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
+            var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);            
             var response = await client.GetResponse<TOut>(request);
+            return response.Message;
+        }
+
+        public async Task<TOut> GetResponseFromRabbitTask_v2<TIn, TOut>(TIn request, 
+            Uri rabbitMqUrl/*, string correlationId*/)
+            where TIn : class
+            where TOut : class
+        {
+            var clientFactory = _provider.GetRequiredService<IClientFactory>();
+
+            var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
+            var response = await client.GetResponse<TOut>(request, x => x.UseExecute(context =>
+            context.Headers.Set("X-Correlation-Id", _correlationIdGenerator.GetCorrelationId())));
+
+            
             return response.Message;
         }
     }
