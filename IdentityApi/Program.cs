@@ -58,7 +58,7 @@ namespace MicroZoo.IdentityApi
                         })
                     .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
                     .Enrich.WithCorrelationIdHeader("X-Correlation-Id")
-                    .Enrich.WithCorrelationId()
+                    //.Enrich.WithCorrelationId()
                     .ReadFrom.Configuration(context.Configuration);
             });
 
