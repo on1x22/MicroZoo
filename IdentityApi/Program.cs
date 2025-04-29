@@ -1,5 +1,6 @@
 
 using MassTransit;
+using MassTransit.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,7 @@ using MicroZoo.IdentityApi.Policies;
 using MicroZoo.IdentityApi.Repositories;
 using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.CorrelationIdGenerator;
+using MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi;
 using MicroZoo.Infrastructure.Models.Roles;
 using MicroZoo.Infrastructure.Models.Users;
 using Serilog;
@@ -167,12 +169,14 @@ namespace MicroZoo.IdentityApi
                 x.AddConsumer<CheckAccessConsumer>();
 
                 x.UsingRabbitMq((context, cfg) =>
-                {
+                {                    
+                    cfg.ConfigureEndpoints(context);
                     cfg.Host(builder.Configuration.GetConnectionString("RabbitMq"));
                     cfg.ReceiveEndpoint("identity-queue", e =>
                     {
                         e.PrefetchCount = 20;
                         e.UseMessageRetry(r => r.Interval(2, 100));
+                        e.UseConsumeFilter<CorrelationIdConsumeFilter<CheckAccessRequest>>(context);
 
                         e.ConfigureConsumer<CheckAccessConsumer>(context);
                     });

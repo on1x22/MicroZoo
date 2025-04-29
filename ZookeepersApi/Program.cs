@@ -111,13 +111,7 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
         x.AddConsumer<DeleteSpecialityConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
-        {
-            cfg.ConfigureSend(sendCfg =>
-            {
-                sendCfg.UseFilter(new CorrelationIdSendFilter<HttpContext>(
-                    context.GetRequiredService<IHttpContextAccessor>()));
-            });
-            //cfg.UseSendFilter(typeof(CorrelationIdSendFilter<>), context);            
+        {                        
             cfg.Host(builder.Configuration.GetConnectionString("RabbitMq"));
             cfg.ReceiveEndpoint("zookeepers-queue", e =>
             {

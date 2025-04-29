@@ -2,11 +2,11 @@
 
 namespace MicroZoo.ZookeepersApi
 {
-    public class CorrelationIdSendFilter<T> : IFilter<SendContext<T>> where T : class
+    public class __CorrelationIdSendFilter<T> : IFilter<SendContext<T>> where T : class
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CorrelationIdSendFilter(IHttpContextAccessor httpContextAccessor)
+        public __CorrelationIdSendFilter(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }

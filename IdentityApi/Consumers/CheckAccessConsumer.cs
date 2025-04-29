@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MicroZoo.IdentityApi.DbContexts;
 using MicroZoo.IdentityApi.JwtFeatures;
 using MicroZoo.Infrastructure.CorrelationIdGenerator;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
 using MicroZoo.Infrastructure.Models.Users;
@@ -34,12 +35,13 @@ namespace MicroZoo.IdentityApi.Consumers
 
         public async Task Consume(ConsumeContext<CheckAccessRequest> context)
         {
-            var correlationId = context.Headers.Get<string>("X-Correlation-Id");
+            /*var correlationId = context.Headers.Get<string>("X-Correlation-Id");
             if (correlationId != null)
                 _correlationIdGenerator.SetCorrelationId(correlationId);            
             else
-                _correlationIdGenerator.GetCorrelationId();
-            Serilog.Context.LogContext.PushProperty("CorrelationId", correlationId);
+                correlationId = _correlationIdGenerator.GetCorrelationId();
+            Serilog.Context.LogContext.PushProperty("CorrelationId", correlationId);*/
+            //CorrelationIdHandler.SetCorrelationIdToLogContext(context, _correlationIdGenerator);
 
             var response = new CheckAccessResponse();
             response.OperationId = context.Message.OperationId;
