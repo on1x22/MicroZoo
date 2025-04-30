@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MassTransit;
+﻿using MassTransit;
 using MicroZoo.Infrastructure.CorrelationIdGenerator;
-using Serilog;
 
 
 namespace MicroZoo.Infrastructure.MassTransit
 {
-    public class CorrelationIdHandler
+    public class __CorrelationIdHandler
     {
         public static void SetCorrelationIdToLogContext(ConsumeContext context, 
             ICorrelationIdGenerator correlationIdGenerator)

@@ -26,6 +26,8 @@ namespace MicroZoo.Infrastructure.CorrelationIdGenerator
             _logger.LogInformation($"Request with CorrelationId {correlationId} received");
 
             await _next(context);
+
+            _logger.LogInformation($"Request with CorrelationId {correlationId} processed");
         }
 
         private StringValues GetCorrelationId(HttpContext context,

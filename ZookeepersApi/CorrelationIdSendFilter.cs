@@ -2,13 +2,16 @@
 
 namespace MicroZoo.ZookeepersApi
 {
-    public class __CorrelationIdSendFilter<T> : IFilter<SendContext<T>> where T : class
+    public class CorrelationIdSendFilter<T> : IFilter<SendContext<T>> where T : class
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<CorrelationIdSendFilter<T>> _logger;
 
-        public __CorrelationIdSendFilter(IHttpContextAccessor httpContextAccessor)
+        public CorrelationIdSendFilter(IHttpContextAccessor httpContextAccessor,
+            ILogger<CorrelationIdSendFilter<T>> logger)
         {
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         public void Probe(ProbeContext context) { }
@@ -21,7 +24,13 @@ namespace MicroZoo.ZookeepersApi
 
             context.Headers.Set("X-Correlation-Id", correlationId);
 
+            _logger.LogInformation($"MassTransit CorrelationIdSendFilter<T> with " +
+                $"correlationId {correlationId} started");
+
             await next.Send(context);
+
+            _logger.LogInformation($"MassTransit CorrelationIdSendFilter<T> with " +
+                $"correlationId {correlationId} finished");
         }
     }
 }

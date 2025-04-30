@@ -20,7 +20,13 @@ namespace MicroZoo.IdentityApi
 
             Serilog.Context.LogContext.PushProperty("CorrelationId", correlationId);
 
+            _logger.LogInformation($"MassTransit CorrelationIdConsumeFilter<T> with " +
+                $"correlationId {correlationId} started");
+
             await next.Send(context);
+
+            _logger.LogInformation($"MassTransit CorrelationIdConsumeFilter<T> with " +
+                $"correlationId {correlationId} finished");
         }
     }
 }

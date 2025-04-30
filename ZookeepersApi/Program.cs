@@ -13,6 +13,8 @@ using Microsoft.OpenApi.Models;
 using MicroZoo.AuthService.Services;
 using MicroZoo.Infrastructure.CorrelationIdGenerator;
 using MicroZoo.ZookeepersApi;
+using MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi;
+using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -111,7 +113,14 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
         x.AddConsumer<DeleteSpecialityConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
-        {                        
+        {
+            cfg.ConfigureSend(sendCfg =>
+            {
+                sendCfg.UseFilter(new CorrelationIdSendFilter<CheckAccessRequest>(
+                    context.GetRequiredService<IHttpContextAccessor>(),
+                    context.GetRequiredService<ILogger<CorrelationIdSendFilter<CheckAccessRequest>>>()));
+            });
+
             cfg.Host(builder.Configuration.GetConnectionString("RabbitMq"));
             cfg.ReceiveEndpoint("zookeepers-queue", e =>
             {
