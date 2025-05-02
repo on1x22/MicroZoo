@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MicroZoo.Infrastructure\MicroZoo.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\ZookeepersApi\ZookeepersApi.csproj" />
+    <ProjectReference Include="..\..\ZookeepersApi\MicroZoo.ZookeepersApi.csproj" />
   </ItemGroup>
 
 </Project>

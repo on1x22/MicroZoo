@@ -18,19 +18,19 @@ namespace MicroZoo.IdentityApi.Consumers
         private readonly UserManager<User> _userManager;
         private readonly IdentityApiDbContext _dbContext;
         private readonly ILogger<CheckAccessConsumer> _logger;
-        private readonly ICorrelationIdGenerator _correlationIdGenerator;
+        //private readonly ICorrelationIdGenerator _correlationIdGenerator;
 
         public CheckAccessConsumer(JwtHandler jwtHandler,
                                    UserManager<User> userManager,
                                    IdentityApiDbContext dbContext,
-                                   ILogger<CheckAccessConsumer> logger,
-                                   ICorrelationIdGenerator correlationIdGenerator)
+                                   ILogger<CheckAccessConsumer> logger/*,
+                                   ICorrelationIdGenerator correlationIdGenerator*/)
         {
             _jwtHandler = jwtHandler;
             _userManager = userManager;
             _dbContext = dbContext;
             _logger = logger;
-            _correlationIdGenerator = correlationIdGenerator;
+            //_correlationIdGenerator = correlationIdGenerator;
         }
 
         public async Task Consume(ConsumeContext<CheckAccessRequest> context)

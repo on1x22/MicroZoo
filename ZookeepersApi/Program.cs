@@ -1,24 +1,25 @@
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 using MassTransit;
-using MicroZoo.ZookeepersApi.Services;
-using MicroZoo.ZookeepersApi.Repository;
-using MicroZoo.ZookeepersApi.Apis;
-using MicroZoo.ZookeepersApi.DBContext;
-using MicroZoo.ZookeepersApi.Models;
-using MicroZoo.Infrastructure.MassTransit;
-using MicroZoo.ZookeepersApi.Consumers.Jobs;
-using MicroZoo.ZookeepersApi.Consumers.Specialities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MicroZoo.AuthService.Services;
 using MicroZoo.Infrastructure.CorrelationIdGenerator;
-using MicroZoo.ZookeepersApi;
+using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi;
-using MicroZoo.Infrastructure.MassTransit.Requests.AnimalsApi;
+using MicroZoo.ZookeepersApi;
+using MicroZoo.ZookeepersApi.Apis;
+using MicroZoo.ZookeepersApi.Consumers.Jobs;
+using MicroZoo.ZookeepersApi.Consumers.Specialities;
+using MicroZoo.ZookeepersApi.DBContext;
+using MicroZoo.ZookeepersApi.Models;
+using MicroZoo.ZookeepersApi.Repository;
+using MicroZoo.ZookeepersApi.Services;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-RegisterServices(builder.Services, builder.Configuration);
+RegisterServices(builder.Services/*, builder.Configuration*//*, builder*/);
 
 var app = builder.Build();
 
@@ -34,12 +35,33 @@ foreach(var api in apis)
 app.Run();
 
 
-void RegisterServices(IServiceCollection services, IConfiguration configuration)
+void RegisterServices(IServiceCollection services/*, IConfiguration configuration*//*,
+    WebApplicationBuilder builder*/)
 {
-    services.AddScoped<IConnectionService, ConnectionService>();
+    services.AddHttpContextAccessor();
+    services.AddCorrelationIdGenerator(); 
+    
+    builder.Host.UseSerilog((context, config) =>
+    {
+        //var sdghsadh = context.Configuration["ElasticConfiguration:Uri"]!;
+        config.Enrich.FromLogContext()
+            .Enrich.WithMachineName()
+            .WriteTo.Console()
+            .WriteTo.Elasticsearch(
+                new ElasticsearchSinkOptions(new Uri(context.Configuration["ElasticConfiguration:Uri"]!))
+                {
+                    IndexFormat = $"{context.Configuration["ApplicationName"]}-log-{context.HostingEnvironment.EnvironmentName?.ToLower().Replace(".", "-")}-{DateTime.Now:yyyy-MM}",
+                    AutoRegisterTemplate = true,
+                    NumberOfShards = 2,
+                    NumberOfReplicas = 1
+                })
+            .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
+            .Enrich.WithCorrelationIdHeader("X-Correlation-Id")
+            .ReadFrom.Configuration(context.Configuration);
+    });
 
     services.AddHttpClient();
-    services.AddLogging(builder => builder.AddConsole());
+    //services.AddLogging(builder => builder.AddConsole());
     services.AddAuthentication("Bearer").AddJwtBearer();
     services.AddControllers();
     services.AddEndpointsApiExplorer();
@@ -76,14 +98,12 @@ void RegisterServices(IServiceCollection services, IConfiguration configuration)
         });
     });
 
-    services.AddCorrelationIdGenerator();
-    services.AddHttpContextAccessor();
-
     services.AddDbContext<ZookeeperDBContext>(options =>
     {
         options.UseNpgsql(builder.Configuration.GetConnectionString("ZookeepersAPI"));
     });
 
+    services.AddScoped<IConnectionService, ConnectionService>();
     services.AddScoped<__IZookeeperRepository, __ZookeeperRepository>();
     services.AddScoped<IJobsRepository, JobsRepository>();
     services.AddScoped<ISpecialitiesRepository, SpecialitiesRepository>();
@@ -160,6 +180,7 @@ void Configure(WebApplication app)
     app.UseCorrelationIdMiddleware();
 
     app.UseAuthentication();
+    //app.UseCorrelationIdMiddleware();
 
     app.MapControllers();
 }

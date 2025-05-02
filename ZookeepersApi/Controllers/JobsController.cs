@@ -21,6 +21,7 @@ namespace MicroZoo.ZookeepersApi.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IConnectionService _connectionService;
         private readonly IRabbitMqResponseErrorsHandler _errorsHandler;
+        private readonly ILogger<JobsController> _logger;
 
         /// <summary>
         /// Controller for handling jobs requests
@@ -28,12 +29,14 @@ namespace MicroZoo.ZookeepersApi.Controllers
         public JobsController(IJobsRequestReceivingService receivingService,
                               IAuthorizationService authorizationService,
                               IConnectionService connectionService,
-                              IRabbitMqResponseErrorsHandler errorsHandler)
+                              IRabbitMqResponseErrorsHandler errorsHandler,
+                              ILogger<JobsController> logger)
         {
             _receivingService = receivingService;
             _authorizationService = authorizationService;
             _connectionService = connectionService;
             _errorsHandler = errorsHandler;
+            _logger = logger;
         }
 
         /// <summary>
@@ -73,6 +76,9 @@ namespace MicroZoo.ZookeepersApi.Controllers
                 return _errorsHandler.GetActionResult(accessResult);
 
             var response = await _receivingService.GetCurrentJobsOfZookeeperAsync(zookeeperId);
+
+            _logger.LogInformation($"Received information about current jobs of zookeeper with" +
+                $"Id {zookeeperId}");
 
             return response.Jobs != null
                 ? Ok(response.Jobs)

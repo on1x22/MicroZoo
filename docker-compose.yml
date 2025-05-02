@@ -17,6 +17,7 @@ services:
   zookeepersapi:
     image: zookeepersapi
     container_name: zookeepersapi
+    hostname: zookeepersapi
     build:
       context: .
       dockerfile: ZookeepersApi/Dockerfile
@@ -28,10 +29,14 @@ services:
     environment:
       PERSONS_API: "http://personsapi"
       ANIMALS_API: "http://animalsapi"
+    depends_on:
+    - rabbitmq
+    - kibana
   
   managersapi:
     image: managersapi
     container_name: managersapi
+    hostname: managersapi
     build:
       context: .
       dockerfile: ManagersApi/Dockerfile
@@ -48,6 +53,7 @@ services:
   personsapi:
     image: personsapi
     container_name: personsapi
+    hostname: personsapi
     build:
       context: .
       dockerfile: PersonApi/Dockerfile
@@ -59,6 +65,7 @@ services:
   animalsapi:
     image: animalsapi
     container_name: animalsapi
+    hostname: animalsapi
     build:
       context: .
       dockerfile: AnimalsApi/Dockerfile

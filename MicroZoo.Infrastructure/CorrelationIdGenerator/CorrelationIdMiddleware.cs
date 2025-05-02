@@ -23,11 +23,13 @@ namespace MicroZoo.Infrastructure.CorrelationIdGenerator
             //AddCorrelationIdHeaderToResponse(context, correlationId);
             AddCorrelationIdHeaderToRequest(context, correlationId);
 
-            _logger.LogInformation($"Request with CorrelationId {correlationId} received");
+            _logger.LogInformation($"CorrelationIdMiddleware. Request with " +
+                $"CorrelationId {correlationId} received");
 
             await _next(context);
 
-            _logger.LogInformation($"Request with CorrelationId {correlationId} processed");
+            _logger.LogInformation($"CorrelationIdMiddleware. Request with " +
+                $"CorrelationId {correlationId} processed");
         }
 
         private StringValues GetCorrelationId(HttpContext context,
