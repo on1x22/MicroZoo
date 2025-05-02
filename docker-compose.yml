@@ -4,6 +4,7 @@ services:
   gateway:
     image: gateway
     container_name: gateway
+    hostname: gateway
     build:
       context: .
       dockerfile: Gateway/Dockerfile
@@ -16,6 +17,7 @@ services:
   zookeepersapi:
     image: zookeepersapi
     container_name: zookeepersapi
+    hostname: zookeepersapi
     build:
       context: .
       dockerfile: ZookeepersApi/Dockerfile
@@ -27,10 +29,14 @@ services:
     environment:
       PERSONS_API: "http://personsapi"
       ANIMALS_API: "http://animalsapi"
+    depends_on:
+    - rabbitmq
+    - kibana
   
   managersapi:
     image: managersapi
     container_name: managersapi
+    hostname: managersapi
     build:
       context: .
       dockerfile: ManagersApi/Dockerfile
@@ -47,6 +53,7 @@ services:
   personsapi:
     image: personsapi
     container_name: personsapi
+    hostname: personsapi
     build:
       context: .
       dockerfile: PersonApi/Dockerfile
@@ -58,6 +65,7 @@ services:
   animalsapi:
     image: animalsapi
     container_name: animalsapi
+    hostname: animalsapi
     build:
       context: .
       dockerfile: AnimalsApi/Dockerfile
@@ -82,6 +90,7 @@ services:
     - microzoo_net
     depends_on:
     - rabbitmq
+    - kibana
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -99,6 +108,38 @@ services:
     networks: 
     - microzoo_net
 
+  elasticsearch:
+    image: docker.io/library/elasticsearch:7.16.1
+    container_name: elasticsearch
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=es01
+      - bootstrap.memory_lock=true
+      - "ES_JAVAOPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - d:/data/elasticsearch/microzoo:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - microzoo_net
+
+  kibana:
+    image: docker.io/library/kibana:7.16.1
+    container_name: kibana
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    depends_on: 
+      - elasticsearch
+    networks:
+      - microzoo_net
 
 
 networks:

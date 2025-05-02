@@ -16,14 +16,16 @@ namespace MicroZoo.IdentityApi.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
-        private readonly JwtHandler _jwtHandler;        
+        private readonly JwtHandler _jwtHandler;
+        private readonly ILogger<AccountsController> _logger;
 
         public AccountsController(UserManager<User> userManager, IEmailSender emailSender, 
-            JwtHandler jwtHandler)
+            JwtHandler jwtHandler, ILogger<AccountsController> logger)
         {
             _userManager = userManager;            
             _emailSender = emailSender;
             _jwtHandler = jwtHandler;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -123,6 +125,8 @@ namespace MicroZoo.IdentityApi.Controllers
             user.AccessFailedCount = 0;
 
             await _userManager.UpdateAsync(user);
+
+            _logger.LogInformation($"User with email \"{user.Email}\" is logged in");
 
             return Ok(new AuthResponseDto { IsAuthSuccessful = true, AccessToken = accessToken,
                                                 RefreshToken = refreshToken});
