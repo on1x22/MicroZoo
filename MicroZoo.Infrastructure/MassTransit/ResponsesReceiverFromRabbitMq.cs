@@ -45,19 +45,5 @@ namespace MicroZoo.Infrastructure.MassTransit
             var response = await client.GetResponse<TOut>(request);
             return response.Message;
         }
-
-        public async Task<TOut> GetResponseFromRabbitTask_v2<TIn, TOut>(TIn request, 
-            Uri rabbitMqUrl)
-            where TIn : class
-            where TOut : class
-        {
-            var clientFactory = _provider.GetRequiredService<IClientFactory>();
-
-            var client = clientFactory.CreateRequestClient<TIn>(rabbitMqUrl);
-            /*var response = await client.GetResponse<TOut>(request, x => x.UseExecute(context =>
-            context.Headers.Set("X-Correlation-Id", _correlationIdGenerator.GetCorrelationId())));*/
-            var response = await client.GetResponse<TOut>(request);            
-            return response.Message;
-        }
     }
 }

@@ -19,8 +19,7 @@ namespace MicroZoo.Infrastructure.CorrelationIdGenerator
 
         public async Task InvokeAsync(HttpContext context, ICorrelationIdGenerator correlationIdGenerator)
         {
-            var correlationId = GetCorrelationId(context, correlationIdGenerator);
-            //AddCorrelationIdHeaderToResponse(context, correlationId);
+            var correlationId = GetCorrelationId(context, correlationIdGenerator);            
             AddCorrelationIdHeaderToRequest(context, correlationId);
 
             _logger.LogInformation($"CorrelationIdMiddleware. Request with " +
@@ -38,38 +37,20 @@ namespace MicroZoo.Infrastructure.CorrelationIdGenerator
             if (context.Request.Headers.TryGetValue(_correlationIdHeader, out var correlationId))
             {
                 correlationIdGenerator.SetCorrelationId(correlationId!);
-                //AddCorrelationIdHeaderToRequest(context, correlationId);
-                //_logger.LogInformation($"Request with CorrelationId {correlationId} received");
+                
                 return correlationId;
             }
             else
             {
                 var newCorrelationId = correlationIdGenerator.GetCorrelationId();
-                //AddCorrelationIdHeaderToRequest(context, correlationId);
-                /*_logger.LogInformation($"The request had no CorrelationId, so it was assigned " +
-                    $"automatically ({newCorrelationId})");*/
+                
                 return newCorrelationId;
             }
         }
 
-        /*private void AddCorrelationIdHeaderToResponse(HttpContext context,
-            StringValues correlationId)
-        {
-            _logger.LogInformation($"The response is assigned an CorrelationId {correlationId}");
-            context.Response.OnStarting(() =>
-            {
-                context.Response.Headers.Add(_correlationIdHeader,
-                        new[] { correlationId.ToString() });
-
-                return Task.CompletedTask;
-            });
-        }*/
-
         private void AddCorrelationIdHeaderToRequest(HttpContext context,
             StringValues correlationId)
         {
-            //_logger.LogInformation($"The request is assigned an CorrelationId {correlationId}");
-
             if (context.Request.Headers[_correlationIdHeader].FirstOrDefault() == null)
                 context.Request.Headers.Add(_correlationIdHeader, correlationId.ToString());
         }

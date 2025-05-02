@@ -1,6 +1,7 @@
 ﻿using MassTransit;
+using Microsoft.Extensions.Logging;
 
-namespace MicroZoo.IdentityApi
+namespace MicroZoo.Infrastructure.MassTransit.MiddlewareFilters
 {
     public class CorrelationIdConsumeFilter<T> : IFilter<ConsumeContext<T>> where T : class
     {

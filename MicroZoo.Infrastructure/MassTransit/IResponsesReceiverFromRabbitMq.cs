@@ -17,9 +17,5 @@ namespace MicroZoo.Infrastructure.MassTransit
         Task<TOut> GetResponseFromRabbitTask<TIn, TOut>(TIn request, Uri rabbitMqUrl) 
             where TIn : class
             where TOut : class;
-
-        Task<TOut> GetResponseFromRabbitTask_v2<TIn, TOut>(TIn request, Uri rabbitMqUrl)
-            where TIn : class
-            where TOut : class;
     }
 }

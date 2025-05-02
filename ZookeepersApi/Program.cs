@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using MicroZoo.AuthService.Services;
 using MicroZoo.Infrastructure.CorrelationIdGenerator;
 using MicroZoo.Infrastructure.MassTransit;
+using MicroZoo.Infrastructure.MassTransit.MiddlewareFilters;
 using MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi;
 using MicroZoo.ZookeepersApi;
 using MicroZoo.ZookeepersApi.Apis;
@@ -19,7 +20,7 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-RegisterServices(builder.Services/*, builder.Configuration*//*, builder*/);
+RegisterServices(builder.Services);
 
 var app = builder.Build();
 
@@ -35,15 +36,13 @@ foreach(var api in apis)
 app.Run();
 
 
-void RegisterServices(IServiceCollection services/*, IConfiguration configuration*//*,
-    WebApplicationBuilder builder*/)
+void RegisterServices(IServiceCollection services)
 {
     services.AddHttpContextAccessor();
     services.AddCorrelationIdGenerator(); 
     
     builder.Host.UseSerilog((context, config) =>
     {
-        //var sdghsadh = context.Configuration["ElasticConfiguration:Uri"]!;
         config.Enrich.FromLogContext()
             .Enrich.WithMachineName()
             .WriteTo.Console()
@@ -61,7 +60,6 @@ void RegisterServices(IServiceCollection services/*, IConfiguration configuratio
     });
 
     services.AddHttpClient();
-    //services.AddLogging(builder => builder.AddConsole());
     services.AddAuthentication("Bearer").AddJwtBearer();
     services.AddControllers();
     services.AddEndpointsApiExplorer();
@@ -180,7 +178,6 @@ void Configure(WebApplication app)
     app.UseCorrelationIdMiddleware();
 
     app.UseAuthentication();
-    //app.UseCorrelationIdMiddleware();
 
     app.MapControllers();
 }

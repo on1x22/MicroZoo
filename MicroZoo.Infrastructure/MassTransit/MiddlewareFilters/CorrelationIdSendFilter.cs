@@ -1,6 +1,8 @@
 ﻿using MassTransit;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
-namespace MicroZoo.ZookeepersApi
+namespace MicroZoo.Infrastructure.MassTransit.MiddlewareFilters
 {
     public class CorrelationIdSendFilter<T> : IFilter<SendContext<T>> where T : class
     {

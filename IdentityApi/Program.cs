@@ -14,6 +14,7 @@ using MicroZoo.IdentityApi.Policies;
 using MicroZoo.IdentityApi.Repositories;
 using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.CorrelationIdGenerator;
+using MicroZoo.Infrastructure.MassTransit.MiddlewareFilters;
 using MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi;
 using MicroZoo.Infrastructure.Models.Roles;
 using MicroZoo.Infrastructure.Models.Users;
@@ -59,7 +60,6 @@ namespace MicroZoo.IdentityApi
                         })
                     .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
                     .Enrich.WithCorrelationIdHeader("X-Correlation-Id")
-                    //.Enrich.WithCorrelationId()
                     .ReadFrom.Configuration(context.Configuration);
             });
 

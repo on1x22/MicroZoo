@@ -3,12 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.IdentityApi.DbContexts;
 using MicroZoo.IdentityApi.JwtFeatures;
-using MicroZoo.Infrastructure.CorrelationIdGenerator;
-using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
 using MicroZoo.Infrastructure.Models.Users;
-using Serilog.Context;
 
 namespace MicroZoo.IdentityApi.Consumers
 {
@@ -18,31 +15,20 @@ namespace MicroZoo.IdentityApi.Consumers
         private readonly UserManager<User> _userManager;
         private readonly IdentityApiDbContext _dbContext;
         private readonly ILogger<CheckAccessConsumer> _logger;
-        //private readonly ICorrelationIdGenerator _correlationIdGenerator;
 
         public CheckAccessConsumer(JwtHandler jwtHandler,
                                    UserManager<User> userManager,
                                    IdentityApiDbContext dbContext,
-                                   ILogger<CheckAccessConsumer> logger/*,
-                                   ICorrelationIdGenerator correlationIdGenerator*/)
+                                   ILogger<CheckAccessConsumer> logger)
         {
             _jwtHandler = jwtHandler;
             _userManager = userManager;
             _dbContext = dbContext;
             _logger = logger;
-            //_correlationIdGenerator = correlationIdGenerator;
         }
 
         public async Task Consume(ConsumeContext<CheckAccessRequest> context)
         {
-            /*var correlationId = context.Headers.Get<string>("X-Correlation-Id");
-            if (correlationId != null)
-                _correlationIdGenerator.SetCorrelationId(correlationId);            
-            else
-                correlationId = _correlationIdGenerator.GetCorrelationId();
-            Serilog.Context.LogContext.PushProperty("CorrelationId", correlationId);*/
-            //CorrelationIdHandler.SetCorrelationIdToLogContext(context, _correlationIdGenerator);
-
             var response = new CheckAccessResponse();
             response.OperationId = context.Message.OperationId;
 
