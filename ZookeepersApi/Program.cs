@@ -173,6 +173,8 @@ void Configure(WebApplication app)
         db.Database.EnsureCreated();
     }
 
+    app.UseSerilogRequestLogging();
+
     app.UseHttpsRedirection();
 
     app.UseCorrelationIdMiddleware();

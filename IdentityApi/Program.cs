@@ -191,6 +191,8 @@ namespace MicroZoo.IdentityApi
                 app.UseSwaggerUI();
             }
 
+            app.UseSerilogRequestLogging();
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();

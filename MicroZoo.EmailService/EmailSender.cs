@@ -1,5 +1,6 @@
-﻿using MimeKit;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
+using Microsoft.Extensions.Logging;
+using MimeKit;
 
 namespace MicroZoo.EmailService
 {
@@ -9,14 +10,17 @@ namespace MicroZoo.EmailService
     public class EmailSender : IEmailSender
     {
         private readonly EmailConfiguration _emailConfiguration;
+        private readonly ILogger<EmailSender> _logger;
 
         /// <summary>
         /// Initialize a new instance of <see cref="EmailSender"/> class
         /// </summary>
         /// <param name="emailConfiguration"></param>
-        public EmailSender(EmailConfiguration emailConfiguration)
+        public EmailSender(EmailConfiguration emailConfiguration,
+            ILogger<EmailSender> logger)
         {
             _emailConfiguration = emailConfiguration;
+            _logger = logger;
         }
 
         /// <summary>
@@ -66,9 +70,13 @@ namespace MicroZoo.EmailService
                 client.Authenticate(_emailConfiguration.UserName, _emailConfiguration.Password);
 
                 client.Send(mailMessage);
+
+                var mails = mailMessage.To.Mailboxes.Select(m => m.Address);
+                _logger.LogInformation("Message sent to email {mails}", mails);
             }
             catch
             {
+                _logger.LogWarning("Something goes wrong while sending message: {@mailMessage}", mailMessage);
                 throw;
             }
             finally
@@ -87,9 +95,13 @@ namespace MicroZoo.EmailService
                 await client.AuthenticateAsync(_emailConfiguration.UserName, _emailConfiguration.Password);
 
                 await client.SendAsync(mailMessage);
+                
+                var mails = mailMessage.To.Mailboxes.Select(m => m.Address);
+                _logger.LogInformation("Message sent to email {mails}", mails);
             }
             catch
             {
+                _logger.LogWarning("Something goes wrong while sending message: {@mailMessage}", mailMessage);
                 throw;
             }
             finally

@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MicroZoo.EmailService\MicroZoo.EmailService.csproj" />
     <ProjectReference Include="..\MicroZoo.Infrastructure\MicroZoo.Infrastructure.csproj" />
+    <ProjectReference Include="..\MicroZoo.JwtConfiguration\MicroZoo.JwtConfiguration.csproj" />
   </ItemGroup>
 
 </Project>

@@ -53,6 +53,8 @@ async void Configure(WebApplication app)
         app.UseSwaggerUI();
     }
     
+    app.UseSerilogRequestLogging();
+
     //app.UseCors("CORSPolicy");
     app.UseHttpsRedirection();
     app.UseCorrelationIdMiddleware();
