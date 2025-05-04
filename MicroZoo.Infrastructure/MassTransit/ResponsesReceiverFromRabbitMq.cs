@@ -18,6 +18,7 @@ namespace MicroZoo.Infrastructure.MassTransit
         /// </summary>
         /// <param name="provider"></param>
         /// <param name="publishEndpoint"></param>
+        /// <param name="correlationIdGenerator"></param>
         public ResponsesReceiverFromRabbitMq(IServiceProvider provider, 
                                              IPublishEndpoint publishEndpoint,
                                              ICorrelationIdGenerator correlationIdGenerator)

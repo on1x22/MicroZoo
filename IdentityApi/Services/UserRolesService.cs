@@ -83,7 +83,7 @@ namespace MicroZoo.IdentityApi.Services
 
             if (!isSuccessfullyDeleted)
             {
-                response.ErrorMessage = "Innser server error";
+                response.ErrorMessage = "Inner server error";
                 return response;
             }
 
@@ -103,7 +103,7 @@ namespace MicroZoo.IdentityApi.Services
 
             if (!isSuccessfullyAdded)
             {
-                response.ErrorMessage = "Innser server error";
+                response.ErrorMessage = "Inner server error";
                 return response;
             }
 
