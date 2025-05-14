@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MicroZoo.IdentityApi.JwtFeatures;
 using MicroZoo.IdentityApi.Models;
 using MicroZoo.Infrastructure.Models.Users;
+using MicroZoo.JwtConfiguration;
 
 namespace MicroZoo.IdentityApi.Controllers
 {
@@ -26,13 +27,14 @@ namespace MicroZoo.IdentityApi.Controllers
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
         {
-            var remoteIpAddress = HttpContext.Connection.RemoteIpAddress!.ToString();
-            var remotePort = HttpContext.Connection.RemotePort!.ToString();
+            //var remoteIpAddress = HttpContext.Connection.RemoteIpAddress!.ToString();
+            //var remotePort = HttpContext.Connection.RemotePort!.ToString();
+            var remoteIpAddress = JwtExtensions.GetRemoteAddressFromHttpContext(HttpContext);
 
             if (tokenModel == null)
             {                
-                _logger.LogWarning("Invalid TokenModel sent from address {remoteIpAddress}, " +
-                    "port {remotePort}", remoteIpAddress, remotePort);
+                _logger.LogWarning("Invalid TokenModel sent from address {remoteIpAddress}", 
+                    remoteIpAddress);
 
                 return BadRequest("Invalid client request");
             }
@@ -44,8 +46,7 @@ namespace MicroZoo.IdentityApi.Controllers
             if (principal == null)
             {
                 _logger.LogWarning("An unexpected error occurred while determining the user " +
-                    "who sent the request from address {remoteIpAddress}, port {remotePort}",
-                    remoteIpAddress, remotePort);
+                    "who sent the request from address {remoteIpAddress}", remoteIpAddress);
 
                 return BadRequest("Invalid access token or refresh token");
             }

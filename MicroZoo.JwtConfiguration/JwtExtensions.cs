@@ -64,5 +64,13 @@ namespace MicroZoo.JwtConfiguration
             var accessToken = authorizationHeader.ToString().Substring("Bearer ".Length).Trim();
             return accessToken;
         }
+
+        public static string GetRemoteAddressFromHttpContext(HttpContext context)
+        {
+            var remoteIpAddress = context.Connection.RemoteIpAddress!.ToString();
+            var remotePort = context.Connection.RemotePort!.ToString();
+
+            return remoteIpAddress + ":" + remotePort;
+        }
     }
 }
