@@ -52,8 +52,9 @@ namespace MicroZoo.IdentityApi.Controllers
         public async Task<IActionResult> UpdateUserAsync(string userId,
             [FromBody] UserForUpdateDto userForUpdateDto)
         {
-            var token = JwtExtensions.GetAccessTokenFromRequest(Request);
-            var adminPrincipal = _jwtHandler.GetPrincipalFromToken(token);
+            //var token = JwtExtensions.GetAccessTokenFromRequest(Request);
+            //var adminPrincipal = _jwtHandler.GetPrincipalFromToken(token);
+            var adminPrincipal = _jwtHandler.GetPrincipalFromHttpRequest(Request);
             _logger.LogInformation("User {Name} tried to update data about user with Id {userId}",
                 adminPrincipal.Identity!.Name, userId);
 
@@ -68,8 +69,9 @@ namespace MicroZoo.IdentityApi.Controllers
         [Authorize(Policy = "IdentityApi.Delete")]
         public async Task<IActionResult> SoftDeleteUserAsync(string userId)
         {
-            var token = JwtExtensions.GetAccessTokenFromRequest(Request);
-            var adminPrincipal = _jwtHandler.GetPrincipalFromToken(token);
+            //var token = JwtExtensions.GetAccessTokenFromRequest(Request);
+            //var adminPrincipal = _jwtHandler.GetPrincipalFromToken(token);
+            var adminPrincipal = _jwtHandler.GetPrincipalFromHttpRequest(Request);
             _logger.LogInformation("User {Name} tried to delete user with Id {userId}",
                 adminPrincipal.Identity!.Name, userId);
 
@@ -96,8 +98,9 @@ namespace MicroZoo.IdentityApi.Controllers
         public async Task<IActionResult> UpdateUserWithRolesAsync(string userId,
             [FromBody] List<string> roleIds)
         {
-            var token = JwtExtensions.GetAccessTokenFromRequest(Request);
-            var adminPrincipal = _jwtHandler.GetPrincipalFromToken(token);
+            //var token = JwtExtensions.GetAccessTokenFromRequest(Request);
+            //var adminPrincipal = _jwtHandler.GetPrincipalFromToken(token);
+            var adminPrincipal = _jwtHandler.GetPrincipalFromHttpRequest(Request);
             _logger.LogInformation("User {Name} tried to change roles for user with Id {userId}",
                 adminPrincipal.Identity!.Name, userId);
 
