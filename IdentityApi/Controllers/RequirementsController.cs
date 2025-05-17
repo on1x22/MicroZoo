@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MicroZoo.IdentityApi.JwtFeatures;
 using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.Models.Roles;
+using MicroZoo.JwtConfiguration;
 
 namespace MicroZoo.IdentityApi.Controllers
 {
@@ -10,10 +12,16 @@ namespace MicroZoo.IdentityApi.Controllers
     public class RequirementsController : ControllerBase
     {
         private readonly IRequirementsService _requirementsService;
+        private readonly ILogger<RequirementsController> _logger;
+        private readonly JwtHandler _jwtHandler;
 
-        public RequirementsController(IRequirementsService requirementsService)
+        public RequirementsController(IRequirementsService requirementsService,
+            ILogger<RequirementsController> logger,
+            JwtHandler jwtHandler)
         {
             _requirementsService = requirementsService;
+            _logger = logger;
+            _jwtHandler = jwtHandler;
         }
 
         [HttpGet]
@@ -43,22 +51,51 @@ namespace MicroZoo.IdentityApi.Controllers
         public async Task<IActionResult> AddRequirementAsync(
             [FromBody] RequirementWithoutIdDto requirementDto)
         {
-            var response = await _requirementsService.AddRequirementAsync(requirementDto);
+            if (requirementDto == null)
+            {
+                var remoteIpAddress = JwtExtensions.GetRemoteAddressFromHttpContext(HttpContext);
+                _logger.LogWarning("Invalid RequirementWithoutIdDto sent from address " +
+                    "{remoteIpAddress}", remoteIpAddress);
+            }
 
-            return response.Requirement != null
-                ? Ok(response.Requirement)
-                : BadRequest(response.ErrorMessage);
+            var response = await _requirementsService.AddRequirementAsync(requirementDto!);            
+
+            if (response.Requirement == null)
+            {
+                _logger.LogInformation("An error occurred while adding requirement: " +
+                    "{ErrorMessage}", response.ErrorMessage);
+                return BadRequest(response.ErrorMessage);
+            }            
+
+            var adminPrincipal = _jwtHandler.GetPrincipalFromHttpRequest(Request);
+            _logger.LogInformation("The user {Name} created new requirement {requirementDto}",
+                adminPrincipal.Identity!.Name, requirementDto);
+
+            return Ok(response.Requirement);
         }
 
         [HttpDelete("{requirementId}")]
         [Authorize(Policy = "IdentityApi.Delete")]
         public async Task<IActionResult> SoftDeleteRequirementAsync(Guid requirementId)
         {
-            var response = await _requirementsService.SoftDeleteRequirementAsync(requirementId);
+            var adminPrincipal = _jwtHandler.GetPrincipalFromHttpRequest(Request);
+            _logger.LogInformation("User {Name} tried to delete requirement with Id " +
+                "{requirementId}", adminPrincipal.Identity!.Name, requirementId);
 
-            return response.Requirement != null
-                ? Ok(response.Requirement)
-                : BadRequest(response.ErrorMessage);
+            var response = await _requirementsService.SoftDeleteRequirementAsync(requirementId);
+           
+            if (response.Requirement == null)
+            {
+                _logger.LogInformation("An error occurred while deleting role: {ErrorMessage}",
+                    response.ErrorMessage);
+
+                return BadRequest(response.ErrorMessage);
+            }
+
+            _logger.LogInformation("The user {Name} deleted requirement with Id {requirementId}",
+                    adminPrincipal.Identity!.Name, requirementId);
+
+            return Ok(response.Requirement);
         }
     }
 }
