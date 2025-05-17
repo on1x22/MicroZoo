@@ -10,14 +10,17 @@ namespace MicroZoo.IdentityApi.Services
         private readonly IUsersRepository _usersRepository;
         private readonly IUserRolesRepository _userRolesRepository;
         private readonly IRolesRepository _rolesRepository;
+        private readonly ILogger<UserRolesService> _logger;
 
         public UserRolesService(IUsersRepository usersRepository,
                                 IUserRolesRepository userRolesRepository,
-                                IRolesRepository rolesRepository)
+                                IRolesRepository rolesRepository,
+                                ILogger<UserRolesService> logger)
         {
             _usersRepository = usersRepository;
             _userRolesRepository = userRolesRepository;
             _rolesRepository = rolesRepository;
+            _logger = logger;
         }
 
         public async Task<GetUserWithRolesResponse> GetUserWithRolesAsync(string userId)
@@ -83,7 +86,7 @@ namespace MicroZoo.IdentityApi.Services
 
             if (!isSuccessfullyDeleted)
             {
-                response.ErrorMessage = "Innser server error";
+                response.ErrorMessage = "Inner server error";
                 return response;
             }
 
@@ -103,9 +106,12 @@ namespace MicroZoo.IdentityApi.Services
 
             if (!isSuccessfullyAdded)
             {
-                response.ErrorMessage = "Innser server error";
+                response.ErrorMessage = "Inner server error";
                 return response;
             }
+
+            _logger.LogInformation("New roles have been set for user with Id {userId}. " +
+                "New role Ids: {roleIds}", userId, roleIds);
 
             return await GetUserWithRolesAsync(userId);
         }

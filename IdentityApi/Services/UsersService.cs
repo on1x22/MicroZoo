@@ -8,12 +8,14 @@ namespace MicroZoo.IdentityApi.Services
     {
         private readonly IUsersRepository _userRepository;
         private readonly IUserRolesService _userRolesService;
+        private readonly ILogger<UsersService> _logger;
 
         public UsersService(IUsersRepository userRepository,
-            IUserRolesService userRolesService)
+            IUserRolesService userRolesService, ILogger<UsersService> logger)
         {
             _userRepository = userRepository;
             _userRolesService = userRolesService;
+            _logger = logger;
         }
 
         public async Task<GetUsersResponse> GetAllUsersAsync() =>
@@ -67,6 +69,9 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
+            _logger.LogInformation("Information about user with Id {userId} has been " +
+                "updated: {@userForUpdateDto}", userId, userForUpdateDto);
+
             return response;
         }
 
@@ -89,7 +94,9 @@ namespace MicroZoo.IdentityApi.Services
             
             await _userRolesService.DeleteUserRolesByUserIdAsync(userId);
             response.User = await _userRepository.SoftDeleteUserAsync(userForDelete);
- 
+
+            _logger.LogInformation("User with Id {userId} has been marked as \"Deleted\"", userId);
+
             return response;
         }
     }

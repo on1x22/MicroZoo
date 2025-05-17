@@ -6,6 +6,7 @@ using MicroZoo.AnimalsApi.DbContexts;
 using MicroZoo.AnimalsApi.Repository;
 using MicroZoo.AnimalsApi.Services;
 using MicroZoo.AuthService.Services;
+using MicroZoo.Infrastructure.CorrelationIdGenerator;
 using MicroZoo.Infrastructure.MassTransit;
 using System.Reflection;
 
@@ -40,6 +41,8 @@ void RegisterServices(IServiceCollection services)
         var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
         c.IncludeXmlComments(xmlPath);
     });
+
+    services.AddCorrelationIdGenerator();
 
     services.AddDbContext<AnimalDbContext>(options =>
     {

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservices", "{1631D592-C458-4647-8E36-4C6257E86A96}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZookeepersApi", "ZookeepersApi\ZookeepersApi.csproj", "{3C3E5B6C-D48D-402C-9E58-B1440EDA945E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroZoo.ZookeepersApi", "ZookeepersApi\MicroZoo.ZookeepersApi.csproj", "{3C3E5B6C-D48D-402C-9E58-B1440EDA945E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimalsApi", "AnimalsApi\AnimalsApi.csproj", "{E5770E9C-FE51-4EEA-85C4-30DD887FE08B}"
 EndProject

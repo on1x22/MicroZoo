@@ -20,12 +20,17 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Enrichers.CorrelationId" Version="3.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MicroZoo.EmailService\MicroZoo.EmailService.csproj" />
     <ProjectReference Include="..\MicroZoo.Infrastructure\MicroZoo.Infrastructure.csproj" />
+    <ProjectReference Include="..\MicroZoo.JwtConfiguration\MicroZoo.JwtConfiguration.csproj" />
   </ItemGroup>
 
 </Project>

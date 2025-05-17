@@ -4,6 +4,7 @@ using MicroZoo.Infrastructure.Models.Users;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
+using MicroZoo.JwtConfiguration;
 
 namespace MicroZoo.IdentityApi.JwtFeatures
 {
@@ -48,6 +49,12 @@ namespace MicroZoo.IdentityApi.JwtFeatures
         {
             var refreshTokenExpiryTimeSpanInDays = Convert.ToDouble(_jwtSettings["refreshTokenExpiryTimeSpanInDays"]);
             return DateTime.UtcNow.AddDays(refreshTokenExpiryTimeSpanInDays);
+        }
+
+        public ClaimsPrincipal GetPrincipalFromHttpRequest(HttpRequest request)
+        {
+            var token = JwtExtensions.GetAccessTokenFromRequest(request);
+            return GetPrincipalFromToken(token);
         }
 
         private ClaimsPrincipal ExtractPrincipalFromToken(string token, bool validateLifetimeValue)

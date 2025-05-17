@@ -2,6 +2,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MicroZoo.AuthService.Services;
+using MicroZoo.Infrastructure.CorrelationIdGenerator;
 using MicroZoo.Infrastructure.MassTransit;
 using MicroZoo.PersonsApi.Apis;
 using MicroZoo.PersonsApi.Consumers;
@@ -66,6 +67,8 @@ void RegisterServices(IServiceCollection services)
             }
         });
     });
+
+    services.AddCorrelationIdGenerator();
 
     services.AddDbContext<PersonDbContext>(options =>
     {
