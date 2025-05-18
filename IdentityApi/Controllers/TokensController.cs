@@ -13,10 +13,10 @@ namespace MicroZoo.IdentityApi.Controllers
     public class TokensController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
-        private readonly JwtHandler _jwtHandler;
+        private readonly IJwtHandler _jwtHandler;
         private readonly ILogger<TokensController> _logger;
 
-        public TokensController(UserManager<User> userManager, JwtHandler jwtHandler,
+        public TokensController(UserManager<User> userManager, IJwtHandler jwtHandler,
             ILogger<TokensController> logger)
         {
             _userManager = userManager;

@@ -15,12 +15,12 @@ namespace MicroZoo.IdentityApi.Controllers
         private readonly IRolesService _rolesService;
         private readonly IRoleRequirementsService _roleRequirementsService;
         private readonly ILogger<RolesController> _logger;
-        private readonly JwtHandler _jwtHandler;
+        private readonly IJwtHandler _jwtHandler;
 
         public RolesController(IRolesService rolesService, 
             IRoleRequirementsService roleRequirementsService,
             ILogger<RolesController> logger,
-            JwtHandler jwtHandler)
+            IJwtHandler jwtHandler)
         {
             _rolesService = rolesService;
             _roleRequirementsService = roleRequirementsService;

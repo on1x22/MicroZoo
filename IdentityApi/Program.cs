@@ -108,7 +108,8 @@ namespace MicroZoo.IdentityApi
             services.AddAuthorization(opt => PoliciesConfiguration.AddAuthorizationOptions(opt));
             services.AddScoped<IAuthorizationHandler,AllowedRequirementsHandler>();
 
-            services.AddSingleton<JwtHandler>();
+            //services.AddSingleton<JwtHandler>();
+            services.AddScoped<IJwtHandler, JwtHandler>();
 
             var emailConfig = builder.Configuration
                 .GetSection("EmailConfiguration")
@@ -162,7 +163,7 @@ namespace MicroZoo.IdentityApi
 
             services.AddScoped<IRoleRequirementsRepository, RoleRequirementsRepository>();
             services.AddScoped<IRoleRequirementsService, RoleRequirementsService>();
-
+                       
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<CheckAccessConsumer>();

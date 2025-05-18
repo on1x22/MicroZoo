@@ -13,11 +13,11 @@ namespace MicroZoo.IdentityApi.Controllers
     {
         private readonly IUsersService _usersService;
         private readonly IUserRolesService _userRolesService;
-        private readonly JwtHandler _jwtHandler;
+        private readonly IJwtHandler _jwtHandler;
         private readonly ILogger<UsersController> _logger;
 
         public UsersController(IUsersService usersService, IUserRolesService userRolesService,
-            JwtHandler jwtHandler, ILogger<UsersController> logger)
+            IJwtHandler jwtHandler, ILogger<UsersController> logger)
         {
             _usersService = usersService;
             _userRolesService = userRolesService;

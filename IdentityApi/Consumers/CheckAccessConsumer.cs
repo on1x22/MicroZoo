@@ -11,12 +11,12 @@ namespace MicroZoo.IdentityApi.Consumers
 {
     public class CheckAccessConsumer : IConsumer<CheckAccessRequest>
     {
-        private readonly JwtHandler _jwtHandler;
+        private readonly IJwtHandler _jwtHandler;
         private readonly UserManager<User> _userManager;
         private readonly IdentityApiDbContext _dbContext;
         private readonly ILogger<CheckAccessConsumer> _logger;
 
-        public CheckAccessConsumer(JwtHandler jwtHandler,
+        public CheckAccessConsumer(IJwtHandler jwtHandler,
                                    UserManager<User> userManager,
                                    IdentityApiDbContext dbContext,
                                    ILogger<CheckAccessConsumer> logger)

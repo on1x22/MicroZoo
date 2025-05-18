@@ -8,7 +8,7 @@ using MicroZoo.JwtConfiguration;
 
 namespace MicroZoo.IdentityApi.JwtFeatures
 {
-    public class JwtHandler
+    public class JwtHandler : IJwtHandler
     {
         private readonly IConfiguration _configuration;
         private readonly IConfigurationSection _jwtSettings;

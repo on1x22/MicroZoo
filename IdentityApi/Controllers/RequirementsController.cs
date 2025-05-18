@@ -13,11 +13,11 @@ namespace MicroZoo.IdentityApi.Controllers
     {
         private readonly IRequirementsService _requirementsService;
         private readonly ILogger<RequirementsController> _logger;
-        private readonly JwtHandler _jwtHandler;
+        private readonly IJwtHandler _jwtHandler;
 
         public RequirementsController(IRequirementsService requirementsService,
             ILogger<RequirementsController> logger,
-            JwtHandler jwtHandler)
+            IJwtHandler jwtHandler)
         {
             _requirementsService = requirementsService;
             _logger = logger;

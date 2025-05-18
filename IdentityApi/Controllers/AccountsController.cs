@@ -18,11 +18,11 @@ namespace MicroZoo.IdentityApi.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
-        private readonly JwtHandler _jwtHandler;
+        private readonly IJwtHandler _jwtHandler;
         private readonly ILogger<AccountsController> _logger;
 
         public AccountsController(UserManager<User> userManager, IEmailSender emailSender, 
-            JwtHandler jwtHandler, ILogger<AccountsController> logger)
+            IJwtHandler jwtHandler, ILogger<AccountsController> logger)
         {
             _userManager = userManager;            
             _emailSender = emailSender;
