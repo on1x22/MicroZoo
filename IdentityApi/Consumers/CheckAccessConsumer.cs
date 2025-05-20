@@ -71,6 +71,8 @@ namespace MicroZoo.IdentityApi.Consumers
             {
                 _logger.LogInformation("User {userName} not found", userName);
                 response.IsAuthenticated = false;
+                await context.RespondAsync(response);
+                return;
             }
 
             if (user!.Deleted == true)
