@@ -1,12 +1,17 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
 using MassTransit;
+//using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MicroZoo.IdentityApi.Consumers;
+using MicroZoo.IdentityApi.DbContexts;
 using MicroZoo.IdentityApi.JwtFeatures;
+using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
+using MicroZoo.Infrastructure.Models.Roles;
 using MicroZoo.Infrastructure.Models.Users;
 using Moq;
 using System.Security.Claims;
@@ -19,6 +24,7 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests
         private readonly Mock<ConsumeContext<CheckAccessRequest>> _mockContext;
         private readonly Mock<IJwtHandler> _mockJwtHandler;        
         private readonly Mock<ILogger<CheckAccessConsumer>> _mockLogger;
+        private readonly Mock<IUserRequirementsService> _mockUserRequirementsService;
         private readonly Mock<UserManager<User>> _mockUserManager;
         private readonly CheckAccessConsumer _consumer;        
 
@@ -28,6 +34,7 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests
             _mockContext = _fixture.Freeze<Mock<ConsumeContext<CheckAccessRequest>>>();
             _mockJwtHandler = _fixture.Freeze<Mock<IJwtHandler>>();            
             _mockLogger = _fixture.Freeze<Mock<ILogger<CheckAccessConsumer>>>();
+            _mockUserRequirementsService = _fixture.Freeze<Mock<IUserRequirementsService>>();
 
             _mockUserManager = new Mock<UserManager<User>>(
                 new Mock<IUserStore<User>>().Object,
@@ -165,9 +172,74 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests
             await _consumer.Consume(_mockContext.Object);
 
             // Assert
-            _mockContext.Verify(x => x.RespondAsync(It.IsAny<CheckAccessResponse>()), Times.Once);
+            _mockContext.Verify(x => x.RespondAsync(It.Is<CheckAccessResponse>(r =>
+                !r.IsAuthenticated)), Times.Once);
             _mockLogger.VerifyLog(LogLevel.Information,
                 "User Test_user not found", Times.Once());
+        }
+
+        [Fact]
+        public async Task Consume_UserIsDeleted_ReturnsUserNotFound()
+        {
+            // Arrange
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, "Test_user") };
+            var identity = new ClaimsIdentity(claims, "test");
+            var principal = new ClaimsPrincipal(identity);
+            var user = _fixture.Build<User>()
+                .With(x => x.UserName, "Test_user")
+                .With(x => x.Deleted, true)
+                .Create();
+            var request = _fixture.Build<CheckAccessRequest>()
+                .With(x => x.Policies, new List<string> { "test_requirement" })
+                .Create();
+
+            _mockContext.Setup(x => x.Message).Returns(request);
+            _mockJwtHandler.Setup(x => x.GetPrincipalFromToken(It.IsAny<string>()))
+                .Returns(principal);
+            _mockUserManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+
+            // Act
+            await _consumer.Consume(_mockContext.Object);
+
+            // Assert
+            _mockContext.Verify(x => x.RespondAsync(It.Is<CheckAccessResponse>(r =>
+                !r.IsAuthenticated)), Times.Once);
+            _mockLogger.VerifyLog(LogLevel.Information,
+                "Status of the user Test_user is \"Deleted\"", Times.Once());
+        }
+
+        [Fact]
+        public async Task Consume_PolicyMismatch_ReturnsAccessNotConfirmed()
+        {            
+            // Arrange
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, "Test_user") };
+            var identity = new ClaimsIdentity(claims, "test");
+            var principal = new ClaimsPrincipal(identity);
+            var user = _fixture.Build<User>()
+                .With(x => x.UserName, "Test_user")
+                .With(x => x.Deleted, false)
+                .Create();
+            var request = _fixture.Build<CheckAccessRequest>()
+                .With(x => x.Policies, new List<string> { "test_requirement" })
+                .Create();
+
+            _mockContext.Setup(x => x.Message).Returns(request);
+            _mockJwtHandler.Setup(x => x.GetPrincipalFromToken(It.IsAny<string>()))
+                .Returns(principal);
+            _mockUserManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _mockUserRequirementsService.Setup(x => x.GetAllowedRequirementsOfUser(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>());
+
+            // Act
+            await _consumer.Consume(_mockContext.Object);
+
+            // Assert
+            _mockContext.Verify(x => x.RespondAsync(It.Is<CheckAccessResponse>(r =>
+                !r.IsAccessConfirmed)), Times.Once);
+            _mockLogger.VerifyLog(LogLevel.Information,
+                "User Test_user have not necessary requirements", Times.Once());
         }
     }
 }

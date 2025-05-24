@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MicroZoo.IdentityApi.DbContexts;
 using MicroZoo.IdentityApi.JwtFeatures;
+using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.MassTransit.Requests.IdentityApi;
 using MicroZoo.Infrastructure.MassTransit.Responses.IdentityApi;
 using MicroZoo.Infrastructure.Models.Users;
@@ -15,16 +16,19 @@ namespace MicroZoo.IdentityApi.Consumers
         private readonly UserManager<User> _userManager;
         private readonly IdentityApiDbContext _dbContext;
         private readonly ILogger<CheckAccessConsumer> _logger;
+        private readonly IUserRequirementsService _userRequirementsService;
 
         public CheckAccessConsumer(IJwtHandler jwtHandler,
                                    UserManager<User> userManager,
                                    IdentityApiDbContext dbContext,
-                                   ILogger<CheckAccessConsumer> logger)
+                                   ILogger<CheckAccessConsumer> logger,
+                                   IUserRequirementsService userRequirementsService)
         {
             _jwtHandler = jwtHandler;
             _userManager = userManager;
             _dbContext = dbContext;
             _logger = logger;
+            _userRequirementsService = userRequirementsService;
         }
 
         public async Task Consume(ConsumeContext<CheckAccessRequest> context)
@@ -80,9 +84,13 @@ namespace MicroZoo.IdentityApi.Consumers
                 _logger.LogInformation("Status of the user {UserName} is \"Deleted\"", 
                     user!.UserName);
                 response.IsAuthenticated = false;
+                await context.RespondAsync(response);
+                return;
             }
 
-            var allowedRequirementsOfUser = await GetAllowedRequirementsOfUser(user);
+            //var allowedRequirementsOfUser = await GetAllowedRequirementsOfUser(user);
+            var allowedRequirementsOfUser = 
+                await _userRequirementsService.GetAllowedRequirementsOfUser(user);
 
             var isRequirementsMatch = checkedPolicies!.Any(req =>
                 allowedRequirementsOfUser.Contains(req));
@@ -92,13 +100,15 @@ namespace MicroZoo.IdentityApi.Consumers
                     user!.UserName);
                 response.IsAuthenticated = true;
                 response.IsAccessConfirmed = false;
+                await context.RespondAsync(response);
+                return;
             }
-            else
-            {
+            /*else
+            {*/
                 _logger.LogInformation("Access confirm for user {UserName}", user!.UserName);
                 response.IsAuthenticated = true;
                 response.IsAccessConfirmed = true;
-            }
+            /*}*/
 
             await context.RespondAsync(response);
         }

@@ -150,7 +150,10 @@ namespace MicroZoo.IdentityApi
             });
 
             services.AddScoped<IUsersRepository, UsersRepository>();
-            services.AddScoped<IUsersService, UsersService>();      
+            services.AddScoped<IUsersService, UsersService>();  
+            
+            services.AddScoped<IUserRequirementsRepository, UserRequirementsRepository>();
+            services.AddScoped<IUserRequirementsService, UserRequirementsService>();
             
             services.AddScoped<IRolesRepository, RolesRepository>();
             services.AddScoped<IRolesService, RolesService>();
