@@ -81,7 +81,7 @@ namespace MicroZoo.IdentityApi.Consumers
 
             if (user!.Deleted == true)
             {
-                _logger.LogInformation("Status of the user {UserName} is \"Deleted\"", 
+                _logger.LogInformation("Status of the user {UserName} is \"Deleted\"",
                     user!.UserName);
                 response.IsAuthenticated = false;
                 await context.RespondAsync(response);
@@ -91,6 +91,15 @@ namespace MicroZoo.IdentityApi.Consumers
             //var allowedRequirementsOfUser = await GetAllowedRequirementsOfUser(user);
             var allowedRequirementsOfUser = 
                 await _userRequirementsService.GetAllowedRequirementsOfUser(user);
+
+            if (allowedRequirementsOfUser == null)
+            {
+                _logger.LogInformation("User {UserName} have null requirements",
+                    user!.UserName);
+                response.IsAuthenticated = false;
+                await context.RespondAsync(response);
+                return;
+            }
 
             var isRequirementsMatch = checkedPolicies!.Any(req =>
                 allowedRequirementsOfUser.Contains(req));
