@@ -100,6 +100,14 @@ namespace MicroZoo.IdentityApi.JwtFeatures
 
         private List<Claim> GetClaims(User user, IList<string> roles) 
         {
+            if (user == null)            
+                throw new ArgumentNullException("Cannot get UserName because user is null");
+            
+            //ArgumentNullException.ThrowIfNull("Cannot get UserName because user is null");
+
+            if (roles == null)
+                throw new ArgumentNullException("User roles is null");
+
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, user.UserName!)
