@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using MicroZoo.IdentityApi.Services;
 
-namespace MicroZoo.IdentityApi.Tests.UnitTests
+namespace MicroZoo.IdentityApi.Tests.UnitTests.Services
 {
     public class EmailValidatorTests
     {

@@ -12,7 +12,7 @@ using MicroZoo.Infrastructure.Models.Users;
 using Moq;
 using System.Security.Claims;
 
-namespace MicroZoo.IdentityApi.Tests.UnitTests
+namespace MicroZoo.IdentityApi.Tests.UnitTests.Consumers
 {
     public class CheckAccessConsumerTests
     {

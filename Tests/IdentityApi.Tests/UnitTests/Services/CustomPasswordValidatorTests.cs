@@ -4,7 +4,7 @@ using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.Models.Users;
 using Moq;
 
-namespace MicroZoo.IdentityApi.Tests.UnitTests
+namespace MicroZoo.IdentityApi.Tests.UnitTests.Services
 {
     public class CustomPasswordValidatorTests
     {
