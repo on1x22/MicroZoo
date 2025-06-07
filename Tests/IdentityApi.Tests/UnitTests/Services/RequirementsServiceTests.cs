@@ -27,7 +27,6 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Services
         public async Task GetAllRequirementsAsync_ReturnsAllRequirements()
         {
             // Arrange
-            //var requirements = _fixture.CreateMany<Requirement>(5).ToList();
             var requirements = _fixture.Build<Requirement>()
                 .OmitAutoProperties()
                 .CreateMany(5)
@@ -42,6 +41,134 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Services
             Assert.NotNull(result.Requirements!);
             Assert.NotEmpty(result.Requirements!);
             Assert.Equal(5, result.Requirements!.Count);
+        }
+
+        [Fact]
+        public async Task GetRequirementAsync_ReturnsRequirementDoesNotExist()
+        {
+            // Arrange
+            var requirementId = Guid.NewGuid();
+            var expectedMessage = $"Requirement with Id {requirementId} does not exist";
+
+            _requirementRepository.Setup(x => x.GetRequirementAsync(It.IsAny<Guid>()))
+                .ReturnsAsync((Requirement)null!);
+            
+            // Act
+            var result = await _requirementsService.GetRequirementAsync(requirementId);
+
+            // Assert
+            Assert.NotNull(result.ErrorMessage);
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task GetRequirementAsync_ReturnsRequirement()
+        {
+            // Arrange
+            var requirementId = Guid.NewGuid();
+            var requirement = _fixture.Build<Requirement>()
+                .With(x => x.RoleRequirements, (List<RoleRequirement>)null!)
+                .Create();
+            var expectedMessage = $"Requirement with Id {requirementId} does not exist";
+
+            _requirementRepository.Setup(x => x.GetRequirementAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(requirement);            
+
+            // Act
+            var result = await _requirementsService.GetRequirementAsync(requirementId);
+
+            // Assert
+            Assert.NotNull(result.Requirement);
+        }
+
+        [Fact]
+        public async Task AddRequirementAsync_NullRequirementDto_ReturnsNewRequirementMustBeNotNull()
+        {
+            // Arrange            
+            var expectedMessage = "New requirement must be not null";
+
+            // Act
+            var result = await _requirementsService.AddRequirementAsync(null!);
+
+            // Assert
+            Assert.NotNull(result.ErrorMessage);
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task AddRequirementAsync_RequirementDtoWithNullName_ReturnsNameOfNewRequirementMustBeNotNullOrEmpty()
+        {
+            // Arrange            
+            var requirementDto = _fixture.Build<RequirementWithoutIdDto>()
+                .With(x => x.Name, (string)null!)
+                .Create();
+            var expectedMessage = "Name of new requirement must be not null or empty";
+
+            // Act
+            var result = await _requirementsService.AddRequirementAsync(requirementDto);
+
+            // Assert
+            Assert.NotNull(result.ErrorMessage);
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task AddRequirementAsync_RequirementDtoWithEmptyName_ReturnsNameOfNewRequirementMustBeNotNullOrEmpty()
+        {
+            // Arrange            
+            var requirementDto = _fixture.Build<RequirementWithoutIdDto>()
+                .With(x => x.Name, "")
+                .Create();
+            var expectedMessage = "Name of new requirement must be not null or empty";
+
+            // Act
+            var result = await _requirementsService.AddRequirementAsync(requirementDto);
+
+            // Assert
+            Assert.NotNull(result.ErrorMessage);
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task AddRequirementAsync_DuplicateRequirementDto_ReturnsRequirementAlreadyExist()
+        {
+            // Arrange            
+            var requirementDto = _fixture.Build<RequirementWithoutIdDto>()
+                .Create();            
+            var expectedMessage = $"Requirement with name {requirementDto.Name} already exist";
+
+            _requirementRepository.Setup(x => x.AddRequirementAsync(It.IsAny<Requirement>()))
+                .ReturnsAsync((Requirement)null!);
+
+            // Act
+            var result = await _requirementsService.AddRequirementAsync(requirementDto);
+
+            // Assert
+            Assert.NotNull(result.ErrorMessage);
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task AddRequirementAsync_ReturnsRequirement()
+        {
+            // Arrange            
+            var requirementDto = _fixture.Build<RequirementWithoutIdDto>()
+                .Create();
+            var requirement = _fixture.Build<Requirement>()
+                .With(x => x.Name, requirementDto.Name)
+                .With(x => x.RoleRequirements, (List<RoleRequirement>)null!)
+                .Create();
+            //var expectedMessage = $"Requirement with name {requirementDto.Name} already exist";
+
+            _requirementRepository.Setup(x => x.AddRequirementAsync(It.IsAny<Requirement>()))
+                .ReturnsAsync(requirement);
+
+            // Act
+            var result = await _requirementsService.AddRequirementAsync(requirementDto);
+
+            // Assert
+            Assert.NotNull(result.Requirement);
+            //Assert.Equal(expectedMessage, result.ErrorMessage);
         }
     }
 }
