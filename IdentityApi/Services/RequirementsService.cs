@@ -47,7 +47,8 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
-            if (string.IsNullOrEmpty(requirementDto.Name))
+            if (string.IsNullOrEmpty(requirementDto.Name) || 
+                string.IsNullOrWhiteSpace(requirementDto.Name))
             {
                 response.ErrorMessage = "Name of new requirement must be not null or empty";
                 return response;
@@ -77,8 +78,17 @@ namespace MicroZoo.IdentityApi.Services
                 response.ErrorMessage = $"Requirement with Id {requirementId} does not exist";
                 return response;
             }
+                        
+            var isSuccessfullyDeleted = await _roleRequirementsService
+                .DeleteRoleRequirementsByRequirementIdAsync(requirementId);  
+            
+            if (isSuccessfullyDeleted == false)
+            {
+                response.ErrorMessage = $"Something goes wrong during delete RoleRequirements" +
+                    $"for requirement with Id {requirementId}";
+                return response;
+            }
 
-            await _roleRequirementsService.DeleteRoleRequirementsByRequirementIdAsync(requirementId);            
             response.Requirement = await _requirementRepository.SoftDeleteRequirementAsync(requirementForDelete);
             
             return response;

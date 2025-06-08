@@ -95,29 +95,15 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Services
             Assert.Equal(expectedMessage, result.ErrorMessage);
         }
 
-        [Fact]
-        public async Task AddRequirementAsync_RequirementDtoWithNullName_ReturnsNameOfNewRequirementMustBeNotNullOrEmpty()
+        [Theory]
+        [InlineData((string)null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task AddRequirementAsync_NullOrEmptyNameOfRequirementDto_ReturnsNameOfNewRequirementMustBeNotNullOrEmpty(string name)
         {
             // Arrange            
             var requirementDto = _fixture.Build<RequirementWithoutIdDto>()
-                .With(x => x.Name, (string)null!)
-                .Create();
-            var expectedMessage = "Name of new requirement must be not null or empty";
-
-            // Act
-            var result = await _requirementsService.AddRequirementAsync(requirementDto);
-
-            // Assert
-            Assert.NotNull(result.ErrorMessage);
-            Assert.Equal(expectedMessage, result.ErrorMessage);
-        }
-
-        [Fact]
-        public async Task AddRequirementAsync_RequirementDtoWithEmptyName_ReturnsNameOfNewRequirementMustBeNotNullOrEmpty()
-        {
-            // Arrange            
-            var requirementDto = _fixture.Build<RequirementWithoutIdDto>()
-                .With(x => x.Name, "")
+                .With(x => x.Name, name)
                 .Create();
             var expectedMessage = "Name of new requirement must be not null or empty";
 
@@ -158,7 +144,6 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Services
                 .With(x => x.Name, requirementDto.Name)
                 .With(x => x.RoleRequirements, (List<RoleRequirement>)null!)
                 .Create();
-            //var expectedMessage = $"Requirement with name {requirementDto.Name} already exist";
 
             _requirementRepository.Setup(x => x.AddRequirementAsync(It.IsAny<Requirement>()))
                 .ReturnsAsync(requirement);
@@ -168,7 +153,78 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Services
 
             // Assert
             Assert.NotNull(result.Requirement);
-            //Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task SoftDeleteRequirementAsync_NotExistedGuid_ReturnsRequirementDoesNotExist()
+        {
+            // Arrange            
+            var requirementId = Guid.NewGuid();
+            var expectedMessage = $"Requirement with Id {requirementId} does not exist";
+            
+            _requirementRepository.Setup(x => x.GetRequirementAsync(It.IsAny<Guid>()))
+                .ReturnsAsync((Requirement)null!);
+
+            // Act
+            var result = await _requirementsService.SoftDeleteRequirementAsync(requirementId);
+
+            // Assert
+            Assert.NotNull(result.ErrorMessage);
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task SoftDeleteRequirementAsync_BadWorkOfRoleRequirementsDeleteon_ReturnsSomethingGoesWrong()
+        {
+            // Arrange            
+            var requirementId = Guid.NewGuid();
+            var requirement = _fixture.Build<Requirement>()
+                .With(x => x.Id, requirementId)
+                .With(x => x.RoleRequirements, (List<RoleRequirement>)null!)
+                .Create();
+
+            var expectedMessage = $"Something goes wrong during delete RoleRequirements" +
+                    $"for requirement with Id {requirementId}";
+
+            _requirementRepository.Setup(x => x.GetRequirementAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(requirement);
+            _roleRequirementService.Setup(x =>
+                x.DeleteRoleRequirementsByRequirementIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(false);
+
+            // Act
+            var result = await _requirementsService.SoftDeleteRequirementAsync(requirementId);
+
+            // Assert
+            Assert.NotNull(result.ErrorMessage);
+            Assert.Equal(expectedMessage, result.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task SoftDeleteRequirementAsync_CorrectGuid_ReturnsRequirement()
+        {
+            // Arrange            
+            var requirementId = Guid.NewGuid();
+            var requirement = _fixture.Build<Requirement>()                
+                .With(x => x.Id, requirementId)
+                .With(x => x.RoleRequirements, (List<RoleRequirement>)null!)
+                .Create();
+
+            var expectedMessage = $"Requirement with Id {requirementId} does not exist";
+
+            _requirementRepository.Setup(x => x.GetRequirementAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(requirement);
+            _roleRequirementService.Setup(x =>
+                x.DeleteRoleRequirementsByRequirementIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(true);
+            _requirementRepository.Setup(x => x.SoftDeleteRequirementAsync(It.IsAny<Requirement>()))
+                .ReturnsAsync(requirement);
+
+            // Act
+            var result = await _requirementsService.SoftDeleteRequirementAsync(requirementId);
+
+            // Assert
+            Assert.NotNull(result.Requirement);
         }
     }
 }
