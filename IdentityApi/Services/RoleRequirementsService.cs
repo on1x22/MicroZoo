@@ -82,7 +82,7 @@ namespace MicroZoo.IdentityApi.Services
                 .DeleteRoleRequirementsByRoleIdAsync(roleId);
             if (!isSuccessfullyDeleted)
             {
-                response.ErrorMessage = "Innser server error";
+                response.ErrorMessage = "Inner server error";
                 return response;
             }
 
@@ -101,7 +101,7 @@ namespace MicroZoo.IdentityApi.Services
                 .AddRoleRequirementsAsync(newRoleRequirements);
             if (!isSuccessfullyAdded)
             {
-                response.ErrorMessage = "Innser server error";
+                response.ErrorMessage = "Inner server error";
                 return response;
             }
 
