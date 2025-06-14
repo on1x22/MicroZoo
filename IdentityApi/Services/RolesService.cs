@@ -106,8 +106,17 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
 
-            await _userRolesService.DeleteUserRolesByRoleIdAsync(roleId);
-            await _roleRequirementsService.DeleteRoleRequirementsByRoleIdAsync(roleId);
+            var isSuccessfullyDeletedUserRoles = await _userRolesService
+                .DeleteUserRolesByRoleIdAsync(roleId);
+
+            var isSuccessfullyDeletedRoleRequirements = await _roleRequirementsService
+                .DeleteRoleRequirementsByRoleIdAsync(roleId);
+            if (!isSuccessfullyDeletedUserRoles || !isSuccessfullyDeletedRoleRequirements)
+            {
+                response.ErrorMessage = "Inner server error";
+                return response;
+            }
+
             response.Role = await _rolesRepository.SoftDeleteRoleAsync(roleForDelete);
 
             return response;
