@@ -7,7 +7,6 @@ using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.Models.Roles;
 using MicroZoo.Infrastructure.Models.Users;
 using Moq;
-using Org.BouncyCastle.Crypto;
 
 namespace MicroZoo.IdentityApi.Tests.UnitTests.Services
 {
@@ -317,9 +316,6 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Services
         [InlineData("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxxx")]
         public async Task DeleteUserRolesByUserIdAsync_NotGuid_ReturnsUserIdIsNotGuid(string userId)
         {
-            // Arrange            
-            //var expectedMessage = "User Id is not Guid";
-
             // Act
             var result = await _userRolesService.DeleteUserRolesByUserIdAsync(userId);
 
@@ -369,9 +365,6 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Services
         [InlineData("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxxx")]
         public async Task DeleteUserRolesByRoleIdAsync_NotGuid_ReturnsUserIdIsNotGuid(string roleId)
         {
-            // Arrange            
-            //var expectedMessage = "User Id is not Guid";
-
             // Act
             var result = await _userRolesService.DeleteUserRolesByRoleIdAsync(roleId);
 

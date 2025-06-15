@@ -92,9 +92,16 @@ namespace MicroZoo.IdentityApi.Services
                 return response;
             }
             
-            await _userRolesService.DeleteUserRolesByUserIdAsync(userId);
-            response.User = await _userRepository.SoftDeleteUserAsync(userForDelete);
+            var isSuccessfullyDeleted = await _userRolesService
+                .DeleteUserRolesByUserIdAsync(userId);
+            if (!isSuccessfullyDeleted)
+            {
+                response.ErrorMessage = "Inner server error";
+                return response;
+            }
 
+            response.User = await _userRepository.SoftDeleteUserAsync(userForDelete);
+            
             _logger.LogInformation("User with Id {userId} has been marked as \"Deleted\"", userId);
 
             return response;
