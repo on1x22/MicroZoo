@@ -40,6 +40,11 @@ namespace MicroZoo.IdentityApi.Services
             }
 
             var rolesOfUser = await _userRolesRepository.GetRolesOfUserAsync(userId);
+            if (rolesOfUser == null)
+            {
+                response.ErrorMessage = "Inner server error";
+                return response;
+            }
 
             var userWithRoles = UserUpdater.ConvertToUserWithRoles(selectedUser);
             userWithRoles.Roles = rolesOfUser;
