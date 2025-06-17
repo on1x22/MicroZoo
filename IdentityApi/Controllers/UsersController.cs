@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using MicroZoo.IdentityApi.JwtFeatures;
 using MicroZoo.IdentityApi.Models.DTO;
 using MicroZoo.IdentityApi.Services;
-using MicroZoo.JwtConfiguration;
 
 namespace MicroZoo.IdentityApi.Controllers
 {
