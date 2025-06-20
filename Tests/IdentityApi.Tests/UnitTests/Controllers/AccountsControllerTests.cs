@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -47,6 +48,11 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Controllers
             _fixture.Inject(_mockUserManager.Object);
             _fixture.Customize<BindingInfo>(x => x.OmitAutoProperties());
             _controller = _fixture.Create<AccountsController>();
+        }
+                private bool HasAuthorizeAttribute<T>(string methodName)
+        {
+            var methodInfo = typeof(T).GetMethod(methodName);
+            return methodInfo!.GetCustomAttributes(typeof(AuthorizeAttribute), true).Any();
         }
 
         [Fact]
@@ -575,6 +581,186 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Controllers
             Assert.Contains(forgotPasswordDto.ClientUri!, actualCallback);
             Assert.Contains($"token={token}", actualCallback);
             Assert.Contains($"email={forgotPasswordDto.Email}", actualCallback);
+        }
+
+        [Fact]
+        public void ResetPassword_HasAuthorizeAttribute()
+        {
+            // Act & Assert
+            Assert.True(HasAuthorizeAttribute<AccountsController>("ResetPassword"));
+        }
+
+        [Fact]
+        public async Task ResetPassword_InvalidModel_ReturnsBadRequest()
+        {
+            // Arrange
+            var resetPasswordDto = _fixture.Create<ResetPasswordDto>();
+            _controller.ModelState.AddModelError("error", "some error");
+
+            // Act
+            var result = await _controller.ResetPassword(resetPasswordDto);
+
+            // Assert
+            Assert.IsType<BadRequestResult>(result);            
+        }
+
+        [Fact]
+        public async Task ResetPassword_UserNotExists_ReturnsBadRequestAndLogsWarning()
+        {
+            // Arrange
+            var resetPasswordDto = _fixture.Create<ResetPasswordDto>();
+            _mockUserManager.Setup(x => x.FindByEmailAsync(resetPasswordDto.Email!))
+                .ReturnsAsync((User)null!);
+
+            // Act
+            var result = await _controller.ResetPassword(resetPasswordDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Invalid request", badRequestResult.Value);
+
+            _mockLogger.VerifyLog(LogLevel.Warning,
+                $"User with email {resetPasswordDto.Email} tried to reset password, but " +
+                $"his doesn't exist in database",
+                Times.Once());
+        }
+
+        [Fact]
+        public async Task ResetPassword_UserDeleted_ReturnsBadRequestAndLogsWarning()
+        {
+            // Arrange
+            var resetPasswordDto = _fixture.Create<ResetPasswordDto>();
+            var user = _fixture.Build<User>()
+                .With(u => u.Deleted, true)
+                .Create();
+
+            _mockUserManager.Setup(x => x.FindByEmailAsync(resetPasswordDto.Email!))
+                .ReturnsAsync(user);
+
+            // Act
+            var result = await _controller.ResetPassword(resetPasswordDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Invalid request", badRequestResult.Value);
+
+            _mockLogger.VerifyLog(LogLevel.Warning,
+                $"An attempt was made to reset password a user {resetPasswordDto.Email} " +
+                "that is marked as \"Deleted\"",
+                Times.Once());
+        }
+
+        [Fact]
+        public async Task ResetPassword_ResetFails_ReturnsBadRequestWithErrors()
+        {
+            // Arrange
+            var resetPasswordDto = _fixture.Create<ResetPasswordDto>();
+            var user = _fixture.Build<User>()
+                .With(x => x.Deleted, false)
+                .Create();
+            var token = _fixture.Create<string>();
+            var decodedToken = HttpUtility.UrlDecode(token);
+            var errors = new[] { "Error1", "Error2" }.Select(e =>
+                    new IdentityError { Description = e }).ToArray();
+
+            _mockUserManager.Setup(x => x.FindByEmailAsync(resetPasswordDto.Email!))
+                .ReturnsAsync(user);
+            _mockUserManager.Setup(x => 
+                x.ResetPasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Failed(errors/*.Select(e => 
+                    new IdentityError { Description = e }).ToArray()*/));
+
+            // Act
+            var result = await _controller.ResetPassword(resetPasswordDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Invalid request", badRequestResult.Value);
+            /*var response = badRequestResult.Value as dynamic;
+            var responseErrors = (IEnumerable<string>)response!.Errors;
+
+            Assert.Equal(errors, responseErrors);*/
+            var er = $"Error while reset password for user {resetPasswordDto.Email}: " +
+                $"{badRequestResult.Value}";
+            _mockLogger.VerifyLog(LogLevel.Warning,
+                $"Error while reset password for user {resetPasswordDto.Email}: " +
+                $"{badRequestResult.Value}",
+                Times.Once());
+        }
+
+        [Fact]
+        public async Task ResetPassword_SetLockoutEndDateFails_ReturnsBadRequestWithErrors()
+        {
+            // Arrange
+            var resetPasswordDto = _fixture.Create<ResetPasswordDto>();
+            var user = _fixture.Build<User>()
+                .With(x => x.Deleted, false)
+                .Create();
+            var errors = new[] { "Lockout error" };
+
+            _mockUserManager.Setup(x => x.FindByEmailAsync(resetPasswordDto.Email!))
+                .ReturnsAsync(user);
+            _mockUserManager.Setup(x => x.ResetPasswordAsync(user,It.IsAny<string>(),
+                    resetPasswordDto.Password!))
+                .ReturnsAsync(IdentityResult.Success);
+            _mockUserManager.Setup(x => x.SetLockoutEndDateAsync(user, null))
+                .ReturnsAsync(IdentityResult.Failed(errors.Select(e => 
+                    new IdentityError { Description = e }).ToArray()));
+
+            // Act
+            var result = await _controller.ResetPassword(resetPasswordDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var response = badRequestResult.Value as dynamic;
+            var responseErrors = (IEnumerable<string>)response!.Errors;
+
+            Assert.Equal(errors, responseErrors);
+
+            _mockLogger.VerifyLog(LogLevel.Warning,
+                $"Error while set lockout end date for user {resetPasswordDto.Email}: {responseErrors}",
+                Times.Once());
+
+            //_mockUserManager.Verify(x => x.SetLockoutEndDateAsync(user, null), Times.Once());
+        }
+
+        [Fact]
+        public async Task ResetPassword_Success_ReturnsOkAndLogsInformation()
+        {
+            // Arrange
+            var resetPasswordDto = _fixture.Create<ResetPasswordDto>();
+            var user = _fixture.Create<User>();
+
+            _mockUserManager.Setup(x => x.FindByEmailAsync(resetPasswordDto.Email!))
+                .ReturnsAsync(user);
+            _mockUserManager.Setup(x => x.ResetPasswordAsync(
+                    user,
+                    It.IsAny<string>(),
+                    resetPasswordDto.Password!))
+                .ReturnsAsync(IdentityResult.Success);
+            _mockUserManager.Setup(x => x.SetLockoutEndDateAsync(user, null))
+                .ReturnsAsync(IdentityResult.Success);
+
+            // Act
+            var result = await _controller.ResetPassword(resetPasswordDto);
+
+            // Assert
+            Assert.IsType<OkResult>(result);
+
+            _mockLogger.VerifyLog(LogLevel.Information,
+                $"Successfully reset password for user {resetPasswordDto.Email}",
+                Times.Once());
+
+            /*_mockUserManager.Verify(
+                x => x.ResetPasswordAsync(
+                    user,
+                    HttpUtility.UrlDecode(resetPasswordDto.Token!),
+                    resetPasswordDto.Password!),
+                Times.Once());*/
+
+            /*_mockUserManager.Verify(
+                x => x.SetLockoutEndDateAsync(user, null),
+                Times.Once());*/
         }
     }
 }

@@ -257,19 +257,29 @@ namespace MicroZoo.IdentityApi.Controllers
                 return BadRequest("Invalid request");
             }
 
-            var result = await _userManager.ResetPasswordAsync(user, 
+            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, 
                 System.Web.HttpUtility.UrlDecode(resetPasswordDto.Token!), resetPasswordDto.Password!);
 
-            if(!result.Succeeded)
+            if(!resetPasswordResult.Succeeded)
             {
-                var errors = result.Errors.Select(e => e.Description);
+                var errors = resetPasswordResult.Errors.Select(e => e.Description);
                 _logger.LogWarning("Error while reset password for user {Email}: {Errors}",
                     resetPasswordDto.Email, errors);
 
                 return BadRequest(new { Errors = errors });
             }
 
-            await _userManager.SetLockoutEndDateAsync(user, null);
+            var setLockoutEndDateResult = await _userManager.SetLockoutEndDateAsync(user, null);
+
+            if(!setLockoutEndDateResult.Succeeded)
+            {
+                var errors = resetPasswordResult.Errors.Select(e => e.Description);
+                _logger.LogWarning("Error while set lockout end date for user {Email}: {Errors}",
+                    resetPasswordDto.Email, errors);
+
+                return BadRequest(new { Errors = errors });
+            }
+
             _logger.LogInformation("Successfully reset password for user {Email}", resetPasswordDto.Email);
 
             return Ok();
