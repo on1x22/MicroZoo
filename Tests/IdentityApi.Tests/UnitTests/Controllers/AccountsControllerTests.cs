@@ -12,7 +12,11 @@ using MicroZoo.IdentityApi.Models.DTO;
 using MicroZoo.Infrastructure.Models.Users;
 using MimeKit;
 using Moq;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Text.Json;
 using System.Web;
+using System.Xml.Linq;
 
 namespace MicroZoo.IdentityApi.Tests.UnitTests.Controllers
 {
@@ -49,11 +53,19 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Controllers
             _fixture.Customize<BindingInfo>(x => x.OmitAutoProperties());
             _controller = _fixture.Create<AccountsController>();
         }
-                private bool HasAuthorizeAttribute<T>(string methodName)
+        /*private bool HasAuthorizeAttribute<T>(string methodName)
         {
             var methodInfo = typeof(T).GetMethod(methodName);
             return methodInfo!.GetCustomAttributes(typeof(AuthorizeAttribute), true).Any();
         }
+
+        private bool HasAuthorizeAttributeWithPolicy<T>(string methodName, string policy)
+        {
+            var methodInfo = typeof(T).GetMethod(methodName);
+            var authorizeAttr = methodInfo.GetCustomAttributes(typeof(AuthorizeAttribute), true)
+                .FirstOrDefault() as AuthorizeAttribute;
+            return authorizeAttr?.Policy == policy;
+        }*/
 
         [Fact]
         public async Task RegisterUser_NullInput_ReturnsBadRequest()
@@ -587,7 +599,9 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Controllers
         public void ResetPassword_HasAuthorizeAttribute()
         {
             // Act & Assert
-            Assert.True(HasAuthorizeAttribute<AccountsController>("ResetPassword"));
+            //Assert.True(HasAuthorizeAttribute<AccountsController>("ResetPassword"));
+            Assert.True(AuthorizeAttributeHandler
+                .HasAuthorizeAttribute<AccountsController>("ResetPassword"));
         }
 
         [Fact]
@@ -660,31 +674,34 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Controllers
                 .Create();
             var token = _fixture.Create<string>();
             var decodedToken = HttpUtility.UrlDecode(token);
-            var errors = new[] { "Error1", "Error2" }.Select(e =>
+            var errorStrings = new[] { "Error1", "Error2" };
+            var errors = errorStrings.Select(e =>
                     new IdentityError { Description = e }).ToArray();
 
             _mockUserManager.Setup(x => x.FindByEmailAsync(resetPasswordDto.Email!))
                 .ReturnsAsync(user);
             _mockUserManager.Setup(x => 
                 x.ResetPasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(IdentityResult.Failed(errors/*.Select(e => 
-                    new IdentityError { Description = e }).ToArray()*/));
+                .ReturnsAsync(IdentityResult.Failed(errors));
 
             // Act
             var result = await _controller.ResetPassword(resetPasswordDto);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Invalid request", badRequestResult.Value);
-            /*var response = badRequestResult.Value as dynamic;
-            var responseErrors = (IEnumerable<string>)response!.Errors;
+            
+            /*var json = JsonSerializer.Serialize(badRequestResult.Value);
+            var document = JsonDocument.Parse(json);
+            var responseErrors = document.RootElement.GetProperty("Errors").EnumerateArray()
+                .Select(e => e.GetString())
+                .ToList();*/
+            var responseErrors = BadRequestObjectResultHandler
+                .GetErrorsFromBadRequestObjectResult(badRequestResult);
 
-            Assert.Equal(errors, responseErrors);*/
-            var er = $"Error while reset password for user {resetPasswordDto.Email}: " +
-                $"{badRequestResult.Value}";
+            Assert.Equal(errorStrings, responseErrors);            
             _mockLogger.VerifyLog(LogLevel.Warning,
                 $"Error while reset password for user {resetPasswordDto.Email}: " +
-                $"{badRequestResult.Value}",
+                $"{string.Join(", ", responseErrors)}",
                 Times.Once());
         }
 
@@ -696,7 +713,9 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Controllers
             var user = _fixture.Build<User>()
                 .With(x => x.Deleted, false)
                 .Create();
-            var errors = new[] { "Lockout error" };
+            var errorStrings = new[] { "Lockout error" };
+            var errors = errorStrings.Select(e =>
+                    new IdentityError { Description = e }).ToArray();
 
             _mockUserManager.Setup(x => x.FindByEmailAsync(resetPasswordDto.Email!))
                 .ReturnsAsync(user);
@@ -704,24 +723,22 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Controllers
                     resetPasswordDto.Password!))
                 .ReturnsAsync(IdentityResult.Success);
             _mockUserManager.Setup(x => x.SetLockoutEndDateAsync(user, null))
-                .ReturnsAsync(IdentityResult.Failed(errors.Select(e => 
-                    new IdentityError { Description = e }).ToArray()));
+                .ReturnsAsync(IdentityResult.Failed(errors));
 
             // Act
             var result = await _controller.ResetPassword(resetPasswordDto);
 
             // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            var response = badRequestResult.Value as dynamic;
-            var responseErrors = (IEnumerable<string>)response!.Errors;
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);            
+            var responseErrors = BadRequestObjectResultHandler
+                .GetErrorsFromBadRequestObjectResult(badRequestResult);
 
-            Assert.Equal(errors, responseErrors);
+            Assert.Equal(errorStrings, responseErrors);
 
             _mockLogger.VerifyLog(LogLevel.Warning,
-                $"Error while set lockout end date for user {resetPasswordDto.Email}: {responseErrors}",
+                $"Error while set lockout end date for user {resetPasswordDto.Email}: " +
+                $"{string.Join(", ", responseErrors)}",
                 Times.Once());
-
-            //_mockUserManager.Verify(x => x.SetLockoutEndDateAsync(user, null), Times.Once());
         }
 
         [Fact]
@@ -729,7 +746,9 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Controllers
         {
             // Arrange
             var resetPasswordDto = _fixture.Create<ResetPasswordDto>();
-            var user = _fixture.Create<User>();
+            var user = _fixture.Build<User>()
+                .With(x => x.Deleted, false)
+                .Create();
 
             _mockUserManager.Setup(x => x.FindByEmailAsync(resetPasswordDto.Email!))
                 .ReturnsAsync(user);
@@ -750,17 +769,186 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Controllers
             _mockLogger.VerifyLog(LogLevel.Information,
                 $"Successfully reset password for user {resetPasswordDto.Email}",
                 Times.Once());
+        }
 
-            /*_mockUserManager.Verify(
-                x => x.ResetPasswordAsync(
-                    user,
-                    HttpUtility.UrlDecode(resetPasswordDto.Token!),
-                    resetPasswordDto.Password!),
-                Times.Once());*/
+        [Fact]
+        public void LockOutUser_HasAuthorizeAttributeWithCorrectPolicy()
+        {
+            // Act & Assert
+            Assert.True(AuthorizeAttributeHandler
+                .HasAuthorizeAttributeWithPolicy<AccountsController>(
+                "LockOutUser", "IdentityApi.Update"));
+        }
 
-            /*_mockUserManager.Verify(
-                x => x.SetLockoutEndDateAsync(user, null),
-                Times.Once());*/
+        [Fact]
+        public async Task LockOutUser_InvalidModel_ReturnsBadRequest()
+        {
+            // Arrange
+            var userId = _fixture.Create<string>();
+            _controller.ModelState.AddModelError("error", "some error");
+
+            // Act
+            var result = await _controller.LockOutUser(userId);
+
+            // Assert
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task LockOutUser_InvalidToken_ReturnsBadRequestAndLogsWarning()
+        {
+            // Arrange
+            var userId = _fixture.Create<string>();
+            var token = _fixture.Create<string>();
+
+            _mockJwtHandler.Setup(x => x.GetPrincipalFromToken(It.IsAny<string>()))
+                .Returns((ClaimsPrincipal)null!);
+
+            // Act
+            var result = await _controller.LockOutUser(userId);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Invalid request", badRequestResult.Value);
+
+            _mockLogger.VerifyLog(LogLevel.Warning,
+                $"An unexpected error occurred while determining the user who sent " +
+                $"the request. User Id {userId}", 
+                Times.Once());
+        }
+
+        [Fact]
+        public async Task LockOutUser_UserNotExists_ReturnsBadRequestAndLogsInformation()
+        {
+            // Arrange
+            var userId = _fixture.Create<string>();
+            var token = _fixture.Create<string>();
+            var adminName = _fixture.Create<string>();
+            var principal = new ClaimsPrincipal(new GenericIdentity(adminName));
+
+            _mockJwtHandler.Setup(x => x.GetPrincipalFromToken(It.IsAny<string>()))
+                .Returns(principal);
+            _mockUserManager.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync((User)null!);
+
+            // Act
+            var result = await _controller.LockOutUser(userId);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Invalid request", badRequestResult.Value);
+
+            _mockLogger.VerifyLog(LogLevel.Information,
+                $"User {principal.Identity!.Name} tried to lock out user with Id {userId}, " +
+                $"but he doesn't exist in database",
+                Times.Once());
+        }
+
+        [Fact]
+        public async Task LockOutUser_SetLockoutEnabledFails_ReturnsBadRequestWithErrors()
+        {
+            // Arrange
+            var userId = _fixture.Create<string>();
+            var token = _fixture.Create<string>();
+            var adminName = _fixture.Create<string>();
+            var principal = new ClaimsPrincipal(new GenericIdentity(adminName));
+            var user = _fixture.Create<User>();
+            var errorStrings = new[] { "Error1", "Error2" };
+            var errors = errorStrings.Select(e =>
+                    new IdentityError { Description = e }).ToArray();
+
+            _mockJwtHandler.Setup(x => x.GetPrincipalFromToken(It.IsAny<string>()))
+                .Returns(principal);
+            _mockUserManager.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _mockUserManager.Setup(x => x.SetLockoutEnabledAsync(It.IsAny<User>(), It.IsAny<bool>()))
+                .ReturnsAsync(IdentityResult.Failed(errors));
+
+            // Act
+            var result = await _controller.LockOutUser(userId);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var responseErrors = BadRequestObjectResultHandler
+                .GetErrorsFromBadRequestObjectResult(badRequestResult);
+
+            Assert.Equal(errorStrings, responseErrors);
+
+            _mockLogger.VerifyLog(LogLevel.Warning,
+                $"Error while set lockout enabled for user with Id {userId}: " +
+                $"{string.Join(", ", responseErrors)}",
+                Times.Once());
+        }
+
+        [Fact]
+        public async Task LockOutUser_SetLockoutEndDateFails_ReturnsBadRequestWithErrors()
+        {
+            // Arrange
+            var userId = _fixture.Create<string>();
+            var token = _fixture.Create<string>();
+            var adminName = _fixture.Create<string>();
+            var principal = new ClaimsPrincipal(new GenericIdentity(adminName));
+            var user = _fixture.Create<User>();
+            var errorStrings = new[] { "DateError1", "DateError2" };
+            var errors = errorStrings.Select(e =>
+                    new IdentityError { Description = e }).ToArray();
+
+            _mockJwtHandler.Setup(x => x.GetPrincipalFromToken(It.IsAny<string>()))
+                .Returns(principal);
+            _mockUserManager.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _mockUserManager.Setup(x => x.SetLockoutEnabledAsync(It.IsAny<User>(), It.IsAny<bool>()))
+                .ReturnsAsync(IdentityResult.Success);
+            _mockUserManager.Setup(x => 
+                x.SetLockoutEndDateAsync(It.IsAny<User>(), It.IsAny<DateTimeOffset>()))
+                .ReturnsAsync(IdentityResult.Failed(errors));
+
+            // Act
+            var result = await _controller.LockOutUser(userId);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);            
+            var responseErrors = BadRequestObjectResultHandler
+                .GetErrorsFromBadRequestObjectResult(badRequestResult);
+
+            Assert.Equal(errorStrings, responseErrors);
+
+            _mockLogger.VerifyLog(LogLevel.Warning,
+                $"Error while set lockout end date for user with Id {userId}: " +
+                $"{string.Join(", ", responseErrors)}",
+                Times.Once());
+        }
+
+        [Fact]
+        public async Task LockOutUser_Success_ReturnsOkAndLogsInformation()
+        {
+            // Arrange
+            var userId = _fixture.Create<string>();
+            var token = _fixture.Create<string>();
+            var adminName = _fixture.Create<string>();
+            var principal = new ClaimsPrincipal(new GenericIdentity(adminName));
+            var user = _fixture.Create<User>();
+
+            _mockJwtHandler.Setup(x => x.GetPrincipalFromToken(It.IsAny<string>()))
+                .Returns(principal);
+            _mockUserManager.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _mockUserManager.Setup(x => x.SetLockoutEnabledAsync(It.IsAny<User>(), It.IsAny<bool>()))
+                .ReturnsAsync(IdentityResult.Success);
+            _mockUserManager.Setup(x => 
+                x.SetLockoutEndDateAsync(It.IsAny<User>(), It.IsAny<DateTimeOffset>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            // Act
+            var result = await _controller.LockOutUser(userId);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal($"User with Id = \"{userId}\" was locked out", okResult.Value);
+
+            _mockLogger.VerifyLog(LogLevel.Information,
+                $"User {principal.Identity!.Name} successfully lock out user with Id {userId}",
+                Times.Once());
         }
     }
 }

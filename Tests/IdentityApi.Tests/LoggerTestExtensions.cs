@@ -3,9 +3,9 @@ using Moq;
 
 namespace MicroZoo.IdentityApi.Tests
 {
-    public static class LoggerTestExtensions
+    internal static class LoggerTestExtensions
     {
-        public static void VerifyLog<T>(this Mock<ILogger<T>> loggerMock, LogLevel level,
+        internal static void VerifyLog<T>(this Mock<ILogger<T>> loggerMock, LogLevel level,
             string message, Times times)
         {
             loggerMock.Verify(x => 

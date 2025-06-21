@@ -273,14 +273,15 @@ namespace MicroZoo.IdentityApi.Controllers
 
             if(!setLockoutEndDateResult.Succeeded)
             {
-                var errors = resetPasswordResult.Errors.Select(e => e.Description);
+                var errors = setLockoutEndDateResult.Errors.Select(e => e.Description);
                 _logger.LogWarning("Error while set lockout end date for user {Email}: {Errors}",
                     resetPasswordDto.Email, errors);
 
                 return BadRequest(new { Errors = errors });
             }
 
-            _logger.LogInformation("Successfully reset password for user {Email}", resetPasswordDto.Email);
+            _logger.LogInformation("Successfully reset password for user {Email}", 
+                resetPasswordDto.Email);
 
             return Ok();
         }
@@ -297,7 +298,7 @@ namespace MicroZoo.IdentityApi.Controllers
             if (adminPrincipal == null)
             {
                 _logger.LogWarning("An unexpected error occurred while determining the user " +
-                    "who sent the request: {@adminPrincipal}", adminPrincipal);
+                    "who sent the request. User Id {@userId}", userId);
 
                 return BadRequest("Invalid request");
             }
@@ -311,8 +312,26 @@ namespace MicroZoo.IdentityApi.Controllers
                 return BadRequest("Invalid request");
             }
 
-            await _userManager.SetLockoutEnabledAsync(user, true);
-            await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+            var setLockoutEnabledResult = await _userManager.SetLockoutEnabledAsync(user, true);
+            if (!setLockoutEnabledResult.Succeeded)
+            {
+                var errors = setLockoutEnabledResult.Errors.Select(e => e.Description);
+                _logger.LogWarning("Error while set lockout enabled for user with Id {userId}: " +
+                    "{Errors}", userId, errors);
+
+                return BadRequest(new { Errors = errors });
+            }
+
+            var setLockoutEndDateResult = await _userManager
+                .SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+            if (!setLockoutEndDateResult.Succeeded)
+            {
+                var errors = setLockoutEndDateResult.Errors.Select(e => e.Description);
+                _logger.LogWarning("Error while set lockout end date for user with Id {userId}: " +
+                    "{Errors}", userId, errors);
+
+                return BadRequest(new { Errors = errors });
+            }
 
             _logger.LogInformation("User {Name} successfully lock out user with Id {userId}",
                 adminPrincipal.Identity!.Name, userId);
