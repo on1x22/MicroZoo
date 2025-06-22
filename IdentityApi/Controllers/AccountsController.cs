@@ -351,7 +351,7 @@ namespace MicroZoo.IdentityApi.Controllers
             if (adminPrincipal == null)
             {
                 _logger.LogWarning("An unexpected error occurred while determining the user " +
-                    "who sent the request: {@adminPrincipal}", adminPrincipal);
+                    "who sent the request. User Id {@userId}", userId);
 
                 return BadRequest("Invalid request");
             }
@@ -364,8 +364,25 @@ namespace MicroZoo.IdentityApi.Controllers
 
                 return BadRequest("Invalid request");
             }
-            await _userManager.SetLockoutEnabledAsync(user, false);
-            await _userManager.SetLockoutEndDateAsync(user, null);
+            var setLockoutEnabledResult = await _userManager.SetLockoutEnabledAsync(user, false);
+            if (!setLockoutEnabledResult.Succeeded)
+            {
+                var errors = setLockoutEnabledResult.Errors.Select(e => e.Description);
+                _logger.LogWarning("Error while set lockout enabled for user with Id {userId}: " +
+                    "{Errors}", userId, errors);
+
+                return BadRequest(new { Errors = errors });
+            }
+
+            var setLockoutEndDateResult = await _userManager.SetLockoutEndDateAsync(user, null);
+            if (!setLockoutEndDateResult.Succeeded)
+            {
+                var errors = setLockoutEndDateResult.Errors.Select(e => e.Description);
+                _logger.LogWarning("Error while set lockout end date for user with Id {userId}: " +
+                    "{Errors}", userId, errors);
+
+                return BadRequest(new { Errors = errors });
+            }
 
             _logger.LogInformation("User {Name} successfully unlock user with Id {userId}",
                 adminPrincipal.Identity!.Name, userId);
