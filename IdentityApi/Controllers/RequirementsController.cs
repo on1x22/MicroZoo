@@ -56,6 +56,7 @@ namespace MicroZoo.IdentityApi.Controllers
                 var remoteIpAddress = JwtExtensions.GetRemoteAddressFromHttpContext(HttpContext);
                 _logger.LogWarning("Invalid RequirementWithoutIdDto sent from address " +
                     "{remoteIpAddress}", remoteIpAddress);
+                return BadRequest("Invalid request");
             }
 
             var response = await _requirementsService.AddRequirementAsync(requirementDto!);            
