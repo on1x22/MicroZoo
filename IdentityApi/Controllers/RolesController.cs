@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using MicroZoo.IdentityApi.JwtFeatures;
 using MicroZoo.IdentityApi.Services;
 using MicroZoo.Infrastructure.Models.Roles;
-using MicroZoo.Infrastructure.Models.Users;
 using MicroZoo.JwtConfiguration;
 
 namespace MicroZoo.IdentityApi.Controllers
@@ -30,7 +29,7 @@ namespace MicroZoo.IdentityApi.Controllers
 
         [HttpGet]
         [Authorize(Policy = "IdentityApi.Read")]
-        public async Task<IActionResult> GetAllRoles()
+        public async Task<IActionResult> GetAllRolesAsync()
         {
             var response = await _rolesService.GetAllRolesAsync();
 
@@ -59,13 +58,14 @@ namespace MicroZoo.IdentityApi.Controllers
                 var remoteIpAddress = JwtExtensions.GetRemoteAddressFromHttpContext(HttpContext);
                 _logger.LogWarning("Invalid RoleWithoutIdDto sent from address {remoteIpAddress}",
                     remoteIpAddress);
+                return BadRequest("Invalid request");
             }
             
             var response = await _rolesService.AddRoleAsync(roleWithoutIdDto);
 
-            if (response.Role == null)
+            if (response.Role == null)            
                 _logger.LogInformation("An error occurred while adding role: {ErrorMessage}",
-                    response.ErrorMessage);
+                    response.ErrorMessage);            
             else
             {
                 //var token = JwtExtensions.GetAccessTokenFromRequest(Request);
@@ -90,6 +90,7 @@ namespace MicroZoo.IdentityApi.Controllers
                 var remoteIpAddress = JwtExtensions.GetRemoteAddressFromHttpContext(HttpContext);
                 _logger.LogWarning("Invalid RoleWithoutIdDto sent from address {remoteIpAddress}",
                     remoteIpAddress);
+                return BadRequest("Invalid request");
             }
 
             var response = await _rolesService.UpdateRoleAsync(roleId, roleWithoutIdDto!);

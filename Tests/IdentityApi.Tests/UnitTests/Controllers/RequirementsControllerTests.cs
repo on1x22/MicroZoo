@@ -71,7 +71,7 @@ namespace MicroZoo.IdentityApi.Tests.UnitTests.Controllers
         }
 
         [Fact]
-        public async Task GetAllRequirementsAsync_WithDifferentCounts_ReturnsCorrectResult()
+        public async Task GetAllRequirementsAsync_CorrectRequest_ReturnsCorrectResult()
         {
             // Arrange
             var requirements = _fixture.Build<Requirement>()
